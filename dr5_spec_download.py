@@ -28,7 +28,7 @@ def dr5_download(bals, plates_dir, balq_dir):
     os.mkdir(balq_dir)
 
     catalog= Table.read(bals)
-    all_plates= catalog['plate'][5:8]
+    all_plates= catalog['plate'][]
     plates= set(all_plates) #select only the unique values
 
     links_list= []
