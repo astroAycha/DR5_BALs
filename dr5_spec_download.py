@@ -20,7 +20,7 @@ def dr5_download(bals, plates_dir, balq_dir):
         plates_dir: directory where you want the plates to be downloaded to
         balq_dir: directory where your data (FITS files) for the DR5 BAL catalog only will be saved
         
-        you need to create thses two direcrories in advance if you don't have them on your local machine
+        these two directory will be created within the function
         
         """
     
@@ -28,7 +28,7 @@ def dr5_download(bals, plates_dir, balq_dir):
     os.mkdir(balq_dir)
 
     catalog= Table.read(bals)
-    all_plates= catalog['plate'][]
+    all_plates= catalog['plate'][:]
     plates= set(all_plates) #select only the unique values
 
     links_list= []
@@ -71,7 +71,7 @@ def dr5_download(bals, plates_dir, balq_dir):
         subprocess.call(["rm", "-R", plate_num])
 
 
-
+    return
 
 
 
