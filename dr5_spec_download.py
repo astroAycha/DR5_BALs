@@ -43,7 +43,7 @@ def dr5_download(bals, plates_dir, balq_dir):
     for line in links_list:
         print "Go take a nap Nathalie! This is gonna take a looong time"
         wget.download(line, out=plates_dir)
-        i=+1
+        i+=1
         print "\n Downloaded", i, "of", len(links_list), "files"
 
         
