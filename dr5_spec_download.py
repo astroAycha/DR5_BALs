@@ -38,10 +38,10 @@ def dr5_download(bals, plates_dir, balq_dir):
 
 
     #now download. this will take a long time
-    
+    print "Go take a nap! This is gonna take a looong time"
     i= 0
     for line in links_list:
-        print "Go take a nap Nathalie! This is gonna take a looong time"
+        
         wget.download(line, out=plates_dir)
         i+=1
         print "\n Downloaded", i, "of", len(links_list), "files"
@@ -56,7 +56,7 @@ def dr5_download(bals, plates_dir, balq_dir):
         print "extracting files from plate", plate_num
         print "plate", plate_num, "has", len(mjd_ls), "spectra from DR5 BAL catalog"
         
-        tarball= tarfile.open(plates_dir+plate_num+".tar.gz", "r")
+        tarball= tarfile.open(plates_dir+"/"+plate_num+".tar.gz", "r")
         tarball.extractall()
         tarball.close()
         
