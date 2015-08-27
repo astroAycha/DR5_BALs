@@ -61,6 +61,14 @@ t.keep_columns(['SDSSName', 'RA', 'DEC', 'z', 'psfmag_g', 'M_i', \
 
 t['EW_SiIV'].unit= t['EW_CIV'].unit = t['EW_AlIII'].unit= t['EW_MgII'].unit= 'Angstrom'
 
+"""remove row with problem in plate tarball. The download stopped in plate 0357. tarball file seems corrupt.
+ for i in range(0, len(t)):
+        if t['plate'][i] == 357:
+            print i #number of row for the corrupt plate.
+    this gave me 5148 for the number of the row
+            """
+#t.remove_row(5148) #maybe not...
+
 t.write('BALCat.fits')
 #t.write('BALCat.csv')
 
