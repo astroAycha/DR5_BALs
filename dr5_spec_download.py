@@ -4,13 +4,65 @@ To generate the links to the FITS files, I am getting the file name from the DR1
 """
 
 import numpy as np
-from astropy.table import Table, Column
+from astropy.table import Table, Column, join
+from astropy import units as u
 import subprocess
 import wget
 import tarfile
 import shutil
 import os
 
+
+#cross match SDSS Quasar data with the DR5 BAL catalog. Then do some work to create a nice catalog file with the stuff i need.
+
+dr5qso= Table.read('dr5qso.fits') #full DR5 quasar catalog from SDSS
+dr5bal= Table.read('dr5BALCat.fits') #DR5 BAL quasars catalog, downloaded from VizieR
+    
+dr5bal['SDSS'].name= "SDSSName" #change column name
+    
+t= join(dr5qso, dr5bal, keys= 'SDSSName') #cross match using SDSS name
+
+t['z_2'].name= 'z'
+    
+t['BI_Si_'].name= 'BI_SiIV'
+t['BIO_Si_'].name= 'BIO_SiIV'
+t['EW_Si_'].name= 'EW_SiIV'
+t['vmin_Si_'].name= 'Vmin_SiIV'
+t['vmax_Si_'].name= 'Vmax_SiIV'
+    
+t['BI_C_'].name= 'BI_CIV'
+t['BIO_C_'].name= 'BIO_CIV'
+t['EW_C_'].name= 'EW_CIV'
+t['vmin_C_'].name= 'Vmin_CIV'
+t['vmax_C_'].name= 'Vmax_CIV'
+    
+t['BI_Al_'].name= 'BI_AlIII'
+t['BIO_Al_'].name= 'BIO_AlIII'
+t['EW_Al_'].name= 'EW_AlIII'
+t['vmin_Al_'].name= 'Vmin_AlIII'
+t['vmax_Al_'].name= 'Vmax_AlIII'
+    
+t['BI_Mg_'].name= 'BI_MgII'
+t['BIO_Mg_'].name= 'BIO_MgII'
+t['EW_Mg_'].name= 'EW_MgII'
+t['vmin_Mg_'].name= 'Vmin_MgII'
+t['vmax_Mg_'].name= 'Vmax_MgII'
+    
+    
+#keep only columns I want. can check the current ones using t.colnames
+    
+t.keep_columns(['SDSSName', 'RA', 'DEC', 'z', 'psfmag_g', 'M_i', \
+                'plate', 'fiberid', 'MJD_spec', 'n_SDSS', \
+                'BI_SiIV', 'BIO_SiIV', 'EW_SiIV', 'Vmin_SiIV', 'Vmax_SiIV', \
+                'BI_CIV', 'BIO_CIV', 'EW_CIV', 'Vmin_CIV', 'Vmax_CIV', \
+                'BI_AlIII', 'BIO_AlIII', 'EW_AlIII', 'Vmin_AlIII', 'Vmax_AlIII', \
+                'BI_MgII', 'BIO_MgII', 'EW_MgII', 'Vmin_MgII', 'Vmax_MgII', \
+                'flg', 'SN1700', 'logF1400', 'logF2500'])
+
+t['EW_SiIV'].unit= t['EW_CIV'].unit = t['EW_AlIII'].unit= t['EW_MgII'].unit= 'Angstrom'
+
+t.write('BALCat.fits')
+#t.write('BALCat.csv')
 
 
 def dr5_download(bals, plates_dir):
@@ -24,11 +76,13 @@ def dr5_download(bals, plates_dir):
         
         """
     
+    
     os.mkdir(plates_dir)
 
     catalog= Table.read(bals)
-    catalog['plate'].fill_value= 0000
-    all_plates= catalog['plate'].filled()
+    #catalog['plate'].fill_value= 0000
+    #all_plates= catalog['plate'].filled()
+    all_plates= catalog['plate']
     plates= set(all_plates) #select only the unique values
 
     links_list= []
@@ -46,7 +100,6 @@ def dr5_download(bals, plates_dir):
         i+=1
         print "\n Downloaded", i, "of", len(links_list), "files"
 
-
     return
     
 def spec_xtract(bals, plate_dir, balq_dir):
@@ -55,20 +108,18 @@ def spec_xtract(bals, plate_dir, balq_dir):
 
     os.mkdir(balq_dir)
     
-    #plates= os.listdir(plate_dir) this is wrong
-    
     catalog= Table.read(bals)
-    catalog['plate'].fill_value= 0000
-    all_plates= catalog['plate'].filled()
-    plates= set(all_plates)
+    all_plates= catalog['plate']
+    plates= set(all_plates) #select only the unique values
+    
     
     for p in plates:
         if p !=0000:
-            mjd_ls= catalog['mjd'][catalog['plate']== p]
+            mjd_ls= catalog['MJD_spec'][catalog['plate']== p]
             fib_ls= catalog['fiberid'][catalog['plate']== p]
         
             plate_num= str(p).zfill(4)
-            print "plate", plate_num, "has", len(mjd_ls), "spectra from DR5 BAL catalog"
+            print "plate", plate_num, "has", len(mjd_ls), "spectra in the DR5 BAL catalog"
         
             tarball= tarfile.open(plate_dir+"/"+plate_num+".tar.gz", "r")
             tarball.extractall()
