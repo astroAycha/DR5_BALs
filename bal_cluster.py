@@ -39,15 +39,20 @@ def bal_cluster(data_tab, line, k):
     vmin= s[line+'-vmin'].filled() # minimum velocity
     s[line+'-vmax'].fill_value= 999
     vmax= s[line+'-vmax'].filled() # maximum velocity
-    s['logF1400'].fill_value= 999
-    l1400= s['logF1400'].filled() # Log of 1400 monochromatic luminosity
-    s['logF2500'].fill_value= 999
-    l2500= s['logF2500'].filled() # Log of 2500 monochromatic luminosity
+    if line== "MgII":
+        lum= "logF2500"
+    
+    else:
+        lum= "logF1400"
+    
+    s[lum].fill_value= 999
+    cl= s[lum].filled() # Log of 1400 or 2500 monochromatic luminosity
+
     s['Name'].fill_value= 999
     names= s['Name'].filled() # SDSS name
 
     # list of features to be used in clustering
-    f= [bi0, ew, vmin, vmax, l1400, l2500]
+    f= [bi0, ew, vmin, vmax]# , cl]
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
 
@@ -65,9 +70,11 @@ def bal_cluster(data_tab, line, k):
     
     clstr_name= line+str(k)
     
-    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], qs[:,4], qs[:,5], labels, names], \
-                      names= ('BIO', 'EW', 'Vmin', 'Vmax', 'logF1400', 'logF2500', 'labels', 'SDSS_Names'), \
-                      dtype= ('float64', 'float64', 'float64', 'float64', 'float64', 'float64', 'int', 'S18'))
+    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names], \
+                     names= ('BIO', 'EW', 'Vmin', 'Vmax', 'label', 'SDSS_Name'), \
+                     dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18'))
+    
+    #clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], qs[:,4], labels, names], names= ('BIO', 'EW', 'Vmin', 'Vmax', lum, 'label', 'SDSS_Name'), dtype= ('float64', 'float64', 'float64', 'float64', 'float64', 'int', 'S18'))
                       
     clstr_tab.write("./clusters/"+clstr_name+"tab.fits", format= 'fits')
 
