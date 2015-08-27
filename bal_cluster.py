@@ -22,9 +22,11 @@ def bal_cluster(data_tab, line, k):
     
     data= Table.read(data_tab)
 
-    #selec the sample: redshift: 1.6-2.1, S/N >3, line-BMBB flag (BALManyBadBins) many bad bins in the spec as reported in the SDSS database
+    #selec the sample: line has an absorption trough: BI0 >0 , S/N >3, line-BMBB flag (BALManyBadBins) many bad bins in the spec as reported in the SDSS database
 
-    s= data[(data['z'] > 1.6) & (data['z'] < 2.1) & (data['SN1700'] >3) & (data[line+'-BMBB'] ==0)]
+    s= data[(data[line+'-BIO'] >0) & (data['SN1700'] >3) & (data[line+'-BMBB'] ==0)]
+    
+    print "sample has", len(s), "objects"
 
     #features
     s[line+'-BI'].fill_value= 999
@@ -55,7 +57,9 @@ def bal_cluster(data_tab, line, k):
     kmeans.fit(qs)
     labels= kmeans.predict(qs)
     sc= metrics.silhouette_score(qs, labels)
+    cntrs= kmeans.cluster_centers_
     print "Silhouette score= ", sc
+    print "centroids: ", cntrs
 
     # save the results in a numpy array
     
@@ -66,5 +70,7 @@ def bal_cluster(data_tab, line, k):
                       dtype= ('float64', 'float64', 'float64', 'float64', 'float64', 'float64', 'int', 'S18'))
                       
     clstr_tab.write("./clusters/"+clstr_name+"tab.fits", format= 'fits')
+
+    return
    
 
