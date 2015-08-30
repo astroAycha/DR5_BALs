@@ -16,7 +16,7 @@ def spec_compos(line, k):
     """
 
     clstr= Table.read(line+str(k)+"_tab.fits")
-    colnames= clstr.colnames
+    column_names= clstr.colnames
 
     data= Table.read('myBALCat.fits')
 
@@ -32,7 +32,7 @@ def spec_compos(line, k):
         clust_spec= np.arange(1100, 4000, 0.5) # wavelength -this is the base that spectra will be stacked to before they're medianed
 
         for q in range(len(cluster)):
-            file_name= "./proc_data/spec-"+str(c['MJD'][q])+"-"+str(c['plate'][q])+"-"+str(c['fiber'][q])+"_proc.fits"
+            file_name= "./proc_data/spec-"+str(c['MJD_spec'][q])+"-"+str(c['plate'][q])+"-"+str(c['fiberid'][q])+"_proc.fits"
             spec=fits.open(file_name)
             flx= spec[0].data[1]
             wlen= spec[0].data[0]
@@ -71,7 +71,7 @@ def spec_compos(line, k):
         hdr= hdu.header
         hdr.set('SPEC_NUMBER', n)
         hdr.set('COMPOSITE', line+"-K"+str(k))
-        hdr.set('PARAMETERS USED', 'EW, RHWHM, BHWHM')
+        hdr.set('PARAMETERS USED', column_names[:k])
         hdu.writeto(spec_name)
 
 
