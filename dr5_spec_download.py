@@ -68,19 +68,23 @@ t['EW_SiIV'].unit= t['EW_CIV'].unit = t['EW_AlIII'].unit= t['EW_MgII'].unit= 'An
 
 #remove row with problem in plate tarball. The download stopped in plate 0357. tarball file seems corrupt.
 bad_rows=[]
-bad_plates= [357, 673, 674, 675, 676, 677, 678, 679, 680, 681, 682, 683, 684, 685, 686, 687, 688, 690, 691, 692, 693, 694, 695, 696, 697, 698, 699, 700, 701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 2069, 2074, 2076, 2079, 2185]
+f= open('bad_plates.txt', 'r') #this file contains a list of zombie plates. I found those plates using their sizes (314B) compared to (~78M) in the other "healty" plates.
+
+badP= f.readlines()
+f.close()
 
 for i in range(0, len(t)):
     
-    for j in bad_plates:
+    for j in badP:
     
-        if t['plate'][i] == j:
-            print i
+        if t['plate'][i] == int(j.rstrip()):
+            print j.rstrip()
             bad_rows.append(i) #number of rows for the corrupt plate.
 
 t.remove_rows(bad_rows)
 
-print len(t)
+print len(bad_rows), "rows were removed"
+print "table now has ", len(t), "lines"
 
 t.write('myBALCat.fits')
 #t.write('BALCat.csv')
@@ -148,6 +152,8 @@ def spec_xtract(bals, plate_dir, balq_dir):
         tarball= tarfile.open(plate_dir+"/"+plate_num+".tar.gz", "r")
         tarball.extractall()
         tarball.close()
+        
+        del tarball
         
         spec_file_names= []
         for f in range(len(mjd_ls)):
