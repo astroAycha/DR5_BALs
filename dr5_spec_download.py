@@ -24,7 +24,7 @@ import os
 
 #ended up doing the cross-matching using TopCat and the RA and DEC.
 
-t= Table.read('myBALs.fits')
+t= Table.read('SDSS_DR5BALs.fits')
 
 t['z_2'].name= 'z'
 t['plate_1'].name= 'plate'
@@ -56,7 +56,7 @@ t['vmax_Mg_'].name= 'Vmax_MgII'
     
 #keep only columns I want. can check the current ones using t.colnames
     
-t.keep_columns(['SDSSName', 'RA', 'DEC', 'z', 'psfmag_g', 'M_i', \
+t.keep_columns(['SDSSName', 'RA', 'DEC', 'z', 'M_i', \
                 'plate', 'fiberid', 'MJD_spec', 'n_SDSS', \
                 'BI_SiIV', 'BIO_SiIV', 'EW_SiIV', 'Vmin_SiIV', 'Vmax_SiIV', \
                 'BI_CIV', 'BIO_CIV', 'EW_CIV', 'Vmin_CIV', 'Vmax_CIV', \
@@ -78,7 +78,7 @@ for i in range(0, len(t)):
     for j in badP:
     
         if t['plate'][i] == int(j.rstrip()):
-            print j.rstrip()
+            #print j.rstrip()
             bad_rows.append(i) #number of rows for the corrupt plate.
 
 t.remove_rows(bad_rows)
@@ -86,8 +86,25 @@ t.remove_rows(bad_rows)
 print len(bad_rows), "rows were removed"
 print "table now has ", len(t), "lines"
 
+
+#now separate flags: left: EmLost, middle: BALManyBadBins, right: BlueWingAbs, 1= MgII, 2= AlIII, 4= CIV, 8= SiIV
+
+f1, f2, f3= [], [], []
+
+for i in t['flg']:
+    f1.append(int(i[0]))
+    f2.append(int(i[1]))
+    f3.append(int(i[2]))
+
+c1= Column(f1, name= 'EmLostFlag')
+c2= Column(f2, name= 'BMBBFlag')
+c3= Column(f3, name= 'BlueWingFlag')
+
+t.add_columns([c1, c2, c3], indexes=[30, 30, 30])
+
 t.write('myBALCat.fits')
-#t.write('BALCat.csv')
+
+## I used TopCat to cross-match this table with extinction_tab.fits and saved the new table as myBALCat.fits (same name)
 
 
 def dr5_download(bals, plates_dir):
