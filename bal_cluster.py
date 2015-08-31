@@ -9,9 +9,6 @@ from astropy.table import Table, join
 from sklearn.cluster import KMeans
 from sklearn import metrics
 
-from scipy.stats import sigmaclip
-
-
 def bal_cluster(data_tab, line, k):
 
     """ unsupervised clustering using KMeans.
@@ -24,21 +21,21 @@ def bal_cluster(data_tab, line, k):
 
     #selec the sample: line has an absorption trough: BI0 >0 , S/N >3, line-BMBB flag (BALManyBadBins) many bad bins in the spec as reported in the SDSS database
 
-    s= data[(data[line+'-BIO'] >0) & (data['SN1700'] >3) & (data[line+'-BMBB'] ==0)]
+    s= data[(data['BIO_'+line] >0) & (data['SN1700'] >3)] # & (data['flg'] ==0)]
     
     print "sample has", len(s), "objects"
 
     #features
-    s[line+'-BI'].fill_value= 999
-    bi= s[line+'-BI'].filled() # balnicity: integration 3000-25000
-    s[line+'-BIO'].fill_value= 999
-    bi0= s[line+'-BIO'].filled() # modified balnicity: integration 0-25000
-    s[line+'-EW'].fill_value= 999
-    ew= s[line+'-EW'].filled() # restframe absorption EW
-    s[line+'-vmin'].fill_value= 999
-    vmin= s[line+'-vmin'].filled() # minimum velocity
-    s[line+'-vmax'].fill_value= 999
-    vmax= s[line+'-vmax'].filled() # maximum velocity
+    s['BI_'+line].fill_value= 999
+    bi= s['BI_'+line].filled() # balnicity: integration 3000-25000
+    s['BIO_'+line].fill_value= 999
+    bi0= s['BIO_'+line].filled() # modified balnicity: integration 0-25000
+    s['EW_'+line].fill_value= 999
+    ew= s['EW_'+line].filled() # restframe absorption EW
+    s['Vmin_'+line].fill_value= 999
+    vmin= s['Vmin_'+line].filled() # minimum velocity
+    s['Vmax_'+line].fill_value= 999
+    vmax= s['Vmax_'+line].filled() # maximum velocity
     if line== "MgII":
         lum= "logF2500"
     
@@ -48,10 +45,10 @@ def bal_cluster(data_tab, line, k):
     s[lum].fill_value= 999
     cl= s[lum].filled() # Log of 1400 or 2500 monochromatic luminosity
 
-    s['Name'].fill_value= 999
-    names= s['Name'].filled() # SDSS name
-
-    # list of features to be used in clustering
+    s['SDSSName'].fill_value= 999
+    names= s['SDSSName'].filled() # SDSS name
+    
+     # list of features to be used in clustering
     f= [bi0, ew, vmin, vmax]# , cl]
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
@@ -71,12 +68,12 @@ def bal_cluster(data_tab, line, k):
     clstr_name= line+str(k)
     
     clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names], \
-                     names= ('BIO', 'EW', 'Vmin', 'Vmax', 'label', 'SDSS_Name'), \
+                     names= ('BIO', 'EW', 'Vmin', 'Vmax', 'label', 'SDSSName'), \
                      dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18'))
     
     #clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], qs[:,4], labels, names], names= ('BIO', 'EW', 'Vmin', 'Vmax', lum, 'label', 'SDSS_Name'), dtype= ('float64', 'float64', 'float64', 'float64', 'float64', 'int', 'S18'))
                       
-    clstr_tab.write("./clusters/"+clstr_name+"tab.fits", format= 'fits')
+    clstr_tab.write("./clusters/"+clstr_name+"clstrs.fits", format= 'fits')
 
     return
    
