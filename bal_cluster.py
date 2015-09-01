@@ -52,7 +52,7 @@ def bal_cluster(data_tab, line, k):
     names= s['SDSSName'].filled() # SDSS name
     
     # list of features to be used in clustering
-    f= [bi0, ew, vmin, vmax]# , cl]
+    f= [ew, vmin, vmax]# , cl]
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
 
@@ -70,9 +70,9 @@ def bal_cluster(data_tab, line, k):
     
     clstr_name= line+str(k)
     
-    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
-                     names= ('BIO', 'EW', 'Vmin', 'Vmax', 'label', 'SDSSName', 'z'), \
-                     dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
+    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], labels, names, redshift], \
+                     names= ('EW', 'Vmin', 'Vmax', 'label', 'SDSSName', 'z'), \
+                     dtype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64'))
     
     
     clstr_tab.write("./clusters/"+clstr_name+"clstrs.fits", format= 'fits')
