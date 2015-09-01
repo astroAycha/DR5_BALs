@@ -651,76 +651,37 @@ def kde_hist(line, sample_name,j):
 
 ########################
 
-def plot_spec_parts(line, sample_name, k):
+def plot_spec_three_pans(line, k):
     
-    """ plot composite spectra in 3 panels:
-        panel 1: C IV, (He II & OIII]), (Al III, Si III], C III])
-        panel 2: Ly alpha, Si IV
+    """ plot composite spectra in 4 panels:
+        panel 1: Ly alpha, Si IV, C IV, (He II & OIII])
+        panel 2: Al III, Si III], C III]
         panel 3: Mg II
         param:
-        line: c4, c3 or mg2 as str
-        line_name: CIV, CIII, or MgII as str
+        line: "SiIV", "CIV", "AlIII", or "MgII"
         k: number of clusters (3, 4, ...)
         """
     
-    
-    if line == "c3":
-        line_name= "CIII"
-        line_label= "CIII]"
-    
-    elif line== "c4":
-        line_name= line_label= "CIV"
-    
-    elif line== "mg2":
-        line_name= line_label = "MgII"
-    
-    if sample_name== "main":
-        sample= "_ew_hwhm_"
-        sample_label= "Main"
-    elif sample_name== "mixed":
-        sample= "_ew_hwhm_mixed_"
-        sample_label= "Mixed"
-    elif sample_name == "bal":
-        sample="_ew_hwhm_bal_"
-        sample_label= "BALQ"
-
-
-    clstr_name= "./clusters/"+line+sample+ str(k) +"clstrs.npy"
-    clstr_array= np.load(clstr_name)
+    clstr_name= "./clusters/"+line+str(k)+"clstrs.fits"
+    clstr= Table.read(clstr_name)
     
     clstr_num=[]
-    for f in range(max(clstr_array[:,3].astype(int))+1):
-        clstr_num.append([f, (mean(clstr_array[:,1][clstr_array[:,3]== f]), (mean(clstr_array[:,2][clstr_array[:,3]== f])))])
+    for f in range(k):
+        clstr_num.append([f, (mean(clstr['Vmin'][clstr['label']== f]), (mean(clstr['Vmax'][clstr['label']== f])))])
         
     ordered_clstrs= sorted(clstr_num, key= itemgetter(1)) #reverse= True
     print ordered_clstrs
 
-    '''
-    compo_name= "./composites/"+line+"_ew_hwhm_bal_only_"+str(k)+"*.fits" #for the BAL only sample
-    #compo_name= "./composites/"+line+"_ew_hwhm_bal_"+str(k)+"*.fits" #for the BAL+nonBAL sample
-    #compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
-    compos= glob(compo_name)'''
     
     compo_list= []
     for r in ordered_clstrs:
-        compo_name= "./composites/"+line+sample+str(k)+"clstrs"+str(r[0]+1)+".fits" #for the BAL+nonBAL sample
+        compo_name= "./composites/"+line+"_"+str(k)+"clstr"+str(r[0]+1)+".fits"
         spec= fits.open(compo_name)
         num_obj= spec[0].header['SPEC_NUMBER']
         compo_list.append([compo_name, num_obj])
     
     print compo_list
-    
-    '''
-    compo_list= []
-    for obj in compos:
-        spec= fits.open(obj)
-        num_obj= spec[0].header['SPEC_NUMBER']
-        compo_list.append([obj, num_obj])
-    ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
 
-    print ordered_compos
-    '''
-    
 
     fig= figure(figsize=(14,8))
     sns.set_style("ticks")
@@ -728,23 +689,27 @@ def plot_spec_parts(line, sample_name, k):
     fig1.set_axis_off()
     fig1.set_xlim(0, 1)
     fig1.set_ylim(0, 1)
-    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
-    fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', \
+             horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', \
+              horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
     
-    line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], [1549, 1640, 1663.5], [1857, 1892, 1908], [2800]]
-    line_labels= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
+    line_mark= [[1215.7, 1240, 1305, 1335, 1396.8, 1549, 1640, 1663.5], \
+                [1857, 1892, 1908], [2800]]
+    line_labels= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV', 'CIV', 'HeII', 'OIII]'], \
+                  ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
     
     alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
-    compo_labels= [line_label+"-"+ a for a in alphabet_list]
+    compo_labels= [line+"-"+ a for a in alphabet_list]
     
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
     
-    splt_ls=[221, 222, 223, 224]
-    dx_ls= [(1150,1450),(1465,1700), (1800, 2000),  (2750, 2850)]
-    dy_ls= [(0.5, 2.1), (0.75, 2.6), (0.75, 1.8),  (0.85, 1.6)]
+    splt_ls=[211, 223, 224]
+    dx_ls= [(1150, 1700), (1800, 2000),  (2750, 2850)]
+    dy_ls= [(0.5, 2.6), (0.75, 1.8),  (0.85, 1.6)]
     
-    for s in range(4):
+    for s in range(3):
     
         ax= fig.add_subplot(splt_ls[s])
         xlim(dx_ls[s])
@@ -752,7 +717,8 @@ def plot_spec_parts(line, sample_name, k):
         
         for t in range(len(line_mark[s])):
             ax.axvline(line_mark[s][t], ls=':', c='k')
-            ax.text(line_mark[s][t]-((dx_ls[s][1]-dx_ls[s][0])/20), dy_ls[s][1]-(dy_ls[s][1]/15), line_labels[s][t], rotation= 'vertical', fontsize= 14, family='serif')
+            ax.text(line_mark[s][t]-((dx_ls[s][1]-dx_ls[s][0])/20), dy_ls[s][1]-(dy_ls[s][1]/15), \
+                    line_labels[s][t], rotation= 'vertical', fontsize= 14, family='serif')
         
         ii= dy_ls[s][1]
         for (sp, clr, clab) in zip(compo_list, clr_ls, compo_labels):
@@ -766,12 +732,12 @@ def plot_spec_parts(line, sample_name, k):
             ii-=0.1
             ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
 
-        mean_compo= fits.open("./composites/mean_compo_"+sample_name+".fits")
-        mean_flx= mean_compo[0].data[1]
+        #mean_compo= fits.open("./composites/mean_compo_"+sample_name+".fits")
+        #mean_flx= mean_compo[0].data[1]
         
-        plot(wlen, mean_flx/mean_flx[(dx_ls[s][0]-1100)*2], c='k', lw=2, label= "Mean")
+        #plot(wlen, mean_flx/mean_flx[(dx_ls[s][0]-1100)*2], c='k', lw=2, label= "Mean")
         
-        ax.text(2752, dy_ls[s][1]-0.15, sample_label+" Sample, "+"N="+ str(len(clstr_array))+"\n"+"Mean Composite ", color= 'k', fontsize= 14, family= 'serif')
+        #ax.text(2752, dy_ls[s][1]-0.15, sample_label+" Sample, "+"N="+ str(len(clstr_array))+"\n"+"Mean Composite ", color= 'k', fontsize= 14, family= 'serif')
 
     return
 
