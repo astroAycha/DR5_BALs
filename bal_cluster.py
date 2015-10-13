@@ -9,7 +9,7 @@ from astropy.table import Table, join
 from sklearn.cluster import KMeans
 from sklearn import metrics
 
-def bal_cluster(data_tab, line, k):
+def bal_cluster(line, k):
 
     """ unsupervised clustering using KMeans.
     param:
@@ -17,11 +17,21 @@ def bal_cluster(data_tab, line, k):
     line: which line to use for the clustering features
     k: number of clusters"""
     
-    data= Table.read(data_tab)
+    data= Table.read('myBALCat.fits')
 
-    #selec the sample: line has an absorption trough: BI0 >0 , S/N >3, line-BMBB flag (BALManyBadBins) many bad bins in the spec as reported in the SDSS database
+    #selec the sample: line has an absorption trough: BI0 >0 , S/N >3, and a redshift cutoff to restrict the bandwidth
+    
+    if line== 'SiIV':
+        z1= 1.79
+        z2= 3.7
+    elif line== 'CIV':
+        z1= 1.5
+        z2= 3.7
+    elif line== 'MgII':
+        z1= 1.1
+        z2= 2.2
 
-    s= data[(data['BIO_'+line] >0) & (data['SN1700'] >3)] # & (data['flg'] ==0)]
+    s= data[(data['BIO_'+line] >0) & (data['SN1700'] >3) & (data['z'] >z1) & (data['z'] <z2)] # & (data['flg'] ==0)]
     
     print "sample has", len(s), "objects"
 
