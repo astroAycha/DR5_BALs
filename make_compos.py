@@ -70,8 +70,8 @@ def spec_compos(line, k):
         hdu= fits.PrimaryHDU(spec_file)
         hdr= hdu.header
         hdr.set('SPEC_NUMBER', n)
-        hdr.set('COMPOSITE', line+"-K"+str(k))
-        param= '-'.join(column_names[:k])
+        hdr.set('COMPO', line+"-K"+str(k))
+        param= '-'.join(column_names[:3])
         print param
         hdr.set('PARAMETERS USED', param)
         hdu.writeto(spec_name)
