@@ -351,10 +351,14 @@ def BALcompos(line, k):
         compo_name= "./composites/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits"
         spec= fits.open(compo_name)
         plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i])
-        text(xlimit[1]-200, yy, "CIV, N="+str(spec[0].header['HIERARCH SPEC_NUMBER']), color= clr_ls[i], fontsize= 18)
+        text(xlimit[1]-200, yy, line+", N="+str(spec[0].header['HIERARCH SPEC_NUMBER']), color= clr_ls[i], fontsize= 18)
         yy-= 0.2
 
     return
+
+##############
+
+
 
 
 
