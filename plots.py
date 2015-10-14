@@ -93,7 +93,7 @@ def kde_hist(line,k):
     ax2d.scatter(x,y, marker='D', color='w', s=[e for e in ew])
         
     clstr_label= ['a'+str(k),'b'+str(k),'c'+str(k),'d'+str(k),'e'+str(k),'f'+str(k)]
-    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
+    clr_ls= ['steelblue', 'olivedrab','orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
     u=0.3
     for l in range(k):
         u-=0.04
@@ -236,49 +236,6 @@ def plot_spec_three_pans(line, k):
     return
 
 
-###########################
-def plot_reprod(line, k):
-    
-    """ make plots with cluster centroids calculated 50 times to show reproducibility.
-        read values from text files.
-        """
-    
-    #lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
-    #for the BAL sample:lines = [('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
-    
-    
-    cntrs= loadtxt(line+str(k)+"_bal.txt") #sample with BALs
-    #cntrs= loadtxt(line+str(k)+".txt") #use for the non-BAL sample
-    
-    fig= figure(figsize=(10,8))
-    
-    subplots_adjust(hspace = .05)
-    ax1= fig.add_subplot(311)
-    xlim(-4, 54)
-    ylabel('EW '+line)
-    ax1.set_xticks([10, 20, 30, 40, 50], [10, 20, 30, 40, 50])
-    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
-    
-    for m in range(0, k*3, 3):
-        ax1.scatter(range(50), cntrs[:, m], marker='s', edgecolor='k', facecolor='0.5')
-    
-    
-    ax2= fig.add_subplot(312, sharex= ax1)
-    xlim(-4, 54)
-    ylabel("BHWHM "+line)
-    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
-    for m in range(1, k*3, 3):
-        ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='0.5')
-    
-    ax3= fig.add_subplot(313, sharex= ax1)
-    xlim(-4, 54)
-    ylabel('RHWHM '+line)
-    xlabel("Number of Repeats")
-    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
-    for m in range(2, k*3, 3):
-        ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='0.5')
-
-
 ###################
 def bal_hist1(k):
 
@@ -359,41 +316,45 @@ ylim(0,1.3)
 
 legend()
 
-#####
+###########
 
 def BALcompos(line, k):
 
     '''plot composites in one panel
     '''
-    
     if line== 'MgII':
         xlimit= (1700, 3100)
+        r= arange(5,9)
+    
     else:
         xlimit= (1300, 2165)
+        r= arange(0,8)
+
     
     fig= figure(figsize=(16,8))
     xlim(xlimit)
+    ylim(.1,3.2)
     xlabel(r'Restframe Wavelength ($\AA$)')
     ylabel(r'Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)')
 
     line_mark= [1335, 1396.8, 1549, 1640, 1663.5, 1857, 1892, 1908, 2800]
-    line_label= ['SiII', 'CII', 'SiIV', 'CIV', 'HeII', 'OIII]', 'AlIII', 'SiIII]', 'CIII]', 'MgII']
+    line_label= ['CII', 'SiIV', 'CIV', 'HeII', 'OIII]', 'AlIII', 'SiIII]', 'CIII]', 'MgII']
 
-    for (l,lm) in zip(line_mark, line_label):
-        axvline(l, ls= ':', color= '0.7')
-        text(l, 3, lm)
-
-    clr_ls= ['navy', 'mediumvioletred','orange']
+    for p in r:
+        axvline(line_mark[p], ls= ':', color= '.5')
+        text(line_mark[p], 3, line_label[p], rotation= 'vertical')
+    
+    clr_ls= ['steelblue', 'olivedrab','orange'] #paleturquoise, orchid
     
     yy= 3
     for i in range(k):
         compo_name= "./composites/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits"
         spec= fits.open(compo_name)
         plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i])
-        text(2000, yy, "CIV, N="+str(spec[0].header['HIERARCH SPEC_NUMBER']), color= clr_ls[i], fontsize= 18)
+        text(xlimit[1]-200, yy, "CIV, N="+str(spec[0].header['HIERARCH SPEC_NUMBER']), color= clr_ls[i], fontsize= 18)
         yy-= 0.2
 
-    #legend()
+    return
 
 
 
