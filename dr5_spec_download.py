@@ -105,8 +105,6 @@ t.add_columns([c1, c2, c3], indexes=[30, 30, 30])
 t.write('myBALCat.fits')
 
 ## I used TopCat to cross-match this table with extinction_tab.fits and saved the new table as myBALCat.fits (same name)
-## table myBALs_red_var.fits contains results of cross-matching myBALCat.fits with krawczyk_reddening.fits (Krawczyk et al. 2015) and filiz2014.fits (Filiz Ak et al. 2014)
-## table myBALs_red_var_xray.fits has the X-ray data from Sarah (and Robyn Smith).
 
 
 def dr5_download(bals, plates_dir):
