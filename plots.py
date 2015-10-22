@@ -359,7 +359,63 @@ def BALcompos(line, k):
 ##############
 
 
+def clstr_prop(line,k):
 
+    """ 
+    Panel1: plot KDE of the clusters in the Vmin vs Vmax plane with the EW as a marker. Overplot objects found to vary in Filiz Ak et al. 2014
+    Panel2: distributions of extinction, and X-ray
+    
+    Param: 
+    line: 'CIV', 'SiIV', or 'MgII'
+    k: number of clusters (3,4,5..)
+    
+    """
+
+    data= Table.read('myBALCat.fits')
+
+    xray_tbl= Table.read('xray_Robyn_final.fits')
+
+    red_tbl= Table.read('krawczyk_reddning.fits')
+
+    var_tbl= Table.read('filiz2014.fits')
+
+    clstr_tbl= Table.read("./clusters/"+line+str(k)+"clstrs.fits")
+    
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(clstr_tbl[clstr_tbl['label'] ==o]),\
+                           mean(clstr_tbl['Vmin'][clstr_tbl['label'] ==o]),\
+                           mean(clstr_tbl['Vmax'][clstr_tbl['label'] ==o]), \
+                           mean(clstr_tbl['EW'][clstr_tbl['label'] ==o])])
+    
+    ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+    
+    print ord_clstrs
+
+    #clr_ls= ['steelblue', 'olivedrab','orange']
+    clr_ls= ['Blues_d', 'Greens_d', 'Reds_d']
+
+
+    fig= figure(figsize=(12,12))
+
+    ax1= fig.add_subplot(211)
+    
+    i =0
+    for c in ord_clstrs:
+        l= c[0]
+        print l
+        sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
+                    cmap= clr_ls[i], n_level= 10)
+
+        i+=1
+    
+    var_bals= join(data, var_tbl, keys='SDSSName')
+    
+    scatter(var_bals['Vmin'], var_bal['Vmax'], m='o', s=10, color='k')
+
+    ax2= fig.add_subplot(222)
+
+    hist()
 
 
 
