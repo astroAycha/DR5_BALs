@@ -118,10 +118,10 @@ t= Table.read('myBALCat_var_red_he2_shen.fits')
 #keep only columns I need:
 
 t.keep_columns(['SDSSName', 'RA_1', 'DEC_1', 'M_i', 'MJD_spec', 'plate_1', 'fiberid', 'z_1', \
-                'BI_SiIV', 'BIO_SiIV', 'EW_SiIV', 'Vmin_SiIV', 'Vmax_SiIV', \
-                'BI_CIV', 'BIO_CIV', 'EW_CIV_1', 'Vmin_CIV', 'Vmax_CIV', \
-                'BI_AlIII', 'BIO_AlIII', 'EW_AlIII', 'Vmin_AlIII', 'Vmax_AlIII', \
-                'BI_MgII', 'BIO_MgII', 'EW_MgII_1', 'Vmin_MgII', 'Vmax_MgII', \
+                'BI_SiIV', 'BIO_SiIV', 'EW_SiIV', 'Vmin_SiIV', 'Vmax_SiIV', 'f_deep_SiIV', \
+                'BI_CIV', 'BIO_CIV', 'EW_CIV_1', 'Vmin_CIV', 'Vmax_CIV', 'f_deep_CIV', \
+                'BI_AlIII', 'BIO_AlIII', 'EW_AlIII', 'Vmin_AlIII', 'Vmax_AlIII', 'f_deep_AlIII', \
+                'BI_MgII', 'BIO_MgII', 'EW_MgII_1', 'Vmin_MgII', 'Vmax_MgII', 'f_deep_MgII', \
                 'SN1700', 'logF1400', 'logF2500', 'flg', \
                 'E_B-V_1', 'E_B-V_2', \
                 'HeII_EW', 'alpha_UV', 'v_md', 'CF', 'FWHM', \
