@@ -17,7 +17,8 @@ def bal_cluster(line, k):
     line: which line to use for the clustering features
     k: number of clusters"""
     
-    data= Table.read('myBALCat.fits')
+    #data= Table.read('myBALCat.fits')
+    data= Table.read('myBALCat_xtra.csv')
 
     #selec the sample: line has an absorption trough: BI0 >0 , S/N >3, and a redshift cutoff to restrict the bandwidth
     
@@ -35,19 +36,32 @@ def bal_cluster(line, k):
     
     print "sample has", len(s), "objects"
 
+
     #features
-    s['z'].fill_value= 999
+    """
+    redshift= s['Z_HW']
+    bi= s['BI_'+line]
+    ew= s['EW_'+line]
+    vmin= s['Vmin_'+line]
+    vmax= s['Vmax_'+line]
+    fdeep= s['f_deep_'+line]
+
+    """
+    s['z'].fill_value= 0
     redshift= s['z'].filled() #redshift
-    s['BI_'+line].fill_value= 999
+    s['BI_'+line].fill_value= 0
     bi= s['BI_'+line].filled() # balnicity: integration 3000-25000
-    s['BIO_'+line].fill_value= 999
+    s['BIO_'+line].fill_value= 0
     bi0= s['BIO_'+line].filled() # modified balnicity: integration 0-25000
-    s['EW_'+line].fill_value= 999
+    s['EW_'+line].fill_value= 0
     ew= s['EW_'+line].filled() # restframe absorption EW
-    s['Vmin_'+line].fill_value= 999
+    s['Vmin_'+line].fill_value= 0
     vmin= s['Vmin_'+line].filled() # minimum velocity
-    s['Vmax_'+line].fill_value= 999
+    s['Vmax_'+line].fill_value= 0
     vmax= s['Vmax_'+line].filled() # maximum velocity
+    s['f_deep_'+line].fill_value= 0
+    fdeep= s['f_deep_'+line].filled()
+    
     
     if line== "MgII":
         lum= "logF2500"
@@ -62,7 +76,7 @@ def bal_cluster(line, k):
     names= s['SDSSName'].filled() # SDSS name
     
     # list of features to be used in clustering
-    f= [ew, vmin, vmax]# , cl]
+    f= [ew, vmin, vmax, fdeep]# , cl]
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
 
@@ -80,9 +94,9 @@ def bal_cluster(line, k):
     
     clstr_name= line+str(k)
     
-    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], labels, names, redshift], \
-                     names= ('EW', 'Vmin', 'Vmax', 'label', 'SDSSName', 'z'), \
-                     dtype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64'))
+    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
+                     names= ('EW', 'Vmin', 'Vmax', 'fdeep', 'label', 'SDSSName', 'z'), \
+                     dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
     
     
     clstr_tab.write("./clusters/"+clstr_name+"clstrs.fits", format= 'fits')
