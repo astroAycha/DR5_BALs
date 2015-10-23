@@ -5,106 +5,12 @@ To generate the links to the FITS files, I am getting the file name from the DR1
 
 import numpy as np
 from astropy.table import Table, Column, join
-from astropy import units as u
 import subprocess
 import wget
 import tarfile
 import shutil
 import os
 
-
-#cross match SDSS Quasar data with the DR5 BAL catalog. Then do some work to create a nice catalog file with the stuff i need.
-
-#dr5qso= Table.read('dr5qso.fits') #full DR5 quasar catalog from SDSS
-#dr5bal= Table.read('dr5BALCat.fits') #DR5 BAL quasars catalog, downloaded from VizieR
-    
-#dr5bal['SDSS'].name= "SDSSName" #change column name
-    
-#t= join(dr5qso, dr5bal, keys= 'SDSSName', join_type= 'right') #cross-match using SDSS name
-
-#ended up doing the cross-matching using TopCat and the RA and DEC.
-
-t= Table.read('SDSS_DR5BALs.fits')
-
-t['z_2'].name= 'z'
-t['plate_1'].name= 'plate'
-    
-t['BI_Si_'].name= 'BI_SiIV'
-t['BIO_Si_'].name= 'BIO_SiIV'
-t['EW_Si_'].name= 'EW_SiIV'
-t['vmin_Si_'].name= 'Vmin_SiIV'
-t['vmax_Si_'].name= 'Vmax_SiIV'
-    
-t['BI_C_'].name= 'BI_CIV'
-t['BIO_C_'].name= 'BIO_CIV'
-t['EW_C_'].name= 'EW_CIV'
-t['vmin_C_'].name= 'Vmin_CIV'
-t['vmax_C_'].name= 'Vmax_CIV'
-    
-t['BI_Al_'].name= 'BI_AlIII'
-t['BIO_Al_'].name= 'BIO_AlIII'
-t['EW_Al_'].name= 'EW_AlIII'
-t['vmin_Al_'].name= 'Vmin_AlIII'
-t['vmax_Al_'].name= 'Vmax_AlIII'
-    
-t['BI_Mg_'].name= 'BI_MgII'
-t['BIO_Mg_'].name= 'BIO_MgII'
-t['EW_Mg_'].name= 'EW_MgII'
-t['vmin_Mg_'].name= 'Vmin_MgII'
-t['vmax_Mg_'].name= 'Vmax_MgII'
-    
-    
-#keep only columns I want. can check the current ones using t.colnames
-    
-t.keep_columns(['SDSSName', 'RA', 'DEC', 'z', 'M_i', \
-                'plate', 'fiberid', 'MJD_spec', 'n_SDSS', \
-                'BI_SiIV', 'BIO_SiIV', 'EW_SiIV', 'Vmin_SiIV', 'Vmax_SiIV', \
-                'BI_CIV', 'BIO_CIV', 'EW_CIV', 'Vmin_CIV', 'Vmax_CIV', \
-                'BI_AlIII', 'BIO_AlIII', 'EW_AlIII', 'Vmin_AlIII', 'Vmax_AlIII', \
-                'BI_MgII', 'BIO_MgII', 'EW_MgII', 'Vmin_MgII', 'Vmax_MgII', \
-                'flg', 'SN1700', 'logF1400', 'logF2500'])
-
-t['EW_SiIV'].unit= t['EW_CIV'].unit = t['EW_AlIII'].unit= t['EW_MgII'].unit= 'Angstrom'
-
-#remove row with problem in plate tarball. The download stopped in plate 0357. tarball file seems corrupt.
-bad_rows=[]
-f= open('bad_plates.txt', 'r') #this file contains a list of zombie plates. I found those plates using their sizes (314B) compared to (~78M) in the other "healty" plates.
-
-badP= f.readlines()
-f.close()
-
-for i in range(0, len(t)):
-    
-    for j in badP:
-    
-        if t['plate'][i] == int(j.rstrip()):
-            #print j.rstrip()
-            bad_rows.append(i) #number of rows for the corrupt plate.
-
-t.remove_rows(bad_rows)
-
-print len(bad_rows), "rows were removed"
-print "table now has ", len(t), "lines"
-
-
-#now separate flags: left: EmLost, middle: BALManyBadBins, right: BlueWingAbs, 1= MgII, 2= AlIII, 4= CIV, 8= SiIV
-
-f1, f2, f3= [], [], []
-
-for i in t['flg']:
-    f1.append(int(i[0]))
-    f2.append(int(i[1]))
-    f3.append(int(i[2]))
-
-c1= Column(f1, name= 'EmLostFlag')
-c2= Column(f2, name= 'BMBBFlag')
-c3= Column(f3, name= 'BlueWingFlag')
-
-t.add_columns([c1, c2, c3], indexes=[30, 30, 30])
-
-t.write('myBALCat.fits')
-
-## I used TopCat to cross-match this table with extinction_tab.fits and saved the new table as myBALCat.fits (same name)
 
 
 def dr5_download(bals, plates_dir):
