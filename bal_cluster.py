@@ -76,7 +76,8 @@ def bal_cluster(line, k):
     names= s['SDSSName'].filled() # SDSS name
     
     # list of features to be used in clustering
-    f= [ew, vmin, vmax, fdeep]# , cl]
+    f= [ew, vmin, vmax]
+    #f= [ew, vmin, vmax, fdeep]# , cl]
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
 
@@ -97,9 +98,18 @@ def bal_cluster(line, k):
     clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
                      names= ('EW', 'Vmin', 'Vmax', 'fdeep', 'label', 'SDSSName', 'z'), \
                      dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
+        
+    clstr_tab.write("./clusters/"+str(len(f))+"features/"+clstr_name+"clstrs.fits", format= 'fits')
+    
+    # used for the clustering done using the fdeep feature in addition to vmin, vmax, and EW.
+    #files save in /DR5_BALs/clusters/4features/
+    
+    #clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
+                     names= ('EW', 'Vmin', 'Vmax', 'fdeep', 'label', 'SDSSName', 'z'), \
+                     dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
     
     
-    clstr_tab.write("./clusters/"+clstr_name+"clstrs.fits", format= 'fits')
+    #clstr_tab.write("./clusters/"+str(len(f))+"features/"+clstr_name+"clstrs.fits", format= 'fits')
 
     return
    
