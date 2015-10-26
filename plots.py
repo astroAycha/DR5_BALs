@@ -373,15 +373,9 @@ def clstr_prop(line,k):
     
     """
 
-    data= Table.read('myBALCat.fits')
+    data= Table.read('myBALCat_xtra.csv')
 
-    xray_tbl= Table.read('xray_Robyn_final.fits')
-
-    red_tbl= Table.read('krawczyk_reddning.fits')
-
-    var_tbl= Table.read('filiz2014.fits')
-
-    clstr_tbl= Table.read("./clusters/"+line+str(k)+"clstrs.fits")
+    clstr_tbl= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
     
     clstrs_ls=[]
     for o in range(k):
@@ -394,8 +388,8 @@ def clstr_prop(line,k):
     
     print ord_clstrs
 
-    #clr_ls= ['steelblue', 'olivedrab','orange']
-    clr_ls= ['Blues_d', 'Greens_d', 'Reds_d']
+    clr_ls= ['steelblue', 'olivedrab','orange', 'gray']
+    clrm_ls= ['Blues_r', 'Greens_r', 'copper_r', 'gray_r']
 
 
     fig= figure(figsize=(12,12))
@@ -407,17 +401,31 @@ def clstr_prop(line,k):
         l= c[0]
         print l
         sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
-                    cmap= clr_ls[i], n_level= 10)
+                    cmap= clrm_ls[i], n_level= 10)
+        #text()
 
         i+=1
     
-    var_bals= join(data, var_tbl, keys='SDSSName')
+    prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     
-    scatter(var_bals['Vmin'], var_bal['Vmax'], m='o', s=10, color='k')
+    #scatter(prop_tbl['Vmin'], prop_tbl['Vmax'], marker='o', s=10, color='k')
 
-    ax2= fig.add_subplot(222)
+    i =0
+    ax2= fig.add_subplot(223)
+    for c in ord_clstrs:
+        l= c[0]
+        hist(prop_tbl['BI1'][prop_tbl['label'] == l], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
 
-    hist()
+        i+=1
+
+    i =0
+    ax3= fig.add_subplot(224)
+    for c in ord_clstrs:
+        l= c[0]
+        hist(prop_tbl['BI2'][prop_tbl['label'] == l], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+        
+        i+=1
+
 
 
 
