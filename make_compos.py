@@ -64,14 +64,14 @@ def spec_compos(line, k):
 
     for m,n in zip(range(k), spec_num): #assumes there is a directory called composites in the working directory
     
-        spec_name= "./composites/"+line+"_"+str(k)+"clstr"+str(m+1)+".fits"
+        spec_name= "./composites/4features/"+line+"_"+str(k)+"clstr"+str(m+1)+".fits"
         spec_file= np.vstack((wlen,compos_ls[m], std_ls[m]))
         
         hdu= fits.PrimaryHDU(spec_file)
         hdr= hdu.header
         hdr.set('SPEC_NUMBER', n)
         hdr.set('COMPO', line+"-K"+str(k))
-        param= '-'.join(column_names[:3])
+        param= '-'.join(column_names[:4])
         print param
         hdr.set('PARAMETERS USED', param)
         hdu.writeto(spec_name)
