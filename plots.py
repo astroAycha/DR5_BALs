@@ -318,9 +318,11 @@ legend()
 
 ###########
 
-def BALcompos(line, k):
+def BALcompos(line, k, f):
 
     '''plot composites in one panel
+    k: number of clusters
+    f: number of features
     '''
     if line== 'MgII':
         xlimit= (1700, 3100)
@@ -348,7 +350,7 @@ def BALcompos(line, k):
     
     yy= 3
     for i in range(k):
-        compo_name= "./composites/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits"
+        compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits"
         spec= fits.open(compo_name)
         plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i])
         text(xlimit[1]-200, yy, line+", N="+str(spec[0].header['HIERARCH SPEC_NUMBER']), color= clr_ls[i], fontsize= 18)
