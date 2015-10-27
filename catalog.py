@@ -151,7 +151,7 @@ t['LOGEDD_RATIO'].name= 'LOGEDD_RATIO_DR7'
 
 t.write('myBALCat_xtra.csv')
 
-## this table has many 'nan' values that astropy's table did not want to fill. I opend it as a spreadsheet and did a quick search and replace with 0 instead of nan.
+## this table has many 'nan' values that astropy's table did not want to fill. I opend it as a spreadsheet and did a quick search and replace with -999 instead of nan.
 
 ##============================================================##
 
