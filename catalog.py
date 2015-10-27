@@ -83,24 +83,12 @@ t.remove_rows(bad_rows)
 print len(bad_rows), "rows were removed"
 print "table now has ", len(t), "lines"
 
-'''
-## this is not what I really want. Will have to come back to it later.
 
-#now separate flags: left: EmLost, middle: BALManyBadBins, right: BlueWingAbs, 1= MgII, 2= AlIII, 4= CIV, 8= SiIV
-
-f1, f2, f3= [], [], []
-
-for i in t['flg']:
-    f1.append(int(i[0]))
-    f2.append(int(i[1]))
-    f3.append(int(i[2]))
-
-c1= Column(f1, name= 'EmLostFlag')
-c2= Column(f2, name= 'BMBBFlag')
-c3= Column(f3, name= 'BlueWingFlag')
-
-t.add_columns([c1, c2, c3], indexes=[30, 30, 30])
-'''
+# flg column: left: EmLost, middle: BALManyBadBins, right: BlueWingAbs, 1= MgII, 2= AlIII, 4= CIV, 8= SiIV
+# [0-9A-F] Flags EmLost (left), BALManyBadBins (middle) and BlueWingAbs (right) with
+# 1=MgII, 2=AlIII, 4=CIV and 8=SiIV
+# A= 10, B= 11, C= 12, D= 13, E= 14, F= 15
+#example: C04 --> C=12= 4+8 = CIV+SiIV, 0=0, 4= CIV --> Emlost in CIV and SiIV, BALManyBadBins is 0, and BlueWingAbs in CIV
 
 t.write('myBALCat.fits')
 
