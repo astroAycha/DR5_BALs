@@ -332,7 +332,19 @@ def BALcompos(line, k, f):
         xlimit= (1300, 2165)
         r= arange(0,8)
 
-    
+    clstr_tbl= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
+
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(clstr_tbl[clstr_tbl['label'] ==o]),\
+                          mean(clstr_tbl['Vmin'][clstr_tbl['label'] ==o]),\
+                          mean(clstr_tbl['Vmax'][clstr_tbl['label'] ==o]), \
+                          mean(clstr_tbl['EW'][clstr_tbl['label'] ==o])])
+
+    ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+
+    print ord_clstrs
+
     fig= figure(figsize=(16,8))
     xlim(xlimit)
     ylim(.1,3.2)
@@ -346,15 +358,18 @@ def BALcompos(line, k, f):
         axvline(line_mark[p], ls= ':', color= '.5')
         text(line_mark[p], 3, line_label[p], rotation= 'vertical')
     
-    clr_ls= ['steelblue', 'olivedrab','orange'] #paleturquoise, orchid
+    clr_ls= ['steelblue', 'olivedrab','orange', 'orchid'] #paleturquoise
     
     yy= 3
-    for i in range(k):
-        compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits"
+    i=0
+    for c in ord_clstrs:
+        l= c[0]
+        compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
         plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i])
         text(xlimit[1]-200, yy, line+", N="+str(spec[0].header['HIERARCH SPEC_NUMBER']), color= clr_ls[i], fontsize= 18)
         yy-= 0.2
+        i+=1
 
     return
 
@@ -364,8 +379,8 @@ def BALcompos(line, k, f):
 def clstr_prop(line,k):
 
     """ 
-    Panel1: plot KDE of the clusters in the Vmin vs Vmax plane with the EW as a marker. Overplot objects found to vary in Filiz Ak et al. 2014
-    Panel2: distributions of extinction, and X-ray
+    plot KDE of the clusters in the Vmin vs Vmax plane with the EW as a marker.
+    lower panels: distributions of properties in each cluster: extinction, HeII, CF...
     
     Param: 
     line: 'CIV', 'SiIV', or 'MgII'
@@ -388,13 +403,13 @@ def clstr_prop(line,k):
     
     print ord_clstrs
 
-    clr_ls= ['steelblue', 'olivedrab','orange', 'gray']
+    clr_ls= ['steelblue', 'olivedrab','orange', 'orchid']
     clrm_ls= ['Blues_r', 'Greens_r', 'copper_r', 'gray_r']
 
 
     fig= figure(figsize=(12,12))
 
-    ax1= fig.add_subplot(211)
+    ax1= fig.add_subplot(411)
     
     i =0
     for c in ord_clstrs:
@@ -408,26 +423,108 @@ def clstr_prop(line,k):
     
     prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     
-    #scatter(prop_tbl['Vmin'], prop_tbl['Vmax'], marker='o', s=10, color='k')
+    scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
 
     i =0
-    ax2= fig.add_subplot(223)
+    ax2= fig.add_subplot(423)
     for c in ord_clstrs:
         l= c[0]
-        hist(prop_tbl['BI1'][prop_tbl['label'] == l], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+        hist(prop_tbl['HeII_EW_BLH'][(prop_tbl['label'] == l) & (prop_tbl['HeII_EW_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
 
         i+=1
 
     i =0
-    ax3= fig.add_subplot(224)
+    ax3= fig.add_subplot(424)
     for c in ord_clstrs:
         l= c[0]
-        hist(prop_tbl['BI2'][prop_tbl['label'] == l], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+        hist(prop_tbl['v_md_BLH'][(prop_tbl['label'] == l) & (prop_tbl['v_md_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
         i+=1
 
+    i =0
+    ax3= fig.add_subplot(425)
+    for c in ord_clstrs:
+        l= c[0]
+        hist(prop_tbl['CF_BLH'][(prop_tbl['label'] == l) & (prop_tbl['CF_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+        
+        i+=1
+
+    i =0
+    ax4= fig.add_subplot(426)
+    for c in ord_clstrs:
+        l= c[0]
+        hist(prop_tbl['BIO_AlIII'][(prop_tbl['label'] == l) & (prop_tbl['BIO_AlIII'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+        
+        i+=1
+
+    i =0
+    ax5= fig.add_subplot(427)
+    for c in ord_clstrs:
+        l= c[0]
+        hist(prop_tbl['E_B-V_1'][(prop_tbl['label'] == l) & (prop_tbl['E_B-V_1'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+        
+        i+=1
+
+    i =0
+    ax6= fig.add_subplot(428)
+    for c in ord_clstrs:
+        l= c[0]
+        hist((prop_tbl['BI1']-prop_tbl['BI2'])[(prop_tbl['label'] == l) & ((prop_tbl['BI1']-prop_tbl['BI2']) !=-999)], bins=20, histtype= 'step', normed=False, color= clr_ls[i], lw= 2)
+        
+        i+=1
+
+    return
 
 
+#########
 
+def clstr_2d(line,k):
+    
+    """
+        plot KDE of the clusters in the Vmin vs Vmax plane with the EW as a marker. Overplot objects found to vary in Filiz Ak et al. 2014
+        
+        Param:
+        line: 'CIV', 'SiIV', or 'MgII'
+        k: number of clusters (3,4,5..)
+        
+        """
+    
+    data= Table.read('myBALCat_xtra.csv')
+    
+    clstr_tbl= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
+    
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(clstr_tbl[clstr_tbl['label'] ==o]),\
+                          mean(clstr_tbl['Vmin'][clstr_tbl['label'] ==o]),\
+                          mean(clstr_tbl['Vmax'][clstr_tbl['label'] ==o]), \
+                          mean(clstr_tbl['EW'][clstr_tbl['label'] ==o])])
+    
+    ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+    
+    print ord_clstrs
 
+    clr_ls= ['steelblue', 'olivedrab','orange', '0.8']
+    clrm_ls= ['Blues_r', 'Greens_r', 'copper_r', 'gray_r']
+    
+    
+    fig= figure(figsize=(10,10))
+    
+    ax1= fig.add_subplot(111)
+    
+    i =0
+    for c in ord_clstrs:
+        l= c[0]
+        print l
+        sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
+                    cmap= clrm_ls[i], n_level= 10)
+        text(0.1, +0.1, str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i], fontsize= 18, transform=ax1.transAxes)
+                    
+        i+=1
+    
+    prop_tbl= join(data, clstr_tbl, keys='SDSSName')
+    
+    scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
+
+    return
 
