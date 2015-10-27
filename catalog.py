@@ -131,7 +131,7 @@ t['HeII_EW'].name= 'HeII_EW_BLH'
 t['alpha_UV'].name= 'alpha_UV_BLH'
 t['v_md'].name= 'v_md_BLH'
 t['CF'].name= 'CF_BLH'
-t['FWHM'].name= 'FWHM_CIB_BAL_BLH'
+t['FWHM'].name= 'FWHM_CIV_BAL_BLH'
 
 t['LOGLBOL'].name= 'LOGLBOL_DR7'
 t['R_6CM_2500A'].name= 'R_6CM_2500A_DR7'
