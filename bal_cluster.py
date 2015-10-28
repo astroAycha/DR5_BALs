@@ -31,6 +31,9 @@ def bal_cluster(line, k):
     elif line== 'MgII':
         z1= 1.1
         z2= 2.2
+    elif line== 'AlIII':
+        z1= 1.79
+        z2= 3.7
 
     s= data[(data['BIO_'+line] >0) & (data['SN1700'] >3) & (data['z'] >z1) & (data['z'] <z2)] # & (data['flg'] ==0)]
     
