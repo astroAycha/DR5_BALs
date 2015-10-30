@@ -75,7 +75,7 @@ def spec_compos(line, k, f):
         hdr.set('COMPO', line+"-K"+str(k))
         param= '-'.join(column_names[:3])
         print param
-        hdr.set('PARAMETERS USED', param)
+        hdr.set('PARAM', param)
         hdu.writeto(spec_name)
     
 
