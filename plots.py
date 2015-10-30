@@ -349,9 +349,42 @@ def clust_compos(line, k, f):
 
     print ord_clstrs
 
-    fig= figure(figsize=(14,10))
+
+    #clr_ls= ['steelblue', 'olivedrab','orange', '0.4']
+    #clr_ls= ["#4C72B0", "#55A868", "#C44E52", "#8172B2", "#CCB974", "#64B5CD"]
+    clr_ls= ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
+    nav= sns.light_palette("navy", as_cmap=True)
+    clrm_ls= ['Purples', 'Blues', 'Greys', 'Reds', nav, 'Greens']
+    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
     
-    ax1= fig.add_subplot(212)
+
+    fig= figure(figsize=(14,10))
+
+    ax1= fig.add_subplot(221)
+    xlabel(line + r'$V_{min}$ (km/s)')
+    xlabel(line + r'$V_{max}$ (km/s)')
+    
+    i =1
+    for c in ord_clstrs:
+        l= c[0]
+        print l
+        sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
+                    shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False)
+        
+        i+=1
+
+    ax1.text(0.1, 0.8, line+" Sample"+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax1.transAxes)
+
+    vmin, vmax, ews=[], [], []
+    for c in ord_clstrs:
+        vmin.append(c[2])
+        vmax.append(c[3])
+        ews.append(c[4])
+
+    scatter(vmin, vmax, s= [e*-5 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
+
+
+    ax2= fig.add_subplot(212)
     xlim(xlimit)
     ylim(.1,3.2)
     xlabel(r'Restframe Wavelength ($\AA$)')
@@ -365,43 +398,14 @@ def clust_compos(line, k, f):
         text(line_mark[p], 3, line_label[p], rotation= 'vertical')
     
 
-    #clr_ls= ['steelblue', 'olivedrab','orange', '0.4']
-    #clr_ls= ["#4C72B0", "#55A868", "#C44E52", "#8172B2", "#CCB974", "#64B5CD"]
-    clr_ls= ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
-    clrm_ls= ['Purples', 'Blues', 'Greys', 'Reds']
-    clstr_name= ['a', 'b', 'c', 'd']
-
-
-    yy= 3
-    i=0
+    i=1
     for c in ord_clstrs:
         l= c[0]
         compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
-        plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i])
-        text(xlimit[1]-200, yy, line+"-"+clstr_name[i]+", N= "+str(spec[0].header['HIERARCH SPEC_NUMBER']), color= clr_ls[i], fontsize= 18)
-        yy-= 0.2
+        plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
+        ax2.text(0.8, .9-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax2.transAxes)
         i+=1
-
-
-    ax2= fig.add_subplot(221)
-
-    i =1
-    for c in ord_clstrs:
-        l= c[0]
-        print l
-        sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
-                    shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1])
-        text(0.1, .9-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax1.transAxes)
-        i+=1
-
-    vmin, vmax, ews=[], [], []
-    for c in ord_clstrs:
-        vmin.append(c[2])
-        vmax.append(c[3])
-        ews.append(c[4])
- 
-    scatter(vmin, vmax, s= [e*-5 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
 
     #prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     #scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
@@ -438,8 +442,12 @@ def clstr_prop(line,k):
     
     print ord_clstrs
 
-    clr_ls= ['steelblue', 'olivedrab','orange', 'orchid']
-    clrm_ls= ['Blues_r', 'Greens_r', 'copper_r', 'gray_r']
+    #clr_ls= ['steelblue', 'olivedrab','orange', 'orchid']
+    #clrm_ls= ['Blues_r', 'Greens_r', 'copper_r', 'gray_r']
+    clr_ls= ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
+    nav= sns.light_palette("navy", as_cmap=True)
+    clrm_ls= ['Purples', 'Blues', 'Greys', 'Reds', nav, 'Greens']
+    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
 
 
     fig= figure(figsize=(12,12))
@@ -451,14 +459,14 @@ def clstr_prop(line,k):
         l= c[0]
         print l
         sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
-                    cmap= clrm_ls[i], n_level= 10)
+                    cmap= clrm_ls[i], shade= True, shade_lowest= False, alpha= 0.5)
         #text()
 
         i+=1
     
     prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     
-    scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
+    #scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
 
     i =0
     ax2= fig.add_subplot(423)
@@ -467,6 +475,7 @@ def clstr_prop(line,k):
         hist(prop_tbl['HeII_EW_BLH'][(prop_tbl['label'] == l) & (prop_tbl['HeII_EW_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
 
         i+=1
+    ax2.text(0.65, 0.85,'HeII_EW_BLH', transform=ax2.transAxes)
 
     i =0
     ax3= fig.add_subplot(424)
@@ -476,37 +485,46 @@ def clstr_prop(line,k):
         
         i+=1
 
+    ax3.text(0.65, 0.85,'v_md_BLH', transform=ax3.transAxes)
+
     i =0
-    ax3= fig.add_subplot(425)
+    ax4= fig.add_subplot(425)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['CF_BLH'][(prop_tbl['label'] == l) & (prop_tbl['CF_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
         i+=1
 
+    ax4.text(0.65, 0.85,'CF_BLH', transform=ax4.transAxes)
+
     i =0
-    ax4= fig.add_subplot(426)
+    ax5= fig.add_subplot(426)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['BIO_AlIII'][(prop_tbl['label'] == l) & (prop_tbl['BIO_AlIII'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
         i+=1
+    ax5.text(0.65, 0.85,'BIO_AlIII', transform=ax5.transAxes)
 
     i =0
-    ax5= fig.add_subplot(427)
+    ax6= fig.add_subplot(427)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['E_B-V_1'][(prop_tbl['label'] == l) & (prop_tbl['E_B-V_1'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
         i+=1
 
+    ax6.text(0.65, 0.85,'E_B-V_1', transform=ax6.transAxes)
+
     i =0
-    ax6= fig.add_subplot(428)
+    ax7= fig.add_subplot(428)
     for c in ord_clstrs:
         l= c[0]
         hist((prop_tbl['BI1']-prop_tbl['BI2'])[(prop_tbl['label'] == l) & ((prop_tbl['BI1']-prop_tbl['BI2']) !=-999)], bins=20, histtype= 'step', normed=False, color= clr_ls[i], lw= 2)
         
         i+=1
+
+    ax7.text(0.65, 0.85,'BI1-BI2', transform=ax7.transAxes)
 
     return
 
