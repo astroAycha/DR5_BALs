@@ -352,9 +352,16 @@ def clust_compos(line, k, f):
 
     #clr_ls= ['steelblue', 'olivedrab','orange', '0.4']
     #clr_ls= ["#4C72B0", "#55A868", "#C44E52", "#8172B2", "#CCB974", "#64B5CD"]
-    clr_ls= ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
-    nav= sns.light_palette("navy", as_cmap=True)
-    clrm_ls= ['Purples', 'Blues', 'Greys', 'Reds', nav, 'Greens']
+    #clr_ls= ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
+    #nav= sns.light_palette("navy", as_cmap=True)
+    #clrm_ls= ['Purples', 'Blues', 'Greys', 'Reds', nav, 'Greens']
+
+    clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["pale red"], sns.xkcd_rgb["dusty purple"]]
+    amb= sns.light_palette(sns.xkcd_rgb["amber"], as_cmap= True)
+    
+    clrm_ls= ['Blues', amb, 'Greys', 'Greens', 'Reds', 'Purples']
+
+    
     clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
     
 
@@ -383,6 +390,9 @@ def clust_compos(line, k, f):
 
     scatter(vmin, vmax, s= [e*-5 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
 
+    for x in range(k):
+        text(vmin[x]-1100, vmax[x]-1100,clstr_name[x] , color= 'k', fontsize= 12)
+
 
     ax2= fig.add_subplot(212)
     xlim(xlimit)
@@ -404,7 +414,7 @@ def clust_compos(line, k, f):
         compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
         plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
-        ax2.text(0.8, .9-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax2.transAxes)
+        ax2.text(0.82, .9-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax2.transAxes)
         i+=1
 
     #prop_tbl= join(data, clstr_tbl, keys='SDSSName')
