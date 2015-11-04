@@ -2,6 +2,7 @@
 """
 
 import numpy as np
+from operator import itemgetter
 from astropy.table import Table
 
 def clstr_cntrs():
@@ -15,16 +16,26 @@ def clstr_cntrs():
     
     #vmin, vmax, ew, num=[], [], [], []
 
-    for k in range(3,6):
+    for l in line_ls:
     
-        for l in line_ls:
+        for k in range(3,6):
         
             t= Table.read("./clusters/3features/"+l+str(k)+"clstrs.fits")
-            tbl.write(l+"-"+str(len(t)) + "\t"+ "K="+ str(k)+ "\n")
             
-            for c in range(k):
-                tbl.write(str(mean(t['Vmin'][t['label'] ==c]))+"\t"+ str(mean(t['Vmax'][t['label'] ==c]))+"\t"+ str(mean(t['EW'][t['label'] ==c]))+"\t"+ str(len(t[t['label'] ==c]))+"\n")
+            tbl.write(l+ "&" + str(len(t)) + "& "+ "K="+ str(k)+ "\n")
             
+            clstrs_ls=[]
+            
+            for o in range(k):
+                clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),mean(t['Vmin'][t['label'] ==o]),\
+                                  mean(t['Vmax'][t['label'] ==o]), mean(t['EW'][t['label'] ==o])])
+    
+            oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
+            
+            for c in oc:
+                tbl.write("{:d}, ({:06.2f},{:06.2f},{:06.2f}) \n".format(c[3], c[4], c[5], c[6]))
+            
+           
     tbl.close()
-            
+    
     return
