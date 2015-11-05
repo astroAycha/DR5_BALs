@@ -403,6 +403,11 @@ def clust_compos(line, k, f):
     line_mark= [1335, 1396.8, 1549, 1640, 1663.5, 1857, 1892, 1908, 2800]
     line_label= ['CII', 'SiIV', 'CIV', 'HeII', 'OIII]', 'AlIII', 'SiIII]', 'CIII]', 'MgII']
 
+    #plot([1990,2065],[1,1], 'k-')
+    ax2.arrow(2030, 1.3, -30, -.1, fc='k', ec='k')
+    ax2.arrow(2030, 1.3, +30, -.1, fc='k', ec='k')
+    text(2020, 1.35, r'FeIII', fontsize= 14, family='serif', color='k')
+    
     for p in r:
         axvline(line_mark[p], ls= ':', color= '.5')
         text(line_mark[p], 3, line_label[p], rotation= 'vertical')
@@ -485,7 +490,9 @@ def clstr_prop(line,k):
     ax2= fig.add_subplot(321)
     for c in ord_clstrs:
         l= c[0]
-        hist(prop_tbl['HeII_EW_BLH'][(prop_tbl['label'] == l) & (prop_tbl['HeII_EW_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+        hist(prop_tbl['HeII_EW_BLH'][(prop_tbl['label'] == l) & (prop_tbl['HeII_EW_BLH'] !=-999) \
+                                  & (prop_tbl['HeII_EW_BLH'] !=0)], bins=20, histtype= 'step', \
+                                 normed= True, color= clr_ls[i], lw= 2)
 
         i+=1
     ax2.text(0.65, 0.85,'HeII_EW_BLH', transform=ax2.transAxes)
@@ -514,7 +521,8 @@ def clstr_prop(line,k):
     ax5= fig.add_subplot(324)
     for c in ord_clstrs:
         l= c[0]
-        hist(prop_tbl['BIO_AlIII'][(prop_tbl['label'] == l) & (prop_tbl['BIO_AlIII'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+        hist(prop_tbl['BIO_AlIII'][(prop_tbl['label'] == l) & (prop_tbl['BIO_AlIII'] !=-999) \
+                                & (prop_tbl['BIO_AlIII'] !=0)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
         i+=1
     ax5.text(0.65, 0.85,'BIO_AlIII', transform=ax5.transAxes)
@@ -533,7 +541,7 @@ def clstr_prop(line,k):
     ax7= fig.add_subplot(326)
     for c in ord_clstrs:
         l= c[0]
-        hist((prop_tbl['BI1']-prop_tbl['BI2'])[(prop_tbl['label'] == l) & ((prop_tbl['BI1']-prop_tbl['BI2']) !=-999)], bins=20, histtype= 'step', normed=True, color= clr_ls[i], lw= 2)
+        hist(abs(prop_tbl['BI1']-prop_tbl['BI2'])[(prop_tbl['label'] == l) & ((prop_tbl['BI1']-prop_tbl['BI2']) !=-999)], bins=20, histtype= 'step', normed=True, color= clr_ls[i], lw= 2)
         
         i+=1
 
