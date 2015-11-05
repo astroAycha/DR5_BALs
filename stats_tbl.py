@@ -39,3 +39,45 @@ def clstr_cntrs():
     tbl.close()
     
     return
+
+###################
+
+#check fraction of objects with BI0(AlIII) >0 in each of the CIV and SiIV clusters:
+
+def al_frac(line, k, q):
+
+    """ print %'s of objects from each cluster which has a quantity >0
+    
+    """
+
+    data= Table.read('myBALCat_xtra.csv')
+
+    c= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
+
+    t= join(data, c, keys='SDSSName')
+
+    for l in range(k):
+        print len(t[t['label'] ==l]), len(t[(t['label'] ==l) & (t[q] >0)])*100./len(t['label']==l)
+
+    return
+
+#################
+def var_frac(line, k):
+
+    """fraction of objects with variablity measurements (i.e., have different BIs as measured in Filiz Ak et al. 2014)
+    """
+
+    data= Table.read('myBALCat_xtra.csv')
+    
+    c= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
+    
+    t= join(data, c, keys='SDSSName')
+    print len(t)
+
+    for l in range(k):
+        print len(t[t['label'] ==l]), len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)]), len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t['label']==l)
+    
+    return
+
+
+
