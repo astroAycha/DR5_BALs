@@ -425,6 +425,10 @@ def clust_compos(line, k, f):
     
     return
 
+##considering adding pie chart here to show the fraction of objects with vatiablity
+#pie([28,3,16,3,12], shadow= True, colors= clr_ls, startangle=30, radius= 0.6, labels=['a', 'b', 'c', 'd', 'e'])
+
+
 
     #prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     #scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
