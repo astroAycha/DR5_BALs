@@ -44,7 +44,7 @@ def clstr_cntrs():
 
 #check fraction of objects with BI0(AlIII) >0 in each of the CIV and SiIV clusters:
 
-def al_frac(line, k, q):
+def frac(line, k, q):
 
     """ print %'s of objects from each cluster which has a quantity >0
     
@@ -57,7 +57,8 @@ def al_frac(line, k, q):
     t= join(data, c, keys='SDSSName')
 
     for l in range(k):
-        print len(t[t['label'] ==l]), len(t[(t['label'] ==l) & (t[q] >0)])*100./len(t['label']==l)
+        print "N= "+str(len(t[t['label'] ==l]))+", N("+q+")= "+str(len(t[(t['label'] ==l) & (t[q] >0)]))+ \
+            " = "+str(len(t[(t['label'] ==l) & (t[q] >0)])*100./len(t[t['label']==l]))+"%"
 
     return
 
@@ -75,7 +76,9 @@ def var_frac(line, k):
     print len(t)
 
     for l in range(k):
-        print len(t[t['label'] ==l]), len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)]), len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t['label']==l)
+        print "N= "+str(len(t[t['label'] ==l]))+", "+ \
+            "N(var)= "+str(len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)]))+"= " \
+            +str(len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==l]))+"%"
     
     return
 
