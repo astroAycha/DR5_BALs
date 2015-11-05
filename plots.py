@@ -416,11 +416,15 @@ def clust_compos(line, k, f):
         plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
         ax2.text(0.82, .9-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax2.transAxes)
         i+=1
+    
+    
+    return
+
 
     #prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     #scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
 
-    return
+
 
 ##############
 
@@ -452,16 +456,14 @@ def clstr_prop(line,k):
     
     print ord_clstrs
 
-    #clr_ls= ['steelblue', 'olivedrab','orange', 'orchid']
-    #clrm_ls= ['Blues_r', 'Greens_r', 'copper_r', 'gray_r']
-    clr_ls= ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
-    nav= sns.light_palette("navy", as_cmap=True)
-    clrm_ls= ['Purples', 'Blues', 'Greys', 'Reds', nav, 'Greens']
+    clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["pale red"], sns.xkcd_rgb["dusty purple"]]
+
     clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
 
 
     fig= figure(figsize=(12,12))
-
+    
+    '''
     ax1= fig.add_subplot(411)
     
     i =0
@@ -473,13 +475,14 @@ def clstr_prop(line,k):
         #text()
 
         i+=1
+        '''
     
     prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     
     #scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
 
     i =0
-    ax2= fig.add_subplot(423)
+    ax2= fig.add_subplot(321)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['HeII_EW_BLH'][(prop_tbl['label'] == l) & (prop_tbl['HeII_EW_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
@@ -488,7 +491,7 @@ def clstr_prop(line,k):
     ax2.text(0.65, 0.85,'HeII_EW_BLH', transform=ax2.transAxes)
 
     i =0
-    ax3= fig.add_subplot(424)
+    ax3= fig.add_subplot(322)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['v_md_BLH'][(prop_tbl['label'] == l) & (prop_tbl['v_md_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
@@ -498,7 +501,7 @@ def clstr_prop(line,k):
     ax3.text(0.65, 0.85,'v_md_BLH', transform=ax3.transAxes)
 
     i =0
-    ax4= fig.add_subplot(425)
+    ax4= fig.add_subplot(323)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['CF_BLH'][(prop_tbl['label'] == l) & (prop_tbl['CF_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
@@ -508,7 +511,7 @@ def clstr_prop(line,k):
     ax4.text(0.65, 0.85,'CF_BLH', transform=ax4.transAxes)
 
     i =0
-    ax5= fig.add_subplot(426)
+    ax5= fig.add_subplot(324)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['BIO_AlIII'][(prop_tbl['label'] == l) & (prop_tbl['BIO_AlIII'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
@@ -517,7 +520,7 @@ def clstr_prop(line,k):
     ax5.text(0.65, 0.85,'BIO_AlIII', transform=ax5.transAxes)
 
     i =0
-    ax6= fig.add_subplot(427)
+    ax6= fig.add_subplot(325)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['E_B-V_1'][(prop_tbl['label'] == l) & (prop_tbl['E_B-V_1'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
@@ -527,10 +530,10 @@ def clstr_prop(line,k):
     ax6.text(0.65, 0.85,'E_B-V_1', transform=ax6.transAxes)
 
     i =0
-    ax7= fig.add_subplot(428)
+    ax7= fig.add_subplot(326)
     for c in ord_clstrs:
         l= c[0]
-        hist((prop_tbl['BI1']-prop_tbl['BI2'])[(prop_tbl['label'] == l) & ((prop_tbl['BI1']-prop_tbl['BI2']) !=-999)], bins=20, histtype= 'step', normed=False, color= clr_ls[i], lw= 2)
+        hist((prop_tbl['BI1']-prop_tbl['BI2'])[(prop_tbl['label'] == l) & ((prop_tbl['BI1']-prop_tbl['BI2']) !=-999)], bins=20, histtype= 'step', normed=True, color= clr_ls[i], lw= 2)
         
         i+=1
 
