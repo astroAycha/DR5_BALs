@@ -55,8 +55,20 @@ def frac(line, k, q):
     c= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
 
     t= join(data, c, keys='SDSSName')
+    
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(t[t['label'] ==o]),\
+                          mean(t['Vmin'][t['label'] ==o]),\
+                          mean(t['Vmax'][t['label'] ==o]), \
+                          mean(t['EW'][t['label'] ==o])])
+    
+    oc= sorted(clstrs_ls, key= itemgetter(2))
 
-    for l in range(k):
+    print oc
+
+    for x in oc:
+        l= x[0]
         print "N= "+str(len(t[t['label'] ==l]))+", N("+q+")= "+str(len(t[(t['label'] ==l) & (t[q] >0)]))+ \
             " = "+str(len(t[(t['label'] ==l) & (t[q] >0)])*100./len(t[t['label']==l]))+"%"
 
@@ -73,9 +85,20 @@ def var_frac(line, k):
     c= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
     
     t= join(data, c, keys='SDSSName')
-    print len(t)
+    
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(t[t['label'] ==o]),\
+                          mean(t['Vmin'][t['label'] ==o]),\
+                          mean(t['Vmax'][t['label'] ==o]), \
+                          mean(t['EW'][t['label'] ==o])])
+    
+    oc= sorted(clstrs_ls, key= itemgetter(2))
 
-    for l in range(k):
+    print oc
+    
+    for x in oc:
+        l= x[0]
         print "N= "+str(len(t[t['label'] ==l]))+", "+ \
             "N(var)= "+str(len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)]))+"= " \
             +str(len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==l]))+"%"
