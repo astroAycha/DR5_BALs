@@ -466,90 +466,112 @@ def clstr_prop(line,k):
     print ord_clstrs
 
     clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["pale red"], sns.xkcd_rgb["dusty purple"]]
-
+    amb= sns.light_palette(sns.xkcd_rgb["amber"], as_cmap= True)
+    
+    clrm_ls= ['Blues', amb, 'Greys', 'Greens', 'Reds', 'Purples']
+    
+    
     clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
 
 
-    fig= figure(figsize=(12,12))
+    fig= figure(figsize=(16,10))
+
+    fig1= fig.add_axes([0., 0., 1, 1])
+    fig1.set_axis_off()
+    fig1.set_xlim(0, 1)
+    fig1.set_ylim(0, 1)
+    fig1.text(.06, 0.3, r"Number", rotation='vertical', \
+              horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(.92, 0.3, r"Number", rotation='vertical', \
+                        horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(.92, 0.7, r"Number", rotation='vertical', \
+                                  horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+
+    prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     
-    '''
-    ax1= fig.add_subplot(411)
+    ax1= fig.add_subplot(231)
+    xlabel(line + r'$V_{min}$ (km/s)')
+    xlabel(line + r'$V_{max}$ (km/s)')
     
-    i =0
+    i =1
     for c in ord_clstrs:
         l= c[0]
         print l
         sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
-                    cmap= clrm_ls[i], shade= True, shade_lowest= False, alpha= 0.5)
-        #text()
-
+                    shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False)
+                    
         i+=1
-        '''
+
+    ax1.text(0.1, 0.8, line+" Sample"+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 16, transform=ax1.transAxes)
+
+    vmin, vmax, ews=[], [], []
+    for c in ord_clstrs:
+        vmin.append(c[2])
+        vmax.append(c[3])
+        ews.append(c[4])
+
+    scatter(vmin, vmax, s= [e*-5 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
     
-    prop_tbl= join(data, clstr_tbl, keys='SDSSName')
-    
-    #scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
+    for x in range(k):
+        text(vmin[x]-1100, vmax[x]-1100,clstr_name[x] , color= 'k', fontsize= 12)
 
     i =0
-    ax2= fig.add_subplot(321)
+    ax2= fig.add_subplot(232)
+    for c in ord_clstrs:
+        l= c[0]
+        hist(prop_tbl['E_B-V_1'][(prop_tbl['label'] == l) & (prop_tbl['E_B-V_1'] !=-999)], \
+             bins=12, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+             
+        i+=1
+    
+    ax2.text(0.7, 0.85,"E(B - V)", transform=ax2.transAxes, color= 'k', fontsize= 16)
+
+    i =0
+    ax3= fig.add_subplot(234)
+    for c in ord_clstrs:
+        l= c[0]
+        hist(prop_tbl['alpha_UV_BLH'][(prop_tbl['label'] == l) & (prop_tbl['alpha_UV_BLH'] !=-999)], \
+             bins=12, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+             
+        i+=1
+
+    ax3.text(0.75, 0.85,r"$\alpha_{UV}$", transform=ax3.transAxes, color= 'k', fontsize= 18)
+    
+
+    i =0
+    ax4= fig.add_subplot(233)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['HeII_EW_BLH'][(prop_tbl['label'] == l) & (prop_tbl['HeII_EW_BLH'] !=-999) \
-                                  & (prop_tbl['HeII_EW_BLH'] !=0)], bins=20, histtype= 'step', \
-                                 normed= True, color= clr_ls[i], lw= 2)
+                                  & (prop_tbl['HeII_EW_BLH'] !=0)], bins=12, histtype= 'step', \
+                                 normed= False, color= clr_ls[i], lw= 2)
 
         i+=1
-    ax2.text(0.65, 0.85,'HeII_EW_BLH', transform=ax2.transAxes)
+    ax4.text(0.65, 0.85,"EW(HeII)", transform=ax4.transAxes, color= 'k', fontsize= 16)
 
     i =0
-    ax3= fig.add_subplot(322)
+    ax5= fig.add_subplot(235)
     for c in ord_clstrs:
         l= c[0]
-        hist(prop_tbl['v_md_BLH'][(prop_tbl['label'] == l) & (prop_tbl['v_md_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+        hist(prop_tbl['v_md_BLH'][(prop_tbl['label'] == l) & (prop_tbl['v_md_BLH'] !=-999)], \
+             bins=12, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
         
         i+=1
 
-    ax3.text(0.65, 0.85,'v_md_BLH', transform=ax3.transAxes)
+    ax5.text(0.8, 0.85,r"v$_{md}$", transform=ax5.transAxes, color= 'k', fontsize= 16)
 
     i =0
-    ax4= fig.add_subplot(323)
+    ax6= fig.add_subplot(236)
     for c in ord_clstrs:
         l= c[0]
-        hist(prop_tbl['CF_BLH'][(prop_tbl['label'] == l) & (prop_tbl['CF_BLH'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+        hist(prop_tbl['CF_BLH'][(prop_tbl['label'] == l) & (prop_tbl['CF_BLH'] !=-999)], \
+             bins=12, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
         
         i+=1
 
-    ax4.text(0.65, 0.85,'CF_BLH', transform=ax4.transAxes)
+    ax6.text(0.2, 0.85,"CF", transform=ax6.transAxes, color= 'k', fontsize= 16)
 
-    i =0
-    ax5= fig.add_subplot(324)
-    for c in ord_clstrs:
-        l= c[0]
-        hist(prop_tbl['BIO_AlIII'][(prop_tbl['label'] == l) & (prop_tbl['BIO_AlIII'] !=-999) \
-                                & (prop_tbl['BIO_AlIII'] !=0)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
-        
-        i+=1
-    ax5.text(0.65, 0.85,'BIO_AlIII', transform=ax5.transAxes)
-
-    i =0
-    ax6= fig.add_subplot(325)
-    for c in ord_clstrs:
-        l= c[0]
-        hist(prop_tbl['E_B-V_1'][(prop_tbl['label'] == l) & (prop_tbl['E_B-V_1'] !=-999)], bins=20, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
-        
-        i+=1
-
-    ax6.text(0.65, 0.85,'E_B-V_1', transform=ax6.transAxes)
-
-    i =0
-    ax7= fig.add_subplot(326)
-    for c in ord_clstrs:
-        l= c[0]
-        hist(abs(prop_tbl['BI1']-prop_tbl['BI2'])[(prop_tbl['label'] == l) & ((prop_tbl['BI1']-prop_tbl['BI2']) !=-999)], bins=20, histtype= 'step', normed=True, color= clr_ls[i], lw= 2)
-        
-        i+=1
-
-    ax7.text(0.65, 0.85,'BI1-BI2', transform=ax7.transAxes)
 
     return
 
