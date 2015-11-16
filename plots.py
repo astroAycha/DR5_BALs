@@ -480,15 +480,13 @@ def clstr_prop(line,k):
     fig1.set_axis_off()
     fig1.set_xlim(0, 1)
     fig1.set_ylim(0, 1)
-    fig1.text(.06, 0.3, r"Number", rotation='vertical', \
+    fig1.text(.06, 0.54, r"Number", rotation='vertical', \
               horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
-    fig1.text(.92, 0.3, r"Number", rotation='vertical', \
-                        horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
-    fig1.text(.92, 0.7, r"Number", rotation='vertical', \
-                                  horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
 
     prop_tbl= join(data, clstr_tbl, keys='SDSSName')
+    
+    """
     
     ax1= fig.add_subplot(231)
     xlabel(line + r'$V_{min}$ (km/s)')
@@ -516,8 +514,21 @@ def clstr_prop(line,k):
     for x in range(k):
         text(vmin[x]-1100, vmax[x]-1100,clstr_name[x] , color= 'k', fontsize= 12)
 
+    """
+    i= 0
+    ax1= fig.add_subplot(321)
+    for c in ord_clstrs:
+        l= c[0]
+        hist(prop_tbl['LOGEDD_RATIO_DR7'][(prop_tbl['label'] == l) & (prop_tbl['LOGEDD_RATIO_DR7'] !=-999) & (prop_tbl['LOGEDD_RATIO_DR7'] < 50000)], \
+             bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+             
+        i+=1
+    
+    ax1.text(0.65, 0.75,"log(E/Edd) \n Normalized", transform=ax1.transAxes, color= 'k', fontsize= 16)
+
+
     i =0
-    ax2= fig.add_subplot(232)
+    ax2= fig.add_subplot(322)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['E_B-V_1'][(prop_tbl['label'] == l) & (prop_tbl['E_B-V_1'] !=-999)], \
@@ -525,10 +536,10 @@ def clstr_prop(line,k):
              
         i+=1
     
-    ax2.text(0.7, 0.85,"E(B - V)", transform=ax2.transAxes, color= 'k', fontsize= 16)
+    ax2.text(0.65, 0.85,"E(B - V)", transform=ax2.transAxes, color= 'k', fontsize= 16)
 
     i =0
-    ax3= fig.add_subplot(234)
+    ax3= fig.add_subplot(323)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['alpha_UV_BLH'][(prop_tbl['label'] == l) & (prop_tbl['alpha_UV_BLH'] !=-999)], \
@@ -536,11 +547,11 @@ def clstr_prop(line,k):
              
         i+=1
 
-    ax3.text(0.75, 0.85,r"$\alpha_{UV}$", transform=ax3.transAxes, color= 'k', fontsize= 18)
+    ax3.text(0.65, 0.85,r"$\alpha_{UV}$", transform=ax3.transAxes, color= 'k', fontsize= 18)
     
 
     i =0
-    ax4= fig.add_subplot(233)
+    ax4= fig.add_subplot(324)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['HeII_EW_BLH'][(prop_tbl['label'] == l) & (prop_tbl['HeII_EW_BLH'] !=-999) \
@@ -548,10 +559,10 @@ def clstr_prop(line,k):
                                  normed= False, color= clr_ls[i], lw= 2)
 
         i+=1
-    ax4.text(0.65, 0.85,"EW(HeII)", transform=ax4.transAxes, color= 'k', fontsize= 16)
+    ax4.text(0.65, 0.85,r"EW(HeII) [$\AA$]", transform=ax4.transAxes, color= 'k', fontsize= 16)
 
     i =0
-    ax5= fig.add_subplot(235)
+    ax5= fig.add_subplot(325)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['v_md_BLH'][(prop_tbl['label'] == l) & (prop_tbl['v_md_BLH'] !=-999)], \
@@ -559,10 +570,10 @@ def clstr_prop(line,k):
         
         i+=1
 
-    ax5.text(0.8, 0.85,r"v$_{md}$", transform=ax5.transAxes, color= 'k', fontsize= 16)
+    ax5.text(0.65, 0.85,r"v$_{md}$ [km/s]", transform=ax5.transAxes, color= 'k', fontsize= 16)
 
     i =0
-    ax6= fig.add_subplot(236)
+    ax6= fig.add_subplot(326)
     for c in ord_clstrs:
         l= c[0]
         hist(prop_tbl['CF_BLH'][(prop_tbl['label'] == l) & (prop_tbl['CF_BLH'] !=-999)], \
