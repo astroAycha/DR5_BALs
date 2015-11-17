@@ -486,6 +486,8 @@ def clstr_prop(line,k):
 
     prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     
+    props= dict(boxstyle='round', edgecolor='k', alpha=0.7)
+    
     """
     
     ax1= fig.add_subplot(231)
@@ -524,8 +526,8 @@ def clstr_prop(line,k):
              
         i+=1
     
-    ax1.text(0.65, 0.75,"log(E/Edd) \n Normalized", transform=ax1.transAxes, color= 'k', fontsize= 16)
-
+    ax1.text(0.65, 0.77,"log(E/Edd) \nNormalized", transform=ax1.transAxes, color= 'k', fontsize= 16)
+    ax1.text(0.95, 0.85, "A", transform=ax1.transAxes, color= 'k', fontsize= 14, bbox= props)
 
     i =0
     ax2= fig.add_subplot(322)
@@ -536,7 +538,8 @@ def clstr_prop(line,k):
              
         i+=1
     
-    ax2.text(0.65, 0.85,"E(B - V)", transform=ax2.transAxes, color= 'k', fontsize= 16)
+    ax2.text(0.7, 0.85,"E(B - V)", transform=ax2.transAxes, color= 'k', fontsize= 16)
+    ax2.text(0.95, 0.85, "B", transform=ax2.transAxes, color= 'k', fontsize= 14, bbox= props)
 
     i =0
     ax3= fig.add_subplot(323)
@@ -547,7 +550,8 @@ def clstr_prop(line,k):
              
         i+=1
 
-    ax3.text(0.65, 0.85,r"$\alpha_{UV}$", transform=ax3.transAxes, color= 'k', fontsize= 18)
+    ax3.text(0.8, 0.85,r"$\alpha_{UV}$", transform=ax3.transAxes, color= 'k', fontsize= 18)
+    ax3.text(0.95, 0.85, "C", transform=ax3.transAxes, color= 'k', fontsize= 14, bbox= props)
     
 
     i =0
@@ -559,7 +563,8 @@ def clstr_prop(line,k):
                                  normed= False, color= clr_ls[i], lw= 2)
 
         i+=1
-    ax4.text(0.65, 0.85,r"EW(HeII) [$\AA$]", transform=ax4.transAxes, color= 'k', fontsize= 16)
+    ax4.text(0.55, 0.82,r"EW(HeII) [$\AA$]", transform=ax4.transAxes, color= 'k', fontsize= 16)
+    ax4.text(0.95, 0.85, "D", transform=ax4.transAxes, color= 'k', fontsize= 14, bbox= props)
 
     i =0
     ax5= fig.add_subplot(325)
@@ -570,7 +575,8 @@ def clstr_prop(line,k):
         
         i+=1
 
-    ax5.text(0.65, 0.85,r"v$_{md}$ [km/s]", transform=ax5.transAxes, color= 'k', fontsize= 16)
+    ax5.text(0.65, 0.8,r"v$_{md}$ [km/s]", transform=ax5.transAxes, color= 'k', fontsize= 16)
+    ax5.text(0.95, 0.85, "E", transform=ax5.transAxes, color= 'k', fontsize= 14, bbox= props)
 
     i =0
     ax6= fig.add_subplot(326)
@@ -582,6 +588,7 @@ def clstr_prop(line,k):
         i+=1
 
     ax6.text(0.2, 0.85,"CF", transform=ax6.transAxes, color= 'k', fontsize= 16)
+    ax6.text(0.05, 0.85, "F", transform=ax6.transAxes, color= 'k', fontsize= 14, bbox= props)
 
 
     return
