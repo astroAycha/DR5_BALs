@@ -343,7 +343,8 @@ def clust_compos(line, k, f):
         clstrs_ls.append([o ,len(clstr_tbl[clstr_tbl['label'] ==o]),\
                           mean(clstr_tbl['Vmin'][clstr_tbl['label'] ==o]),\
                           mean(clstr_tbl['Vmax'][clstr_tbl['label'] ==o]), \
-                          mean(clstr_tbl['EW'][clstr_tbl['label'] ==o])])
+                          mean(clstr_tbl['EW'][clstr_tbl['label'] ==o]), \
+                          mean(clstr_tbl['Lum'][clstr_tbl['label'] ==o])])
 
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
 
@@ -369,32 +370,52 @@ def clust_compos(line, k, f):
 
     ax1= fig.add_subplot(221)
     xlabel(line + r'$V_{min}$ (km/s)')
-    xlabel(line + r'$V_{max}$ (km/s)')
+    ylabel(line + r'$V_{max}$ (km/s)')
     
     i =1
     for c in ord_clstrs:
         l= c[0]
         print l
-        sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
+        if c[1] >30:
+            sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
                     shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False)
         
         i+=1
 
     ax1.text(0.1, 0.8, line+" Sample"+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax1.transAxes)
 
-    vmin, vmax, ews=[], [], []
+    vmin, vmax, ews, lum =[], [], [], []
     for c in ord_clstrs:
-        vmin.append(c[2])
-        vmax.append(c[3])
-        ews.append(c[4])
+        if c[1] >30:
+            vmin.append(c[2])
+            vmax.append(c[3])
+            ews.append(c[4])
+            lum.append(c[5])
 
-    scatter(vmin, vmax, s= [e*-5 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
+    ax1.scatter(vmin, vmax, s= [abs(e)*200 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
 
-    for x in range(k):
-        text(vmin[x]-1100, vmax[x]-1100,clstr_name[x] , color= 'k', fontsize= 12)
+    ax1.text(0.1, 0.8, line+" Sample"+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax1.transAxes)
 
 
-    ax2= fig.add_subplot(212)
+    for x in range(len(vmin)):
+        text(vmin[x]-.1, vmax[x]-.1, clstr_name[x] , color= 'k', fontsize= 12)
+
+
+    ax2= fig.add_subplot(222)
+    xlabel(line + r'EW')
+    ylabel(line + r'L$_{1400}$')
+    
+    i =1
+    for c in ord_clstrs:
+        l= c[0]
+        print l
+        if c[1] >30:
+            sns.kdeplot(clstr_tbl['EW'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
+                        shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False)
+        
+        i+=1
+
+    ax3= fig.add_subplot(212)
     xlim(xlimit)
     ylim(.1,3.2)
     xlabel(r'Restframe Wavelength ($\AA$)')
@@ -404,8 +425,8 @@ def clust_compos(line, k, f):
     line_label= ['CII', 'SiIV', 'CIV', 'HeII', 'OIII]', 'AlIII', 'SiIII]', 'CIII]', 'MgII']
 
     #plot([1990,2065],[1,1], 'k-')
-    ax2.arrow(2030, 1.3, -30, -.1, fc='k', ec='k')
-    ax2.arrow(2030, 1.3, +30, -.1, fc='k', ec='k')
+    ax3.arrow(2030, 1.3, -30, -.1, fc='k', ec='k')
+    ax3.arrow(2030, 1.3, +30, -.1, fc='k', ec='k')
     text(2020, 1.35, r'FeIII', fontsize= 14, family='serif', color='k')
     
     for p in r:
@@ -418,8 +439,9 @@ def clust_compos(line, k, f):
         l= c[0]
         compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
-        plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
-        ax2.text(0.82, .9-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax2.transAxes)
+        if c[1] > 20:
+            plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
+        ax3.text(0.82, .9-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax3.transAxes)
         i+=1
     
     
@@ -452,14 +474,16 @@ def clstr_prop(line,k):
 
     data= Table.read('myBALCat_xtra.csv')
 
-    clstr_tbl= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
+    clstr_tbl= Table.read("./clusters/4features/"+line+str(k)+"clstrs.fits")
     
     clstrs_ls=[]
     for o in range(k):
         clstrs_ls.append([o ,len(clstr_tbl[clstr_tbl['label'] ==o]),\
                            mean(clstr_tbl['Vmin'][clstr_tbl['label'] ==o]),\
                            mean(clstr_tbl['Vmax'][clstr_tbl['label'] ==o]), \
-                           mean(clstr_tbl['EW'][clstr_tbl['label'] ==o])])
+                           mean(clstr_tbl['EW'][clstr_tbl['label'] ==o]), \
+                           mean(clstr_tbl['Lum'][clstr_tbl['label'] ==o])])
+    
     
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
     
@@ -480,13 +504,13 @@ def clstr_prop(line,k):
     fig1.set_axis_off()
     fig1.set_xlim(0, 1)
     fig1.set_ylim(0, 1)
-    fig1.text(.06, 0.54, r"Number", rotation='vertical', \
+    fig1.text(.06, 0.54, r"Normalized Fraction", rotation='vertical', \
               horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
 
     prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     
-    props= dict(boxstyle='round', edgecolor='k', alpha=0.7)
+    props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
     
     """
     
@@ -514,81 +538,90 @@ def clstr_prop(line,k):
     scatter(vmin, vmax, s= [e*-5 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
     
     for x in range(k):
-        text(vmin[x]-1100, vmax[x]-1100,clstr_name[x] , color= 'k', fontsize= 12)
+        text(vmin[x]-1100, vmax[x]-1100, clstr_name[x] , color= 'k', fontsize= 12)
 
     """
     i= 0
     ax1= fig.add_subplot(321)
     for c in ord_clstrs:
-        l= c[0]
-        hist(prop_tbl['LOGEDD_RATIO_DR7'][(prop_tbl['label'] == l) & (prop_tbl['LOGEDD_RATIO_DR7'] !=-999) & (prop_tbl['LOGEDD_RATIO_DR7'] < 50000)], \
+        if c[1] >30:
+            l= c[0]
+            hist(prop_tbl['LOGEDD_RATIO_DR7'][(prop_tbl['label'] == l) & (prop_tbl['LOGEDD_RATIO_DR7'] !=-999) & (prop_tbl['LOGEDD_RATIO_DR7'] < 50000)], \
              bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
              
-        i+=1
+            i+=1
     
-    ax1.text(0.65, 0.77,"log(E/Edd) \nNormalized", transform=ax1.transAxes, color= 'k', fontsize= 16)
-    ax1.text(0.95, 0.85, "A", transform=ax1.transAxes, color= 'k', fontsize= 14, bbox= props)
+    ax1.text(0.65, 0.77,"log(E/Edd)", transform=ax1.transAxes, color= 'k', fontsize= 16)
+    ax1.text(0.95, 0.85, "A", transform=ax1.transAxes, color= 'r', fontsize= 14, bbox= props)
 
     i =0
     ax2= fig.add_subplot(322)
     for c in ord_clstrs:
-        l= c[0]
-        hist(prop_tbl['E_B-V_1'][(prop_tbl['label'] == l) & (prop_tbl['E_B-V_1'] !=-999)], \
-             bins=12, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+        if c[1] >30:
+            l= c[0]
+            hist(prop_tbl['E_B-V_1'][(prop_tbl['label'] == l) & (prop_tbl['E_B-V_1'] !=-999)], \
+             bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+            ax2.text(0.62, .7-i/10., line+"-"+clstr_name[i]+", N= "+str(c[1]), color= clr_ls[i], fontsize= 16, transform=ax2.transAxes)
              
-        i+=1
+            i+=1
     
     ax2.text(0.7, 0.85,"E(B - V)", transform=ax2.transAxes, color= 'k', fontsize= 16)
-    ax2.text(0.95, 0.85, "B", transform=ax2.transAxes, color= 'k', fontsize= 14, bbox= props)
+    ax2.text(0.95, 0.85, "B", transform=ax2.transAxes, color= 'r', fontsize= 14, bbox= props)
+
+
 
     i =0
     ax3= fig.add_subplot(323)
     for c in ord_clstrs:
-        l= c[0]
-        hist(prop_tbl['alpha_UV_BLH'][(prop_tbl['label'] == l) & (prop_tbl['alpha_UV_BLH'] !=-999)], \
-             bins=12, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+        if c[1] >30:
+            l= c[0]
+            hist(prop_tbl['alpha_UV_BLH'][(prop_tbl['label'] == l) & (prop_tbl['alpha_UV_BLH'] !=-999)], \
+             bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
              
-        i+=1
+            i+=1
 
     ax3.text(0.8, 0.85,r"$\alpha_{UV}$", transform=ax3.transAxes, color= 'k', fontsize= 18)
-    ax3.text(0.95, 0.85, "C", transform=ax3.transAxes, color= 'k', fontsize= 14, bbox= props)
+    ax3.text(0.95, 0.85, "C", transform=ax3.transAxes, color= 'r', fontsize= 14, bbox= props)
     
 
     i =0
     ax4= fig.add_subplot(324)
     for c in ord_clstrs:
-        l= c[0]
-        hist(prop_tbl['HeII_EW_BLH'][(prop_tbl['label'] == l) & (prop_tbl['HeII_EW_BLH'] !=-999) \
+        if c[1] > 30:
+            l= c[0]
+            hist(prop_tbl['HeII_EW_BLH'][(prop_tbl['label'] == l) & (prop_tbl['HeII_EW_BLH'] !=-999) \
                                   & (prop_tbl['HeII_EW_BLH'] !=0)], bins=12, histtype= 'step', \
-                                 normed= False, color= clr_ls[i], lw= 2)
+                                 normed= True, color= clr_ls[i], lw= 2)
 
-        i+=1
+            i+=1
     ax4.text(0.55, 0.82,r"EW(HeII) [$\AA$]", transform=ax4.transAxes, color= 'k', fontsize= 16)
-    ax4.text(0.95, 0.85, "D", transform=ax4.transAxes, color= 'k', fontsize= 14, bbox= props)
+    ax4.text(0.95, 0.85, "D", transform=ax4.transAxes, color= 'r', fontsize= 14, bbox= props)
 
     i =0
     ax5= fig.add_subplot(325)
     for c in ord_clstrs:
-        l= c[0]
-        hist(prop_tbl['v_md_BLH'][(prop_tbl['label'] == l) & (prop_tbl['v_md_BLH'] !=-999)], \
-             bins=12, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+        if c[1] >30:
+            l= c[0]
+            hist(prop_tbl['v_md_BLH'][(prop_tbl['label'] == l) & (prop_tbl['v_md_BLH'] !=-999)], \
+             bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
-        i+=1
+            i+=1
 
     ax5.text(0.65, 0.8,r"v$_{md}$ [km/s]", transform=ax5.transAxes, color= 'k', fontsize= 16)
-    ax5.text(0.95, 0.85, "E", transform=ax5.transAxes, color= 'k', fontsize= 14, bbox= props)
+    ax5.text(0.95, 0.85, "E", transform=ax5.transAxes, color= 'r', fontsize= 14, bbox= props)
 
     i =0
     ax6= fig.add_subplot(326)
     for c in ord_clstrs:
-        l= c[0]
-        hist(prop_tbl['CF_BLH'][(prop_tbl['label'] == l) & (prop_tbl['CF_BLH'] !=-999)], \
-             bins=12, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+        if c[1] >30 :
+            l= c[0]
+            hist(prop_tbl['CF_BLH'][(prop_tbl['label'] == l) & (prop_tbl['CF_BLH'] !=-999)], \
+             bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
-        i+=1
+            i+=1
 
     ax6.text(0.2, 0.85,"CF", transform=ax6.transAxes, color= 'k', fontsize= 16)
-    ax6.text(0.05, 0.85, "F", transform=ax6.transAxes, color= 'k', fontsize= 14, bbox= props)
+    ax6.text(0.05, 0.85, "F", transform=ax6.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
     return
