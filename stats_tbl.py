@@ -28,7 +28,8 @@ def clstr_cntrs():
             
             for o in range(k):
                 clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),mean(t['Vmin'][t['label'] ==o]),\
-                                  mean(t['Vmax'][t['label'] ==o]), mean(t['EW'][t['label'] ==o])])
+                                  mean(t['Vmax'][t['label'] ==o]), mean(t['EW'][t['label'] ==o]), \
+                                  mean(t['Lum'][t['label'] ==o])])
     
             oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
             
@@ -44,24 +45,27 @@ def clstr_cntrs():
 
 #check fraction of objects with BI0(AlIII) >0 in each of the CIV and SiIV clusters:
 
-def frac(line, k, q):
+def frac(line, k):
 
-    """ print %'s of objects from each cluster which has a quantity >0
+    """ print %'s of objects from each cluster which has BI0_Alll >0
     
     """
 
     data= Table.read('myBALCat_xtra.csv')
 
-    c= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
+    c= Table.read("./clusters/4features/"+line+str(k)+"clstrs.fits")
 
     t= join(data, c, keys='SDSSName')
+    
+    q= 'BIO_AlIII'
     
     clstrs_ls=[]
     for o in range(k):
         clstrs_ls.append([o ,len(t[t['label'] ==o]),\
                           mean(t['Vmin'][t['label'] ==o]),\
                           mean(t['Vmax'][t['label'] ==o]), \
-                          mean(t['EW'][t['label'] ==o])])
+                          mean(t['EW'][t['label'] ==o]), \
+                          mean(t['Lum'][t['label'] ==o])])
     
     oc= sorted(clstrs_ls, key= itemgetter(2))
 
@@ -82,7 +86,7 @@ def var_frac(line, k):
 
     data= Table.read('myBALCat_xtra.csv')
     
-    c= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
+    c= Table.read("./clusters/4features/"+line+str(k)+"clstrs.fits")
     
     t= join(data, c, keys='SDSSName')
     
@@ -91,7 +95,8 @@ def var_frac(line, k):
         clstrs_ls.append([o ,len(t[t['label'] ==o]),\
                           mean(t['Vmin'][t['label'] ==o]),\
                           mean(t['Vmax'][t['label'] ==o]), \
-                          mean(t['EW'][t['label'] ==o])])
+                          mean(t['EW'][t['label'] ==o]), \
+                          mean(t['Lum'][t['label'] ==o])])
     
     oc= sorted(clstrs_ls, key= itemgetter(2))
 
