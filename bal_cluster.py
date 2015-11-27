@@ -21,17 +21,12 @@ def bal_cluster(line, k):
     data= Table.read('myBALCat_xtra.csv')
 
     #selec the sample: line has an absorption trough: BI0 >0 , S/N >3, and a redshift cutoff to restrict the bandwidth
-    
-    if line== 'SiIV':
-        z1= 1.79
-        z2= 3.7
-    elif line== 'CIV':
-        z1= 1.5
-        z2= 3.7
-    elif line== 'MgII':
+
+    if line == 'MgII':
         z1= 1.1
         z2= 2.2
-    elif line== 'AlIII':
+    
+    else:
         z1= 1.79
         z2= 3.7
 
@@ -77,9 +72,16 @@ def bal_cluster(line, k):
 
     s['SDSSName'].fill_value= 999
     names= s['SDSSName'].filled() # SDSS name
+
+    #standardize parameters before using them in clustering
+    f1= (ew - mean(ew))/std(ew)
+    f2= (vmin - mean(vmin))/std(vmin)
+    f3= (vmax - mean(vmax))/std(vmax)
+    f4= (cl - mean(cl))/std(cl)
     
     # list of features to be used in clustering
-    f= [ew, vmin, vmax]
+    f= [f1, f2, f3, f4]
+
     #f= [ew, vmin, vmax, fdeep]# , cl]
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
@@ -98,9 +100,9 @@ def bal_cluster(line, k):
     
     clstr_name= line+str(k)
     
-    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], labels, names, redshift], \
-                     names= ('EW', 'Vmin', 'Vmax', 'label', 'SDSSName', 'z'), \
-                     dtype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64'))
+    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
+                     names= ('EW', 'Vmin', 'Vmax', 'Lum', 'label', 'SDSSName', 'z'), \
+                     dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
         
     clstr_tab.write("./clusters/"+str(len(f))+"features/"+clstr_name+"clstrs.fits", format= 'fits')
     
