@@ -512,113 +512,115 @@ def clstr_prop(line,k):
     
     props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
     
-    """
     
-    ax1= fig.add_subplot(231)
-    xlabel(line + r'$V_{min}$ (km/s)')
-    xlabel(line + r'$V_{max}$ (km/s)')
-    
-    i =1
-    for c in ord_clstrs:
-        l= c[0]
-        print l
-        sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
-                    shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False)
-                    
-        i+=1
-
-    ax1.text(0.1, 0.8, line+" Sample"+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 16, transform=ax1.transAxes)
-
-    vmin, vmax, ews=[], [], []
-    for c in ord_clstrs:
-        vmin.append(c[2])
-        vmax.append(c[3])
-        ews.append(c[4])
-
-    scatter(vmin, vmax, s= [e*-5 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
-    
-    for x in range(k):
-        text(vmin[x]-1100, vmax[x]-1100, clstr_name[x] , color= 'k', fontsize= 12)
-
-    """
-    i= 0
     ax1= fig.add_subplot(321)
+    i= 0
+    param= "LOGEDD_RATIO_DR7"
+    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/14)
+    #print hist_bins
+
     for c in ord_clstrs:
         if c[1] >30:
             l= c[0]
-            hist(prop_tbl['LOGEDD_RATIO_DR7'][(prop_tbl['label'] == l) & (prop_tbl['LOGEDD_RATIO_DR7'] !=-999) & (prop_tbl['LOGEDD_RATIO_DR7'] < 50000)], \
-             bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] < 50000)], \
+            bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
              
-            i+=1
+        i+=1
     
     ax1.text(0.65, 0.77,"log(E/Edd)", transform=ax1.transAxes, color= 'k', fontsize= 16)
     ax1.text(0.95, 0.85, "A", transform=ax1.transAxes, color= 'r', fontsize= 14, bbox= props)
 
-    i =0
+
     ax2= fig.add_subplot(322)
+    i =0
+    j =0
+    param= "E_B-V_1"
+    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/14)
+
     for c in ord_clstrs:
         if c[1] >30:
             l= c[0]
-            hist(prop_tbl['E_B-V_1'][(prop_tbl['label'] == l) & (prop_tbl['E_B-V_1'] !=-999)], \
-             bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
-            ax2.text(0.62, .7-i/10., line+"-"+clstr_name[i]+", N= "+str(c[1]), color= clr_ls[i], fontsize= 16, transform=ax2.transAxes)
+            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
+             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+            ax2.text(0.62, .7-j/10., line+"-"+clstr_name[i]+", N= "+str(c[1]), color= clr_ls[i], fontsize= 16, transform=ax2.transAxes)
+            j+=1
              
-            i+=1
+        i+=1
     
     ax2.text(0.7, 0.85,"E(B - V)", transform=ax2.transAxes, color= 'k', fontsize= 16)
     ax2.text(0.95, 0.85, "B", transform=ax2.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
-
-    i =0
     ax3= fig.add_subplot(323)
+    i =0
+    param= "alpha_UV_BLH"
+    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/9)
+
     for c in ord_clstrs:
         if c[1] >30:
             l= c[0]
-            hist(prop_tbl['alpha_UV_BLH'][(prop_tbl['label'] == l) & (prop_tbl['alpha_UV_BLH'] !=-999)], \
-             bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
+             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
              
-            i+=1
+        i+=1
 
     ax3.text(0.8, 0.85,r"$\alpha_{UV}$", transform=ax3.transAxes, color= 'k', fontsize= 18)
     ax3.text(0.95, 0.85, "C", transform=ax3.transAxes, color= 'r', fontsize= 14, bbox= props)
     
 
-    i =0
     ax4= fig.add_subplot(324)
-    for c in ord_clstrs:
-        if c[1] > 30:
-            l= c[0]
-            hist(prop_tbl['HeII_EW_BLH'][(prop_tbl['label'] == l) & (prop_tbl['HeII_EW_BLH'] !=-999) \
-                                  & (prop_tbl['HeII_EW_BLH'] !=0)], bins=12, histtype= 'step', \
-                                 normed= True, color= clr_ls[i], lw= 2)
+    i =0
+    param= "HeII_EW_BLH"
+    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/9)
 
-            i+=1
+
+    for c in ord_clstrs:
+        if c[1] > 42:
+            l= c[0]
+            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] !=0)], \
+                 bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+
+        i+=1
     ax4.text(0.55, 0.82,r"EW(HeII) [$\AA$]", transform=ax4.transAxes, color= 'k', fontsize= 16)
     ax4.text(0.95, 0.85, "D", transform=ax4.transAxes, color= 'r', fontsize= 14, bbox= props)
 
-    i =0
+
     ax5= fig.add_subplot(325)
+    i =0
+    param= "v_md_BLH"
+    prop_tbl[param].fill_value= -999
+    #prop_tbl[param].filled()
+
+    hist_bins= arange(min(prop_tbl[param].filled()), max(prop_tbl[param].filled()), \
+                      (max(prop_tbl[param].filled())-min(prop_tbl[param].filled()))/9)
+
     for c in ord_clstrs:
         if c[1] >30:
             l= c[0]
-            hist(prop_tbl['v_md_BLH'][(prop_tbl['label'] == l) & (prop_tbl['v_md_BLH'] !=-999)], \
-             bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+            hist(prop_tbl[param].filled()[(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
+             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
-            i+=1
+        i+=1
 
     ax5.text(0.65, 0.8,r"v$_{md}$ [km/s]", transform=ax5.transAxes, color= 'k', fontsize= 16)
     ax5.text(0.95, 0.85, "E", transform=ax5.transAxes, color= 'r', fontsize= 14, bbox= props)
 
-    i =0
+
     ax6= fig.add_subplot(326)
+    i =0
+    param= "CF_BLH"
+    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/14)
+
     for c in ord_clstrs:
         if c[1] >30 :
             l= c[0]
-            hist(prop_tbl['CF_BLH'][(prop_tbl['label'] == l) & (prop_tbl['CF_BLH'] !=-999)], \
-             bins=12, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
+             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
-            i+=1
+        i+=1
 
     ax6.text(0.2, 0.85,"CF", transform=ax6.transAxes, color= 'k', fontsize= 16)
     ax6.text(0.05, 0.85, "F", transform=ax6.transAxes, color= 'r', fontsize= 14, bbox= props)
