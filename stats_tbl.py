@@ -3,7 +3,7 @@
 
 import numpy as np
 from operator import itemgetter
-from astropy.table import Table
+from astropy.table import Table, join
 
 def clstr_cntrs():
 
@@ -14,27 +14,35 @@ def clstr_cntrs():
 
     tbl= open('cntrs_tbl.txt', 'wrb')
     
+    data= Table.read('myBALCat_xtra.csv')
+    
     #vmin, vmax, ew, num=[], [], [], []
 
     for l in line_ls:
+        if l == 'MgII':
+            lum = 'logF2500'
+        else:
+            lum = 'logF1400'
     
-        for k in range(3,6):
+        for k in range(3,7):
         
-            t= Table.read("./clusters/3features/"+l+str(k)+"clstrs.fits")
+            tt= Table.read("./clusters/4features/"+l+str(k)+"clstrs.fits")
+            
+            t= join(data, tt, keys= 'SDSSName')
             
             tbl.write(l+ "&" + str(len(t)) + "& "+ "K="+ str(k)+ "\n")
             
             clstrs_ls=[]
             
             for o in range(k):
-                clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),mean(t['Vmin'][t['label'] ==o]),\
-                                  mean(t['Vmax'][t['label'] ==o]), mean(t['EW'][t['label'] ==o]), \
-                                  mean(t['Lum'][t['label'] ==o])])
+                clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),mean(t['Vmin_'+l][t['label'] ==o]),\
+                                  mean(t['Vmax_'+l][t['label'] ==o]), mean(t['EW_'+l][t['label'] ==o]), \
+                                  mean(t[lum][t['label'] ==o])])
     
             oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
             
             for c in oc:
-                tbl.write("{:d}, ({:06.2f},{:06.2f},{:06.2f}) \n".format(c[3], c[4], c[5], c[6]))
+                tbl.write("{:d}, ({:06.2f},{:06.2f},{:06.2f},{:06.2f}) \n".format(c[3], c[4], c[5], c[6], c[7]))
             
            
     tbl.close()
