@@ -35,14 +35,16 @@ def clstr_cntrs():
             clstrs_ls=[]
             
             for o in range(k):
-                clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),mean(t['Vmin_'+l][t['label'] ==o]),\
-                                  mean(t['Vmax_'+l][t['label'] ==o]), mean(t['EW_'+l][t['label'] ==o]), \
+                clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
+                                  mean(t['Vmin_'+l][t['label'] ==o]),\
+                                  mean(t['Vmax_'+l][t['label'] ==o]), \
+                                  mean(t['EW_'+l][t['label'] ==o]), \
                                   mean(t[lum][t['label'] ==o])])
     
             oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
             
             for c in oc:
-                tbl.write("{:d}, ({:06.2f},{:06.2f},{:06.2f},{:06.2f}) \n".format(c[3], c[4], c[5], c[6], c[7]))
+                tbl.write("{:d}, ({:06.2f}, {:06.2f}, {:06.2f}, {:06.2f}) \n".format(c[3], c[4], c[5], c[6], c[7]))
             
            
     tbl.close()
