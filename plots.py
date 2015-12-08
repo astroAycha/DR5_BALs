@@ -320,7 +320,7 @@ legend()
 
 def clust_compos(line, k, f):
 
-    '''plot composites in one panel
+    '''plot composites in one panel, and other two panels to show clustering parameter space
     k: number of clusters
     f: number of features
     '''
@@ -331,36 +331,42 @@ def clust_compos(line, k, f):
     if line== 'MgII':
         xlimit= (1700, 3100)
         r= arange(5,9)
+        lum= "logF2500"
     
     else:
         xlimit= (1300, 2165)
         r= arange(0,8)
+        lum = "logF1400"
+
+    cutoff = 10 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
 
     clstr_tbl= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
+    
+    data= Table.read("myBALCat_xtra.csv")
+
+    tt= join(clstr_tbl, data, keys= 'SDSSName')
+
+    props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
 
     clstrs_ls=[]
     for o in range(k):
-        clstrs_ls.append([o ,len(clstr_tbl[clstr_tbl['label'] ==o]),\
-                          mean(clstr_tbl['Vmin'][clstr_tbl['label'] ==o]),\
-                          mean(clstr_tbl['Vmax'][clstr_tbl['label'] ==o]), \
-                          mean(clstr_tbl['EW'][clstr_tbl['label'] ==o]), \
-                          mean(clstr_tbl['Lum'][clstr_tbl['label'] ==o])])
+        clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
+                          mean(tt['Vmin_'+line][tt['label'] ==o]),\
+                          mean(tt['Vmax_'+line][tt['label'] ==o]), \
+                          mean(tt['EW_'+line][tt['label'] ==o]), \
+                          mean(tt[lum][tt['label'] ==o])])
 
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
 
     print ord_clstrs
 
 
-    #clr_ls= ['steelblue', 'olivedrab','orange', '0.4']
-    #clr_ls= ["#4C72B0", "#55A868", "#C44E52", "#8172B2", "#CCB974", "#64B5CD"]
-    #clr_ls= ["#9b59b6", "#3498db", "#95a5a6", "#e74c3c", "#34495e", "#2ecc71"]
-    #nav= sns.light_palette("navy", as_cmap=True)
-    #clrm_ls= ['Purples', 'Blues', 'Greys', 'Reds', nav, 'Greens']
-
-    clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["pale red"], sns.xkcd_rgb["dusty purple"]]
+    clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
+              sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"]]
+    
     amb= sns.light_palette(sns.xkcd_rgb["amber"], as_cmap= True)
     
-    clrm_ls= ['Blues', amb, 'Greys', 'Greens', 'Reds', 'Purples']
+    clrm_ls= ['Blues', 'Purples' , 'Reds', 'Greys', 'Greens', amb]
 
     
     clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
@@ -369,16 +375,16 @@ def clust_compos(line, k, f):
     fig= figure(figsize=(14,10))
 
     ax1= fig.add_subplot(221)
-    xlabel(line + r'$V_{min}$ (km/s)')
-    ylabel(line + r'$V_{max}$ (km/s)')
+    xlabel(line + r' V$_{min}$ (km/s)')
+    ylabel(line + r' V$_{max}$ (km/s)')
     
     i =1
     for c in ord_clstrs:
         l= c[0]
         print l
-        if c[1] >30:
-            sns.kdeplot(clstr_tbl['Vmin'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
-                    shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False)
+        if c[1] > cutoff:
+            sns.kdeplot(tt['Vmin_'+line][tt['label'] == l], tt['Vmax_'+line][tt['label'] == l], \
+                    shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
         
         i+=1
 
@@ -386,34 +392,42 @@ def clust_compos(line, k, f):
 
     vmin, vmax, ews, lum =[], [], [], []
     for c in ord_clstrs:
-        if c[1] >30:
+        if c[1] > cutoff:
             vmin.append(c[2])
             vmax.append(c[3])
             ews.append(c[4])
             lum.append(c[5])
 
-    ax1.scatter(vmin, vmax, s= [abs(e)*200 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
+    #ax1.scatter(vmin, vmax, s= [abs(e)*10 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
 
-    ax1.text(0.1, 0.8, line+" Sample"+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax1.transAxes)
+    text(0.1, 0.8, line+" Sample"+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax1.transAxes)
 
 
     for x in range(len(vmin)):
-        text(vmin[x]-.1, vmax[x]-.1, clstr_name[x] , color= 'k', fontsize= 12)
+        ax1.text(vmin[x], vmax[x], clstr_name[x] , color= 'k', fontsize= 14 , multialignment= 'center', bbox= props)
 
 
-    ax2= fig.add_subplot(222)
-    xlabel(line + r'EW')
-    ylabel(line + r'L$_{1400}$')
+    ax2= fig.add_subplot(222, sharey= ax1)
+    xlabel(line + r' EW ($\AA$)')
+    #ylabel(line + r' $V_{max}$ (km/s)')
+    ax2.axes.get_yaxis().set_visible(False)
     
     i =1
     for c in ord_clstrs:
         l= c[0]
         print l
-        if c[1] >30:
-            sns.kdeplot(clstr_tbl['EW'][clstr_tbl['label'] == l], clstr_tbl['Vmax'][clstr_tbl['label'] == l], \
-                        shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False)
+        if c[1] > cutoff:
+            sns.kdeplot(tt['EW_'+line][tt['label'] == l], tt['Vmax_'+line][tt['label'] == l], \
+                        shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
         
         i+=1
+
+    for x in range(len(vmin)):
+        text(ews[x], vmax[x], clstr_name[x] , color= 'k', fontsize= 14, multialignment= 'center', bbox= props)
+
+    subplots_adjust(wspace =0.001)
+
+    #plt.tight_layout()
 
     ax3= fig.add_subplot(212)
     xlim(xlimit)
@@ -425,9 +439,9 @@ def clust_compos(line, k, f):
     line_label= ['CII', 'SiIV', 'CIV', 'HeII', 'OIII]', 'AlIII', 'SiIII]', 'CIII]', 'MgII']
 
     #plot([1990,2065],[1,1], 'k-')
-    ax3.arrow(2030, 1.3, -30, -.1, fc='k', ec='k')
-    ax3.arrow(2030, 1.3, +30, -.1, fc='k', ec='k')
-    text(2020, 1.35, r'FeIII', fontsize= 14, family='serif', color='k')
+    ax3.arrow(2030, 1.4, -30, -.1, fc='k', ec='k')
+    ax3.arrow(2030, 1.4, +30, -.1, fc='k', ec='k')
+    text(2020, 1.45, r'FeIII', fontsize= 14, family='serif', color='k')
     
     for p in r:
         axvline(line_mark[p], ls= ':', color= '.5')
@@ -439,7 +453,7 @@ def clust_compos(line, k, f):
         l= c[0]
         compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
-        if c[1] > 20:
+        if c[1] > cutoff:
             plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
         ax3.text(0.82, .9-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax3.transAxes)
         i+=1
