@@ -29,7 +29,7 @@ def k_test():
         z1= ss[1]
         z2= ss[2]
         s= data[(data['BIO_'+line] >0) & (data['SN1700'] >3) & \
-                (data['z'] >z1) & (data['z'] <z2)]
+                (data['z'] >z1) & (data['z'] <z2) & (data[lum] !=-999)]
 
 
         #features
