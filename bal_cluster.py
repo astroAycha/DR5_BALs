@@ -22,15 +22,18 @@ def bal_cluster(line, k):
 
     #selec the sample: line has an absorption trough: BI0 >0 , S/N >3, and a redshift cutoff to restrict the bandwidth
 
-    if line == 'MgII':
+    if line == "MgII":
         z1= 1.1
         z2= 2.2
+        lum= "logF2500"
     
     else:
         z1= 1.79
         z2= 3.7
+        lum= "logF1400"
 
-    s= data[(data['BIO_'+line] >0) & (data['SN1700'] >3) & (data['z'] >z1) & (data['z'] <z2)] # & (data['flg'] ==0)]
+
+    s= data[(data['BIO_'+line] >0) & (data['SN1700'] >3) & (data['z'] >z1) & (data['z'] <z2) & (data[lum] !=-999)]
     
     print "sample has", len(s), "objects"
 
@@ -45,32 +48,25 @@ def bal_cluster(line, k):
     fdeep= s['f_deep_'+line]
 
     """
-    s['z'].fill_value= 0
+    s['z'].fill_value= -999
     redshift= s['z'].filled() #redshift
-    s['BI_'+line].fill_value= 0
+    s['BI_'+line].fill_value= -999
     bi= s['BI_'+line].filled() # balnicity: integration 3000-25000
-    s['BIO_'+line].fill_value= 0
+    s['BIO_'+line].fill_value= -999
     bi0= s['BIO_'+line].filled() # modified balnicity: integration 0-25000
-    s['EW_'+line].fill_value= 0
+    s['EW_'+line].fill_value= -999
     ew= s['EW_'+line].filled() # restframe absorption EW
-    s['Vmin_'+line].fill_value= 0
+    s['Vmin_'+line].fill_value= -999
     vmin= s['Vmin_'+line].filled() # minimum velocity
-    s['Vmax_'+line].fill_value= 0
+    s['Vmax_'+line].fill_value= -999
     vmax= s['Vmax_'+line].filled() # maximum velocity
-    s['f_deep_'+line].fill_value= 0
+    s['f_deep_'+line].fill_value= -999
     fdeep= s['f_deep_'+line].filled()
     
-    
-    if line== "MgII":
-        lum= "logF2500"
-    
-    else:
-        lum= "logF1400"
-    
-    s[lum].fill_value= 999
+    s[lum].fill_value= -999
     cl= s[lum].filled() # Log of 1400 or 2500 monochromatic luminosity
 
-    s['SDSSName'].fill_value= 999
+    s['SDSSName'].fill_value= -999
     names= s['SDSSName'].filled() # SDSS name
 
     #standardize parameters before using them in clustering
