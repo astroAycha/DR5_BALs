@@ -28,6 +28,13 @@ def k_test():
         line= ss[0]
         z1= ss[1]
         z2= ss[2]
+        
+        if line== "MgII":
+            lum= "logF2500"
+        
+        else:
+            lum= "logF1400"
+
         s= data[(data['BIO_'+line] >0) & (data['SN1700'] >3) & \
                 (data['z'] >z1) & (data['z'] <z2) & (data[lum] !=-999)]
 
@@ -44,11 +51,6 @@ def k_test():
         s['Vmax_'+line].fill_value= -999
         vmax= s['Vmax_'+line].filled() # maximum velocity
     
-        if line== "MgII":
-            lum= "logF2500"
-
-        else:
-            lum= "logF1400"
     
         s[lum].fill_value= -999
         cl= s[lum].filled() # Log of 1400 or 2500 monochromatic luminosity
@@ -90,7 +92,7 @@ def k_test():
     fig= figure(figsize=(8,12))
     subplots_adjust(hspace= 0.15)
 
-    sns.set(font_scale= 1.5)
+    sns.set(font_scale= 1.4)
     sns.set_style("ticks", {'font.family': u'serif'})
 
 
@@ -99,10 +101,10 @@ def k_test():
     #nullfmt   = NullFormatter()
     #ax1.xaxis.set_major_formatter(nullfmt)
 
-    ax1.plot(range(3,8), ss2[0], marker= 'D', color= '0.1', ls='--', label= 'CIV, N= 2710')
-    ax1.plot(range(3,8), ss2[1], marker= '*', color= '0.3', ls='-.', label= 'SiIV, N= 813')
+    ax1.plot(range(3,8), ss2[0], marker= 'D', color= '0.1', ls='--', label= 'CIV, N= 2683')
+    ax1.plot(range(3,8), ss2[1], marker= '*', color= '0.3', ls='-.', label= 'SiIV, N= 806')
     ax1.plot(range(3,8), ss2[2], marker= 'o', color= '0.5', ls=':', label= 'AlIII, N= 191')
-    ax1.plot(range(3,8), ss2[3], marker= 'v', color= 'k', ls='-', lw=0.7, label= 'MgII, N= 110')
+    ax1.plot(range(3,8), ss2[3], marker= 'v', color= 'k', ls='-', lw=0.7, label= 'MgII, N= 108')
 
     ylabel(r'Sum of squares')
     xlim(2.9, 7.1)
