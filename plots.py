@@ -489,15 +489,14 @@ def clstr_prop(line,k):
 
     data= Table.read('myBALCat_xtra.csv')
 
-    clstr_tbl= Table.read("./clusters/4features/"+line+str(k)+"clstrs.fits")
+    clstr_tbl= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
     
     clstrs_ls=[]
     for o in range(k):
         clstrs_ls.append([o ,len(clstr_tbl[clstr_tbl['label'] ==o]),\
                            mean(clstr_tbl['Vmin'][clstr_tbl['label'] ==o]),\
                            mean(clstr_tbl['Vmax'][clstr_tbl['label'] ==o]), \
-                           mean(clstr_tbl['EW'][clstr_tbl['label'] ==o]), \
-                           mean(clstr_tbl['Lum'][clstr_tbl['label'] ==o])])
+                           mean(clstr_tbl['EW'][clstr_tbl['label'] ==o])])
     
     
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
@@ -510,7 +509,7 @@ def clstr_prop(line,k):
 
     clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
 
-    cutoff = 30 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
+    cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
 
 
     fig= figure(figsize=(16,10))
@@ -532,14 +531,14 @@ def clstr_prop(line,k):
     i= 0
     param= "LOGEDD_RATIO_DR7"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/20)
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
     #print hist_bins
 
     for c in ord_clstrs:
         if c[1] > cutoff:
             l= c[0]
             hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] < 50000)], \
-            bins= hist_bins, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+            bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
              
         i+=1
     
@@ -552,13 +551,14 @@ def clstr_prop(line,k):
     j =0
     param= "E_B-V_1"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/20)
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
     for c in ord_clstrs:
         if c[1] >cutoff:
             l= c[0]
             hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
-             bins= hist_bins, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+             
             ax2.text(0.62, .7-j/10., line+"-"+clstr_name[i]+", N= "+str(c[1]), color= clr_ls[i], fontsize= 16, transform=ax2.transAxes)
             j+=1
              
@@ -572,13 +572,13 @@ def clstr_prop(line,k):
     i =0
     param= "alpha_UV_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/20)
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
     for c in ord_clstrs:
         if c[1] >cutoff:
             l= c[0]
             hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
-             bins= hist_bins, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
              
         i+=1
 
@@ -590,14 +590,14 @@ def clstr_prop(line,k):
     i =0
     param= "HeII_EW_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/20)
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
 
     for c in ord_clstrs:
         if c[1] > cutoff:
             l= c[0]
             hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] !=0)], \
-                 bins= hist_bins, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+                 bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
 
         i+=1
     ax4.text(0.55, 0.82,r"EW(HeII) [$\AA$]", transform=ax4.transAxes, color= 'k', fontsize= 16)
@@ -607,17 +607,14 @@ def clstr_prop(line,k):
     ax5= fig.add_subplot(325)
     i =0
     param= "v_md_BLH"
-    #prop_tbl[param].fill_value= -999
-    #prop_tbl[param].filled()
-
-    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                  (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/20)
+    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] >0]), max(prop_tbl[param][prop_tbl[param] >0 ]), \
+                  (max(prop_tbl[param][prop_tbl[param] >0])-min(prop_tbl[param][prop_tbl[param] >0]))/12)
 
     for c in ord_clstrs:
         if c[1] >cutoff:
             l= c[0]
             hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
-             bins= hist_bins, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
         i+=1
 
@@ -629,13 +626,13 @@ def clstr_prop(line,k):
     i =0
     param= "CF_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/20)
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
     for c in ord_clstrs:
         if c[1] > cutoff:
             l= c[0]
             hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
-             bins= hist_bins, histtype= 'step', normed= False, color= clr_ls[i], lw= 2)
+             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
         i+=1
 
