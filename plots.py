@@ -506,7 +506,6 @@ def clstr_prop(line,k):
     clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
           sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"]]
 
-
     clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
 
     cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
