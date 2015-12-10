@@ -5,14 +5,16 @@ import numpy as np
 from operator import itemgetter
 from astropy.table import Table, join
 
-def clstr_cntrs():
+def clstr_cntrs(f):
 
     """ create a table with the centroids for the clusters for k= 3,4 and 5. formated for the manuscript
+    param: 
+    f: number of features used (3 or 4) this is just to know which file to open.
     """
 
     line_ls= ["CIV", "SiIV", "AlIII", "MgII"]
 
-    tbl= open('cntrs_tbl.txt', 'wrb')
+    tbl= open("cntrs_tbl"+str(f)+".txt", 'wrb')
     
     data= Table.read('myBALCat_xtra.csv')
     
@@ -26,7 +28,7 @@ def clstr_cntrs():
     
         for k in range(3,7):
         
-            tt= Table.read("./clusters/4features/"+l+str(k)+"clstrs.fits")
+            tt= Table.read("./clusters/"+str(f)+"features/"+l+str(k)+"clstrs.fits")
             
             t= join(data, tt, keys= 'SDSSName')
             
@@ -34,21 +36,35 @@ def clstr_cntrs():
             
             clstrs_ls=[]
             
-            for o in range(k):
-                clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
-                                  mean(t['Vmin_'+l][t['label'] ==o]),\
-                                  mean(t['Vmax_'+l][t['label'] ==o]), \
-                                  mean(t['EW_'+l][t['label'] ==o]), \
-                                  mean(t[lum][t['label'] ==o])])
+            if f == 4: # using 4 featurs: vmin, vmax, ew nad lum
+                for o in range(k):
+                    clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
+                                      mean(t['Vmin_'+l][t['label'] ==o]),\
+                                      mean(t['Vmax_'+l][t['label'] ==o]), \
+                                      mean(t['EW_'+l][t['label'] ==o]), \
+                                      mean(t[lum][t['label'] ==o])])
     
             oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
             
             for c in oc:
-                tbl.write("{:d}, ({:06.2f}, {:06.2f}, {:06.2f}, {:06.2f}) \n".format(c[3], c[4], c[5], c[6], c[7]))
+                tbl.write("{:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:06.2f} \n".format(c[3], c[4], c[5], c[6], c[7]))
+        
+        
+            if f == 3: # 3 features vmin, vamx, ew
+        
+                for o in range(k):
+                    clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
+                                      mean(t['Vmin_'+l][t['label'] ==o]),\
+                                      mean(t['Vmax_'+l][t['label'] ==o]), \
+                                    mean(t['EW_'+l][t['label'] ==o])])
+        
+            oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
             
-           
+            for c in oc:
+                tbl.write("{:d} & {:06.2f} & {:06.2f} & {:06.2f} \n".format(c[3], c[4], c[5], c[6]))
+
     tbl.close()
-    
+
     return
 
 ###################
@@ -63,23 +79,23 @@ def frac(line, k):
 
     data= Table.read('myBALCat_xtra.csv')
 
-    c= Table.read("./clusters/4features/"+line+str(k)+"clstrs.fits")
+    c= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
 
     t= join(data, c, keys='SDSSName')
     
-    q= 'BIO_AlIII'
+    q= 'BIO_AlIII' # change to BIO_SiIV
+    #q= 'BIO_SiIV'
     
     clstrs_ls=[]
     for o in range(k):
         clstrs_ls.append([o ,len(t[t['label'] ==o]),\
                           mean(t['Vmin'][t['label'] ==o]),\
                           mean(t['Vmax'][t['label'] ==o]), \
-                          mean(t['EW'][t['label'] ==o]), \
-                          mean(t['Lum'][t['label'] ==o])])
+                          mean(t['EW'][t['label'] ==o])])
     
     oc= sorted(clstrs_ls, key= itemgetter(2))
 
-    print oc
+    #print oc
 
     for x in oc:
         l= x[0]
@@ -89,6 +105,7 @@ def frac(line, k):
     return
 
 #################
+
 def var_frac(line, k):
 
     """fraction of objects with variablity measurements (i.e., have different BIs as measured in Filiz Ak et al. 2014)
@@ -96,7 +113,7 @@ def var_frac(line, k):
 
     data= Table.read('myBALCat_xtra.csv')
     
-    c= Table.read("./clusters/4features/"+line+str(k)+"clstrs.fits")
+    c= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
     
     t= join(data, c, keys='SDSSName')
     
@@ -105,12 +122,11 @@ def var_frac(line, k):
         clstrs_ls.append([o ,len(t[t['label'] ==o]),\
                           mean(t['Vmin'][t['label'] ==o]),\
                           mean(t['Vmax'][t['label'] ==o]), \
-                          mean(t['EW'][t['label'] ==o]), \
-                          mean(t['Lum'][t['label'] ==o])])
+                          mean(t['EW'][t['label'] ==o])])
     
     oc= sorted(clstrs_ls, key= itemgetter(2))
 
-    print oc
+    #print oc
     
     for x in oc:
         l= x[0]
@@ -118,6 +134,113 @@ def var_frac(line, k):
             "N(var)= "+str(len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)]))+"= " \
             +str(len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==l]))+"%"
     
+    return
+
+
+#################
+
+## pie charts to show the fraction of objects with vatiablity
+#
+
+def pies(line, k):
+    
+    """pie charts to show the fraction of objects with other absorption troughs and variablity
+        """
+    
+    data= Table.read('myBALCat_xtra.csv')
+    
+    c= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
+    
+    t= join(data, c, keys='SDSSName')
+    
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(t[t['label'] ==o]),\
+                          mean(t['Vmin'][t['label'] ==o]),\
+                          mean(t['Vmax'][t['label'] ==o]), \
+                          mean(t['EW'][t['label'] ==o])])
+
+    oc= sorted(clstrs_ls, key= itemgetter(2))
+
+    var= []
+    si4= []
+    al3= []
+
+    for x in oc:
+        l= x[0]
+        '''print "N= "+str(len(t[t['label'] ==l]))+", "+ \
+            "N(var)= "+str(len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)]))+"= " \
+            +str(len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==l]))+"%"
+            '''
+        
+        var.append(len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==l]))
+        si4.append(len(t[(t['label'] ==l) & (t['BIO_SiIV'] >0)])*100./len(t[t['label']==l]))
+        al3.append(len(t[(t['label'] ==l) & (t['BIO_AlIII'] >0)])*100./len(t[t['label']==l]))
+
+
+    ex1, ex2, ex3= [], [], []
+    
+    for i in var:
+        if i == max(var):
+            ex1.append(0.1)
+        else:
+            ex1.append(0)
+
+    print var
+    print ex1
+
+    for i in si4:
+        if i == max(si4):
+            ex2.append(0.1)
+        else:
+            ex2.append(0)
+
+    print si4
+    print ex2
+
+    for i in al3:
+        if i == max(al3):
+            ex3.append(0.1)
+        else:
+            ex3.append(0)
+
+    print al3
+    print ex3
+
+    clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
+          sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"]]
+
+    labels = ['a', 'b', 'c', 'd', 'e', 'f']
+
+
+    fig= figure(figsize=(15,5))
+
+    ax1= fig.add_subplot(131)
+
+    pie(si4, shadow= True, colors= clr_ls, startangle=30, radius= 1, autopct='%1.1f%%', \
+        labels= labels[:k], explode= ex2)
+
+    text(0.1, 0.001, "Si IV abs", transform= ax1.transAxes, size= 14, color='k', family= 'serif')
+
+
+    ax2= fig.add_subplot(132)
+
+    pie(al3, shadow= True, colors= clr_ls, startangle=30, radius= 1, autopct='%1.1f%%', \
+        labels= labels[:k], explode= ex3)
+
+    text(0.1, 0.001, "Al III abs", transform= ax2.transAxes, size= 14, color='k', family= 'serif')
+
+    text(0.3, 0.99, line+", K= "+str(k), transform= ax2.transAxes, size= 16, color='red', family= 'serif')
+
+
+    ax3= fig.add_subplot(133)
+
+    pie(var, shadow= True, colors= clr_ls, startangle=30, radius= 1, autopct='%1.1f%%',\
+        labels= labels[:k], explode= ex1)
+
+    text(0.1, 0.001, "Variable", transform= ax3.transAxes, size= 14, color='k', family= 'serif')
+
+
     return
 
 
