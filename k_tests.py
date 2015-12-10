@@ -9,7 +9,12 @@ from astropy.table import Table, join
 from sklearn.cluster import KMeans
 from sklearn import metrics
 
-def k_test():
+def k_test(ff):
+    
+    '''
+    param
+    ff: number of features
+    '''
     
     data= Table.read('myBALCat_xtra.csv')
     
@@ -62,7 +67,12 @@ def k_test():
         f4= (cl - mean(cl))/std(cl)
     
         # list of features to be used in clustering
-        f= [f1, f2, f3, f4]
+        
+        if ff== 4:
+            f= [f1, f2, f3, f4]
+        
+        if ff== 3:
+            f= [f1, f2, f3] #use only vmin, vmax, ew for clustering
         
         qs= np.column_stack(param for param in f) # 2D array to do clustering on
     
