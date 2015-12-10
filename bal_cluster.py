@@ -76,7 +76,8 @@ def bal_cluster(line, k):
     f4= (cl - mean(cl))/std(cl)
     
     # list of features to be used in clustering
-    f= [f1, f2, f3, f4]
+    #f= [f1, f2, f3, f4]
+    f= [f1, f2, f3] # three features (without continuum lum)
 
     #f= [ew, vmin, vmax, fdeep]# , cl]
 
@@ -96,18 +97,19 @@ def bal_cluster(line, k):
     
     clstr_name= line+str(k)
     
+    
+    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], labels, names, redshift], \
+                     names= ('EW', 'Vmin', 'Vmax', 'label', 'SDSSName', 'z'), \
+                     dtype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64'))
+
+    '''
+    #used when Lum was used in clustering
     clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
                      names= ('EW', 'Vmin', 'Vmax', 'Lum', 'label', 'SDSSName', 'z'), \
                      dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
+                     '''
         
     clstr_tab.write("./clusters/"+str(len(f))+"features/"+clstr_name+"clstrs.fits", format= 'fits')
-    
-    # used for the clustering done using the fdeep feature in addition to vmin, vmax, and EW.
-    #files save in /DR5_BALs/clusters/4features/
-    
-    #clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
-                    # names= ('EW', 'Vmin', 'Vmax', 'fdeep', 'label', 'SDSSName', 'z'), \
-                    # dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
     
     
     #clstr_tab.write("./clusters/"+str(len(f))+"features/"+clstr_name+"clstrs.fits", format= 'fits')
