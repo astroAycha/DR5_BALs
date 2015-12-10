@@ -337,7 +337,7 @@ def clust_compos(line, k, f):
         r= arange(0,8)
         lum = "logF1400"
 
-    cutoff = 0 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
+    cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
 
     clstr_tbl= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
     
@@ -387,7 +387,7 @@ def clust_compos(line, k, f):
         
         i+=1
 
-    ax1.text(0.1, 0.8, line+" Sample"+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax1.transAxes)
+    ax1.text(0.1, 0.8, line+" Sample, K= "+str(k)+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax1.transAxes)
 
     vmin, vmax, ews, lum =[], [], [], []
     for c in ord_clstrs:
