@@ -111,7 +111,7 @@ t.keep_columns(['SDSSName', 'RA_1', 'DEC_1', 'M_i', 'MJD_spec', 'plate_1', 'fibe
                 'BI_AlIII', 'BIO_AlIII', 'EW_AlIII', 'Vmin_AlIII', 'Vmax_AlIII', 'f_deep_AlIII', \
                 'BI_MgII', 'BIO_MgII', 'EW_MgII_1', 'Vmin_MgII', 'Vmax_MgII', 'f_deep_MgII', \
                 'SN1700', 'logF1400', 'logF2500', 'flg', \
-                'E_B-V_1', 'E_B-V_2', \
+                'Dal1', 'E_B-V_1', 'Dal2', 'E_B-V_2', \
                 'HeII_EW', 'alpha_UV', 'v_md', 'CF', 'FWHM', \
                 'BI1', 'BI2', 'Delt', \
                 'Z_HW', 'LOGLBOL', 'R_6CM_2500A',
