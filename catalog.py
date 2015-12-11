@@ -133,7 +133,7 @@ t['v_md'].name= 'v_md_BLH'
 t['CF'].name= 'CF_BLH'
 t['FWHM'].name= 'FWHM_CIV_BAL_BLH'
 
-t['LOGLBOL'].name= 'LOGLBOL_DR7'
+t['LOGLBOL'].name= 'LOGLBOL_DR7' 
 t['R_6CM_2500A'].name= 'R_6CM_2500A_DR7'
 t['LOGL_MGII'].name= 'LOGL_MGIIe_DR7'
 t['FWHM_MGII'].name= 'FWHM_MGIIe_DR7'
@@ -150,8 +150,15 @@ t['LOGEDD_RATIO'].name= 'LOGEDD_RATIO_DR7'
 
 #t.write('myBALCat_xtra.csv')
 
-## considering other ways of working with the masked cells
-# did not do
+## filling empty or masked cells with -999
+
+t['BIO_SiIV'] = t['BI_SiIV'].filled(-999)
+t['BIO_CIV'] = t['BI_CIV'].filled(-999)
+t['BIO_AlIII'] = t['BI_AlIII'].filled(-999)
+t['BIO_MgII'] = t['BI_MgII'].filled(-999)
+t['logF1400'] = t['logF1400'].filled(-999)
+t['logF2500'] = t['logF2500'].filled(-999)
+
 
 t['HeII_EW_BLH'] = t['HeII_EW_BLH'].filled(-999)
 t['alpha_UV_BLH'] = t['alpha_UV_BLH'].filled(-999)
