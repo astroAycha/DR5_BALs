@@ -21,6 +21,7 @@ def clstr_cntrs(f):
     #vmin, vmax, ew, num=[], [], [], []
 
     for l in line_ls:
+    
         if l == 'MgII':
             lum = 'logF2500'
         else:
@@ -56,12 +57,30 @@ def clstr_cntrs(f):
                     clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
                                       mean(t['Vmin_'+l][t['label'] ==o]),\
                                       mean(t['Vmax_'+l][t['label'] ==o]), \
-                                    mean(t['EW_'+l][t['label'] ==o])])
+                                      mean(t['EW_'+l][t['label'] ==o])])
         
             oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
             
-            for c in oc:
-                tbl.write("{:d} & {:06.2f} & {:06.2f} & {:06.2f} \n".format(c[3], c[4], c[5], c[6]))
+            var= [] #variability
+            si4= [] # SiIV only. no AlIII
+            sial=[] # SiIV with or without AlIII
+            al3= [] # AlIII abs present
+    
+            for x in oc:
+                q= x[2] #cluster label
+                
+                var.append(len(t[(t['label'] ==q) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==q]))
+
+                si4.append(len(t[(t['label'] ==q) & (t['BIO_SiIV'] >0) & (t['BIO_AlIII'] ==0)])*100./len(t[t['label']==q]))
+        
+                sial.append(len(t[(t['label'] ==q) & (t['BIO_SiIV'] >0)])*100./len(t[t['label']==q]))
+        
+                al3.append(len(t[(t['label'] ==q) & (t['BIO_AlIII'] >0)])*100./len(t[t['label']==q]))
+
+
+            for (c,j) in zip(oc, range(k)):
+
+                tbl.write("{} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f}% & {:02.1f}% & {:02.1f}% & {:02.1f}% \n".format(l, c[3], c[4], c[5], c[6], var[j], si4[j], sial[j], al3[j]))
 
     tbl.close()
 
@@ -162,9 +181,10 @@ def pies(line, k):
 
     oc= sorted(clstrs_ls, key= itemgetter(2))
 
-    var= []
-    si4= []
-    al3= []
+    var= [] #variability
+    si4= [] # SiIV only. no AlIII
+    sial=[] # SiIV with or without AlIII
+    al3= [] # AlIII abs present
 
     for x in oc:
         l= x[0]
@@ -174,11 +194,16 @@ def pies(line, k):
             '''
         
         var.append(len(t[(t['label'] ==l) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==l]))
-        si4.append(len(t[(t['label'] ==l) & (t['BIO_SiIV'] >0)])*100./len(t[t['label']==l]))
+        
+        si4.append(len(t[(t['label'] ==l) & (t['BIO_SiIV'] >0) & (t['BIO_AlIII'] ==0)])*100./len(t[t['label']==l]))
+        
+        sial.append(len(t[(t['label'] ==l) & (t['BIO_SiIV'] >0)])*100./len(t[t['label']==l]))
+        
         al3.append(len(t[(t['label'] ==l) & (t['BIO_AlIII'] >0)])*100./len(t[t['label']==l]))
 
+    print var
 
-    ex1, ex2, ex3= [], [], []
+    ex1, ex2, ex3, ex4= [], [], [], []
     
     for i in var:
         if i == max(var):
@@ -198,14 +223,18 @@ def pies(line, k):
     print si4
     print ex2
 
-    for i in al3:
-        if i == max(al3):
+    for i in sial:
+        if i == max(sial):
             ex3.append(0.1)
         else:
             ex3.append(0)
 
-    print al3
-    print ex3
+    for i in al3:
+        if i == max(al3):
+            ex4.append(0.1)
+        else:
+            ex4.append(0)
+
 
     clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
           sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"]]
@@ -213,32 +242,41 @@ def pies(line, k):
     labels = ['a', 'b', 'c', 'd', 'e', 'f']
 
 
-    fig= figure(figsize=(15,5))
+    fig= figure(figsize=(12,12))
 
-    ax1= fig.add_subplot(131)
+    ax1= fig.add_subplot(221)
+
+    pie(var, shadow= True, colors= clr_ls, startangle=30, radius= 1, autopct='%1.1f%%', \
+        labels= labels[:k], explode= ex2)
+
+    text(0.1, 0.001, "Var", transform= ax1.transAxes, size= 14, color='k', family= 'serif')
+
+
+    ax2= fig.add_subplot(222)
 
     pie(si4, shadow= True, colors= clr_ls, startangle=30, radius= 1, autopct='%1.1f%%', \
         labels= labels[:k], explode= ex2)
 
-    text(0.1, 0.001, "Si IV abs", transform= ax1.transAxes, size= 14, color='k', family= 'serif')
-
-
-    ax2= fig.add_subplot(132)
-
-    pie(al3, shadow= True, colors= clr_ls, startangle=30, radius= 1, autopct='%1.1f%%', \
-        labels= labels[:k], explode= ex3)
-
-    text(0.1, 0.001, "Al III abs", transform= ax2.transAxes, size= 14, color='k', family= 'serif')
+    text(0.1, 0.001, "SiIV only abs", transform= ax2.transAxes, size= 14, color='k', family= 'serif')
 
     text(0.3, 0.99, line+", K= "+str(k), transform= ax2.transAxes, size= 16, color='red', family= 'serif')
 
+    ax3= fig.add_subplot(223)
+    
+    pie(sial, shadow= True, colors= clr_ls, startangle=30, radius= 1, autopct='%1.1f%%', \
+        labels= labels[:k], explode= ex3)
+        
+    text(0.1, 0.001, "SiIV abs", transform= ax3.transAxes, size= 14, color='k', family= 'serif')
+        
+    text(0.3, 0.99, line+", K= "+str(k), transform= ax3.transAxes, size= 16, color='red', family= 'serif')
 
-    ax3= fig.add_subplot(133)
 
-    pie(var, shadow= True, colors= clr_ls, startangle=30, radius= 1, autopct='%1.1f%%',\
-        labels= labels[:k], explode= ex1)
+    ax4= fig.add_subplot(224)
 
-    text(0.1, 0.001, "Variable", transform= ax3.transAxes, size= 14, color='k', family= 'serif')
+    pie(al3, shadow= True, colors= clr_ls, startangle=30, radius= 1, autopct='%1.1f%%',\
+        labels= labels[:k], explode= ex4)
+
+    text(0.1, 0.001, "AlIII abs", transform= ax4.transAxes, size= 14, color='k', family= 'serif')
 
 
     return
