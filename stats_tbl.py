@@ -80,7 +80,7 @@ def clstr_cntrs(f):
 
             for (c,j) in zip(oc, range(k)):
 
-                tbl.write("{} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f}% & {:02.1f}% & {:02.1f}% & {:02.1f}% \n".format(l, c[3], c[4], c[5], c[6], var[j], si4[j], sial[j], al3[j]))
+                tbl.write("{} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f} & {:02.1f} & {:02.1f} & {:02.1f} \n".format(l, c[3], c[4], c[5], c[6], var[j], si4[j], sial[j], al3[j]))
 
     tbl.close()
 
