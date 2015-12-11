@@ -487,7 +487,7 @@ def clstr_prop(line,k):
     
     """
 
-    data= Table.read('myBALCat_xtra.csv')
+    data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
 
     clstr_tbl= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
     
@@ -528,11 +528,13 @@ def clstr_prop(line,k):
     
     ax1= fig.add_subplot(321)
     i= 0
-    param= "LOGEDD_RATIO_DR7"
+    param= "BIO_SiIV"  # "LOGEDD_RATIO_DR7"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
                       (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
     #print hist_bins
-
+    
+    print param, len(prop_tbl[prop_tbl[param] !=-999])
+    
     for c in ord_clstrs:
         if c[1] > cutoff:
             l= c[0]
@@ -541,17 +543,19 @@ def clstr_prop(line,k):
              
         i+=1
     
-    ax1.text(0.65, 0.77,"log(E/Edd)", transform=ax1.transAxes, color= 'k', fontsize= 16)
+    ax1.text(0.65, 0.77,r"log(L/L$_{\rm Edd}$)", transform=ax1.transAxes, color= 'k', fontsize= 16)
     ax1.text(0.95, 0.85, "A", transform=ax1.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
     ax2= fig.add_subplot(322)
     i =0
     j =0
-    param= "E_B-V_1"
+    param= "Dal1"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
                       (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
+    print param, len(prop_tbl[prop_tbl[param] !=-999])
+    
     for c in ord_clstrs:
         if c[1] >cutoff:
             l= c[0]
@@ -573,6 +577,8 @@ def clstr_prop(line,k):
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
                       (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
+    print param, len(prop_tbl[prop_tbl[param] !=-999])
+
     for c in ord_clstrs:
         if c[1] >cutoff:
             l= c[0]
@@ -591,6 +597,7 @@ def clstr_prop(line,k):
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
                       (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
+    print param, len(prop_tbl[prop_tbl[param] !=-999])
 
     for c in ord_clstrs:
         if c[1] > cutoff:
@@ -606,8 +613,10 @@ def clstr_prop(line,k):
     ax5= fig.add_subplot(325)
     i =0
     param= "v_md_BLH"
-    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] >0]), max(prop_tbl[param][prop_tbl[param] >0 ]), \
-                  (max(prop_tbl[param][prop_tbl[param] >0])-min(prop_tbl[param][prop_tbl[param] >0]))/12)
+    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
+
+    print param, len(prop_tbl[prop_tbl[param] !=-999])
 
     for c in ord_clstrs:
         if c[1] >cutoff:
@@ -627,6 +636,8 @@ def clstr_prop(line,k):
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
                       (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
+    print param, len(prop_tbl[prop_tbl[param] !=-999])
+
     for c in ord_clstrs:
         if c[1] > cutoff:
             l= c[0]
@@ -640,7 +651,6 @@ def clstr_prop(line,k):
 
 
     return
-
 
 #########
 
