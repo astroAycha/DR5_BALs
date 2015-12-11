@@ -18,7 +18,7 @@ def clstr_cntrs(f):
     
     data= Table.read('myBALCat_xtra.csv')
     
-    #vmin, vmax, ew, num=[], [], [], []
+    alph= ['a', 'b', 'c', 'd', 'e', 'e']
 
     for l in line_ls:
     
@@ -64,7 +64,6 @@ def clstr_cntrs(f):
             var= [] #variability
             si4= [] # SiIV only. no AlIII
             sial=[] # SiIV with or without AlIII
-            al3= [] # AlIII abs present
     
             for x in oc:
                 q= x[2] #cluster label
@@ -73,14 +72,12 @@ def clstr_cntrs(f):
 
                 si4.append(len(t[(t['label'] ==q) & (t['BIO_SiIV'] >0) & (t['BIO_AlIII'] ==0)])*100./len(t[t['label']==q]))
         
-                sial.append(len(t[(t['label'] ==q) & (t['BIO_SiIV'] >0)])*100./len(t[t['label']==q]))
-        
-                al3.append(len(t[(t['label'] ==q) & (t['BIO_AlIII'] >0)])*100./len(t[t['label']==q]))
+                sial.append(len(t[(t['label'] ==q) & (t['BIO_SiIV'] >0) & (t['BIO_AlIII'] >0)])*100./len(t[t['label']==q]))
 
 
             for (c,j) in zip(oc, range(k)):
-
-                tbl.write("{} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f} & {:02.1f} & {:02.1f} & {:02.1f} \n".format(l, c[3], c[4], c[5], c[6], var[j], si4[j], sial[j], al3[j]))
+                a= alph[j]
+                tbl.write("{} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f} & {:02.1f} & {:02.1f} \n".format(l+"-"+a, c[3], c[4], c[5], c[6], var[j], si4[j], sial[j]))
 
     tbl.close()
 
