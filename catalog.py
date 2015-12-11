@@ -114,7 +114,7 @@ t.keep_columns(['SDSSName', 'RA_1', 'DEC_1', 'M_i', 'MJD_spec', 'plate_1', 'fibe
                 'Dal1', 'E_B-V_1', 'Dal2', 'E_B-V_2', \
                 'HeII_EW', 'alpha_UV', 'v_md', 'CF', 'FWHM', \
                 'BI1', 'BI2', 'Delt', \
-                'Z_HW', 'LOGLBOL', 'R_6CM_2500A',
+                'Z_HW', 'LOGBH', 'LOGLBOL', 'R_6CM_2500A',
                 'LOGL_MGII', 'FWHM_MGII', 'EW_MGII_2', 'EW_FE_MGII', \
                 'LOGL_CIV', 'FWHM_CIV', 'EW_CIV_2', 'VOFF_CIV_PEAK', 'LOGBH', 'LOGEDD_RATIO'])
 
@@ -146,8 +146,36 @@ t['VOFF_CIV_PEAK'].name= 'VOFF_CIVe_PEAK_DR7'
 t['LOGBH'].name= 'LOGBH_DR7'
 t['LOGEDD_RATIO'].name= 'LOGEDD_RATIO_DR7'
 
-
 #save as csv -some of the columns are masked (empty cells with nans that astropy table could not read for some reason). I hacked the file and replaced those nan cells with zeros.
+
+#t.write('myBALCat_xtra.csv')
+
+## considering other ways of working with the masked cells
+# did not do
+
+t['HeII_EW_BLH'] = t['HeII_EW_BLH'].filled(-999)
+t['alpha_UV_BLH'] = t['alpha_UV_BLH'].filled(-999)
+t['v_md_BLH'] = t['v_md_BLH'].filled(-999)
+t['CF_BLH'] = t['CF_BLH'].filled(-999)
+t['FWHM_CIV_BAL_BLH'] = t['FWHM_CIV_BAL_BLH'].filled(-999)
+
+t['LOGLBOL_DR7'] = t['LOGLBOL_DR7'].filled(-999)
+t['R_6CM_2500A_DR7'] = t['R_6CM_2500A_DR7'].filled(-999)
+t['LOGL_MGIIe_DR7']= t['LOGL_MGIIe_DR7'].filled(-999)
+t['FWHM_MGIIe_DR7'] = t['FWHM_MGIIe_DR7'].filled(-999)
+t['EW_MGIIe_DR7'] = t['EW_MGIIe_DR7'].filled(-999)
+t['EW_FE_MGIIe_DR7'] = t['EW_FE_MGIIe_DR7'].filled(-999)
+t['LOGL_CIVe_DR7'] = t['LOGL_CIVe_DR7'].filled(-999)
+t['FWHM_CIVe_DR7'] = t['FWHM_CIVe_DR7'].filled(-999)
+t['EW_CIVe_DR7'] = t['EW_CIVe_DR7'].filled(-999)
+t['VOFF_CIVe_PEAK_DR7'] = t['VOFF_CIVe_PEAK_DR7'].filled(-999)
+t['LOGBH_DR7'] = t['LOGBH_DR7'].filled(-999)
+t['LOGEDD_RATIO_DR7'] = t['LOGEDD_RATIO_DR7'].filled(-999)
+
+t['Dal1'] = t['Dal1'].filled(-999)
+t['E_B-V_1'] = t['E_B-V_1'].filled(-999)
+t['Dal2'] = t['Dal2'].filled(-999)
+t['E_B-V_2'] = t['E_B-V_2'].filled(-999)
 
 t.write('myBALCat_xtra.csv')
 
