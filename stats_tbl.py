@@ -16,9 +16,9 @@ def clstr_cntrs(f):
 
     tbl= open("cntrs_tbl"+str(f)+".txt", 'wrb')
     
-    data= Table.read('myBALCat_xtra.csv')
+    data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
     
-    alph= ['a', 'b', 'c', 'd', 'e', 'e']
+    alph= ['a', 'b', 'c', 'd', 'e', 'f']
 
     for l in line_ls:
     
