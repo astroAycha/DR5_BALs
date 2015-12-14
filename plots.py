@@ -511,7 +511,7 @@ def clstr_prop(line,k):
     cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
 
 
-    fig= figure(figsize=(16,10))
+    fig= figure(figsize=(16,12))
 
     fig1= fig.add_axes([0., 0., 1, 1])
     fig1.set_axis_off()
@@ -526,9 +526,10 @@ def clstr_prop(line,k):
     props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
     
     
-    ax1= fig.add_subplot(321)
+    ax1= fig.add_subplot(421)
     i= 0
-    param= "BIO_SiIV"  # "LOGEDD_RATIO_DR7"
+    j =0
+    param= "LOGEDD_RATIO_DR7"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
                       (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
     #print hist_bins
@@ -540,17 +541,19 @@ def clstr_prop(line,k):
             l= c[0]
             hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] < 50000)], \
             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
-             
+        
+            ax1.text(0.05, .85-j/10., line+"-"+clstr_name[i]+", N= "+str(c[1]), color= clr_ls[i], fontsize= 16, transform=ax1.transAxes)
+            j+=1
+        
         i+=1
     
-    ax1.text(0.65, 0.77,r"log(L/L$_{\rm Edd}$)", transform=ax1.transAxes, color= 'k', fontsize= 16)
+    ax1.text(0.7, 0.77,r"log(L/L$_{\rm Edd}$)", transform=ax1.transAxes, color= 'k', fontsize= 16)
     ax1.text(0.95, 0.85, "A", transform=ax1.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
-    ax2= fig.add_subplot(322)
+    ax2= fig.add_subplot(422)
     i =0
-    j =0
-    param= "Dal1"
+    param= "logF1400" # log monochromatic lum at 1400A from the Gibson catalog
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
                       (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
@@ -562,16 +565,13 @@ def clstr_prop(line,k):
             hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
              bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
              
-            ax2.text(0.62, .7-j/10., line+"-"+clstr_name[i]+", N= "+str(c[1]), color= clr_ls[i], fontsize= 16, transform=ax2.transAxes)
-            j+=1
-             
         i+=1
     
-    ax2.text(0.7, 0.85,"E(B - V)", transform=ax2.transAxes, color= 'k', fontsize= 16)
+    ax2.text(0.05, 0.6, r"log L(1400$\AA$)"+"\n"+"[mW/m$^2$/Hz]", transform=ax2.transAxes, color= 'k', fontsize= 16)
     ax2.text(0.95, 0.85, "B", transform=ax2.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
-    ax3= fig.add_subplot(323)
+    ax3= fig.add_subplot(423)
     i =0
     param= "alpha_UV_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
@@ -587,11 +587,29 @@ def clstr_prop(line,k):
              
         i+=1
 
-    ax3.text(0.8, 0.85,r"$\alpha_{UV}$", transform=ax3.transAxes, color= 'k', fontsize= 18)
+    ax3.text(0.1, 0.75,r"$\alpha_{UV}$", transform=ax3.transAxes, color= 'k', fontsize= 18)
     ax3.text(0.95, 0.85, "C", transform=ax3.transAxes, color= 'r', fontsize= 14, bbox= props)
+
+    ax4= fig.add_subplot(424)
+    i =0
+    param= "Dal1"
+    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
+        
+    print param, len(prop_tbl[prop_tbl[param] !=-999])
+                      
+    for c in ord_clstrs:
+        if c[1] > cutoff:
+            l= c[0]
+            hist((-0.28+prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] !=0)]), \
+                                       bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+                                      
+        i+=1
+    ax4.text(0.1, 0.8,r"$\Delta \alpha_\nu$", transform=ax4.transAxes, color= 'k', fontsize= 16)
+    ax4.text(0.95, 0.85, "D", transform=ax4.transAxes, color= 'r', fontsize= 14, bbox= props)
     
 
-    ax4= fig.add_subplot(324)
+    ax5= fig.add_subplot(425)
     i =0
     param= "HeII_EW_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
@@ -606,11 +624,11 @@ def clstr_prop(line,k):
                  bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
 
         i+=1
-    ax4.text(0.55, 0.82,r"EW(HeII) [$\AA$]", transform=ax4.transAxes, color= 'k', fontsize= 16)
-    ax4.text(0.95, 0.85, "D", transform=ax4.transAxes, color= 'r', fontsize= 14, bbox= props)
+    ax5.text(0.55, 0.82,r"EW(HeII) [$\AA$]", transform=ax5.transAxes, color= 'k', fontsize= 16)
+    ax5.text(0.95, 0.85, "E", transform=ax5.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
-    ax5= fig.add_subplot(325)
+    ax6= fig.add_subplot(426)
     i =0
     param= "v_md_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
@@ -626,11 +644,11 @@ def clstr_prop(line,k):
         
         i+=1
 
-    ax5.text(0.65, 0.8,r"v$_{md}$ [km/s]", transform=ax5.transAxes, color= 'k', fontsize= 16)
-    ax5.text(0.95, 0.85, "E", transform=ax5.transAxes, color= 'r', fontsize= 14, bbox= props)
+    ax6.text(0.65, 0.8,r"v$_{md}$ [km/s]", transform=ax6.transAxes, color= 'k', fontsize= 16)
+    ax6.text(0.95, 0.85, "F", transform=ax6.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
-    ax6= fig.add_subplot(326)
+    ax7= fig.add_subplot(427)
     i =0
     param= "CF_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
@@ -646,11 +664,98 @@ def clstr_prop(line,k):
         
         i+=1
 
-    ax6.text(0.2, 0.85,"CF", transform=ax6.transAxes, color= 'k', fontsize= 16)
-    ax6.text(0.05, 0.85, "F", transform=ax6.transAxes, color= 'r', fontsize= 14, bbox= props)
+    ax7.text(0.2, 0.85,"CF", transform=ax7.transAxes, color= 'k', fontsize= 16)
+    ax7.text(0.05, 0.85, "G", transform=ax7.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
     return
+
+#########
+
+# compare alpha UV from Baskin et al 2014 and alpha lambda from Krawczyk et al 2014
+
+#sns.set(font_scale= 1.5)
+sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
+
+
+data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
+
+clstr= Table.read('./clusters/3features/CIV6clstrs.fits')
+
+t= join(data, clstr, keys= 'SDSSName')
+
+clstrs_ls=[]
+
+k=6
+
+for o in range(k):
+    clstrs_ls.append([o ,len(clstr[clstr['label'] ==o]), \
+                      mean(clstr['Vmin'][clstr['label'] ==o]),\
+                      mean(clstr['Vmax'][clstr['label'] ==o]), \
+                      mean(clstr['EW'][clstr['label'] ==o])])
+
+
+ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+
+print ord_clstrs
+
+
+clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
+          sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"]]
+    
+clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
+
+print len(t[(t['alpha_UV_BLH'] !=-999) & (t['Dal1']!=-999)])
+
+fig= figure(figsize=(10,8))
+xlabel(r"$\alpha_{UV}$", fontsize= 20)
+ylabel(r"Intrinsic $\alpha_\nu$", fontsize= 20)
+xlim(-3, 0.7)
+ylim(-0.7,0.25)
+
+text(-2.75, -0.6, "Red", color= 'r', fontsize= 20)
+text(0.3, 0.15, "Blue", color= 'b', fontsize= 20)
+
+# draw 1:1 line
+x = y = arange(-3.,3.,.001)
+plot(x,y, ls=':', c='k')
+
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t['alpha_UV_BLH'][(t['alpha_UV_BLH'] !=-999) & (t['Dal1']!=-999) & (t['label']==c)],\
+            -.28+t['Dal1'][(t['alpha_UV_BLH'] !=-999) & (t['Dal1']!=-999) & (t['label']== c)], c= clr_ls[j], s=100, alpha= 0.9)
+    j+=1
+
+
+## quick Mi vs z plot -for the CIV sample
+#Tables are read as in the plot above
+
+fig= figure(figsize=(10,9))
+xlabel("Redshift", fontsize=20)
+ylabel(r"$M_{\rm i}$", fontsize=20)
+xlim(1.7,3.75)
+ylim(-24.7, -30)
+
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t['z_1'][t['label']==c], t['M_i'][t['label']== c], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+## same but for full sample and CIV sample overplotted
+
+fig= figure(figsize=(10,9))
+xlabel("Redshift", fontsize=20)
+ylabel(r"$M_{\rm i}$", fontsize=20)
+
+xlim(0,5.2)
+ylim(-22.5, -29.8)
+scatter(data['z'], data['M_i'], c= '0.9', marker= '.', label='Full BALQs sample')
+sns.kdeplot(t['z_1'], t['M_i'], cmap='Reds_r', shade_lowest= False, legend= False, n_levels= 10)
+#scatter(t['z_1'], t['M_i'], c='r', marker= 'o', s=7, label='CIV sample')
+#legend(loc= 4)
+
 
 #########
 
