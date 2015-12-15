@@ -1,6 +1,6 @@
 """ quick script to examine the properties of objects in each cluster: e.g., fraction of AlIII absorption in CIV clusters, the reddening properties for objects in each cluster, and whether objects are showing variablity or not. """
 
-from astropy.table import Table, join
+from astropy.table import Table, Column, join
 from astropy import units as u
 
 
@@ -146,6 +146,11 @@ t['VOFF_CIV_PEAK'].name= 'VOFF_CIVe_PEAK_DR7'
 t['LOGBH'].name= 'LOGBH_DR7'
 t['LOGEDD_RATIO'].name= 'LOGEDD_RATIO_DR7'
 
+## add a column
+
+cc= Column(name='int_alpha_nu', data= t['Dal1']-0.28)
+t.add_column(cc)
+
 #save as csv -some of the columns are masked (empty cells with nans that astropy table could not read for some reason). I hacked the file and replaced those nan cells with zeros.
 
 #t.write('myBALCat_xtra.csv')
@@ -180,6 +185,7 @@ t['LOGBH_DR7'] = t['LOGBH_DR7'].filled(-999)
 t['LOGEDD_RATIO_DR7'] = t['LOGEDD_RATIO_DR7'].filled(-999)
 
 t['Dal1'] = t['Dal1'].filled(-999)
+t['int_alpha_nu']= t['int_alpha_nu'].filled(-999)
 t['E_B-V_1'] = t['E_B-V_1'].filled(-999)
 t['Dal2'] = t['Dal2'].filled(-999)
 t['E_B-V_2'] = t['E_B-V_2'].filled(-999)
