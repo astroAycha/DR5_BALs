@@ -4,7 +4,7 @@ May 8 2015"""
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy.io import fits
-from astropy.table import Table
+from astropy.table import Table, join
 from sklearn.cluster import KMeans
 from mpl_toolkits.mplot3d import Axes3D
 from operator import itemgetter
@@ -592,7 +592,7 @@ def clstr_prop(line,k):
 
     ax4= fig.add_subplot(424)
     i =0
-    param= "Dal1"
+    param= "int_alpha_nu"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
                       (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
         
@@ -601,11 +601,11 @@ def clstr_prop(line,k):
     for c in ord_clstrs:
         if c[1] > cutoff:
             l= c[0]
-            hist((-0.28+prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] !=0)]), \
+            hist((prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] !=0)]), \
                                        bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
                                       
         i+=1
-    ax4.text(0.1, 0.8,r"$\Delta \alpha_\nu$", transform=ax4.transAxes, color= 'k', fontsize= 16)
+    ax4.text(0.1, 0.8,r"Intrinsic $\alpha_\nu$", transform=ax4.transAxes, color= 'k', fontsize= 16)
     ax4.text(0.95, 0.85, "D", transform=ax4.transAxes, color= 'r', fontsize= 14, bbox= props)
     
 
