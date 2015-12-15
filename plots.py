@@ -361,14 +361,15 @@ def clust_compos(line, k, f):
 
 
     clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
-              sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"]]
+              sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["pale aqua"]]
     
     amb= sns.light_palette(sns.xkcd_rgb["amber"], as_cmap= True)
+    aq= sns.light_palette(sns.xkcd_rgb["pale aqua"], as_cmap= True)
     
-    clrm_ls= ['Blues', 'Purples' , 'Reds', 'Greys', 'Greens', amb]
+    clrm_ls= ['Blues', 'Purples' , 'Reds', 'Greys', 'Greens', amb, aq]
 
     
-    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
+    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g']
     
 
     fig= figure(figsize=(14,10))
@@ -387,6 +388,7 @@ def clust_compos(line, k, f):
         
         i+=1
 
+    #labels for full sample with number of clusters and number of objects
     ax1.text(0.1, 0.8, line+" Sample, K= "+str(k)+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax1.transAxes)
 
     vmin, vmax, ews, lum =[], [], [], []
@@ -399,12 +401,11 @@ def clust_compos(line, k, f):
 
     #ax1.scatter(vmin, vmax, s= [abs(e)*10 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
 
-    text(0.1, 0.8, line+" Sample"+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax1.transAxes)
-
-
     for x in range(len(vmin)):
         ax1.text(vmin[x], vmax[x], clstr_name[x] , color= 'k', fontsize= 14 , multialignment= 'center', bbox= props)
 
+
+    #panel for the Vmax vs EW space
 
     ax2= fig.add_subplot(222, sharey= ax1)
     xlabel(line + r' EW ($\AA$)')
@@ -428,8 +429,7 @@ def clust_compos(line, k, f):
 
     subplots_adjust(wspace =0.01)
 
-    #plt.tight_layout()
-
+    #panel for the composites
     ax3= fig.add_subplot(212)
     xlim(xlimit)
     ylim(.1,3.2)
@@ -439,7 +439,7 @@ def clust_compos(line, k, f):
     line_mark= [1335, 1396.8, 1549, 1640, 1663.5, 1857, 1892, 1908, 2800]
     line_label= ['CII', 'SiIV', 'CIV', 'HeII', 'OIII]', 'AlIII', 'SiIII]', 'CIII]', 'MgII']
 
-    #plot([1990,2065],[1,1], 'k-')
+    # labels for FeIII
     ax3.arrow(2030, 1.4, -30, -.1, fc='k', ec='k')
     ax3.arrow(2030, 1.4, +30, -.1, fc='k', ec='k')
     text(2020, 1.45, r'FeIII', fontsize= 14, family='serif', color='k')
@@ -456,7 +456,7 @@ def clust_compos(line, k, f):
         spec= fits.open(compo_name)
         if c[1] > cutoff:
             plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
-        ax3.text(0.82, .9-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax3.transAxes)
+        ax3.text(0.82, .99-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax3.transAxes) # labels for each cluster with number of obejects. Text colors match the plot
         i+=1
     
     
@@ -504,9 +504,9 @@ def clstr_prop(line,k):
     print ord_clstrs
 
     clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
-          sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"]]
+          sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["pale aqua"]]
 
-    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
+    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g']
 
     cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
 
