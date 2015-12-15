@@ -18,7 +18,7 @@ def bal_cluster(line, k):
     k: number of clusters"""
     
     #data= Table.read('myBALCat.fits')
-    data= Table.read('myBALCat_xtra.csv')
+    data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
 
     #selec the sample: line has an absorption trough: BI0 >0 , S/N >3, and a redshift cutoff to restrict the bandwidth
 
