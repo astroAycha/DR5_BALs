@@ -341,7 +341,7 @@ def clust_compos(line, k, f):
 
     clstr_tbl= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
     
-    data= Table.read("myBALCat_xtra.csv")
+    data= Table.read("myBALCat_xtra.csv", format= 'ascii.csv')
 
     tt= join(clstr_tbl, data, keys= 'SDSSName')
 
