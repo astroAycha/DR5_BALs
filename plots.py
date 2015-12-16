@@ -10,6 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from operator import itemgetter
 from glob import glob
 import seaborn as sns
+from scipy.stats import spearmanr
 
 
 #sns.set_style('ticks')
@@ -824,80 +825,114 @@ t= join(data, clstr, keys= 'SDSSName')
 fig= figure(figsize=(16,12))
 
 ##subplots
-nl= 11 #number of contours
-#cm= sns.light_palette(sns.xkcd_rgb["dusk"], as_cmap= True) #color map
-cm= sns.cubehelix_palette(light=1, as_cmap=True)
+nl= 15 #number of contours
+cm= "OrRd" #color map
+#cm= sns.cubehelix_palette(light=1, as_cmap=True)
 
 ax1= fig.add_subplot(4,3,1)
 px = "Vmin_CIV"
 py = "LOGEDD_RATIO_DR7"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
-text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax1.transAxes)
-
+#text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax1.transAxes)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+     color='k', fontsize=14, transform=ax1.transAxes)
 
 ax2= fig.add_subplot(4,3,2)
 px = "Vmax_CIV"
 py = "LOGEDD_RATIO_DR7"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+     color='k', fontsize=14, transform=ax2.transAxes)
 
 ax3= fig.add_subplot(4,3,3)
 px = "EW_CIV"
 py = "LOGEDD_RATIO_DR7"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 xlim(-60,10)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+     color='k', fontsize=14, transform=ax3.transAxes)
 
 ax4= fig.add_subplot(4,3,4)
 px = "Vmin_CIV"
 py = "logF1400"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
-text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax4.transAxes)
-
+#text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax4.transAxes)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+    color='k', fontsize=14, transform=ax4.transAxes)
+     
 ax5= fig.add_subplot(4,3,5)
 px = "Vmax_CIV"
 py = "logF1400"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
-
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+    color='k', fontsize=14, transform=ax5.transAxes)
+     
 ax6= fig.add_subplot(4,3,6)
 px = "EW_CIV"
 py = "logF1400"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 xlim(-60,10)
-
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+    color='k', fontsize=14, transform=ax6.transAxes)
+     
 ax7= fig.add_subplot(4,3,7)
 px = "Vmin_CIV"
 py = "int_alpha_nu"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
-text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax7.transAxes)
-
+#text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax7.transAxes)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+    color='k', fontsize=14, transform=ax7.transAxes)
+     
 ax8= fig.add_subplot(4,3,8)
 px = "Vmax_CIV"
 py = "int_alpha_nu"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
-
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+    color='k', fontsize=14, transform=ax8.transAxes)
+     
 ax9= fig.add_subplot(4,3,9)
 px = "EW_CIV"
 py = "int_alpha_nu"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 xlim(-60,10)
-
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+    color='k', fontsize=14, transform=ax9.transAxes)
+     
 ax10= fig.add_subplot(4,3,10)
 px = "Vmin_CIV"
 py = "HeII_EW_BLH"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
-text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax10.transAxes)
-
+#text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax10.transAxes)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+    color='k', fontsize=14, transform=ax10.transAxes)
+     
 ax11= fig.add_subplot(4,3,11)
 px = "Vmax_CIV"
 py = "HeII_EW_BLH"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
-
-
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+    color='k', fontsize=14, transform=ax11.transAxes)
+     
 ax12= fig.add_subplot(4,3,12)
 px = "EW_CIV"
 py = "HeII_EW_BLH"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 xlim(-60,10)
-
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+    color='k', fontsize=14, transform=ax12.transAxes)
+     
 #axes labels
 fig1= fig.add_axes([0., 0., 1, 1])
 fig1.set_axis_off()
