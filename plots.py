@@ -815,44 +815,24 @@ def clstr_2d(line,k):
 
 sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
 
-
 data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
 
 clstr= Table.read('./clusters/3features/CIV6clstrs.fits')
 
 t= join(data, clstr, keys= 'SDSSName')
 
-clstrs_ls=[]
-
-k=6
-
-for o in range(k):
-    clstrs_ls.append([o ,len(clstr[clstr['label'] ==o]), \
-                      mean(clstr['Vmin'][clstr['label'] ==o]),\
-                      mean(clstr['Vmax'][clstr['label'] ==o]), \
-                      mean(clstr['EW'][clstr['label'] ==o])])
-
-
-ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
-
-print ord_clstrs
-
-
-clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
-          sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"]]
-
-clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
-
 fig= figure(figsize=(16,12))
 
 ##subplots
-nl= 12 #number of contours
-cm= "Greys_r" #color map
+nl= 11 #number of contours
+#cm= sns.light_palette(sns.xkcd_rgb["dusk"], as_cmap= True) #color map
+cm= sns.cubehelix_palette(light=1, as_cmap=True)
 
 ax1= fig.add_subplot(4,3,1)
 px = "Vmin_CIV"
 py = "LOGEDD_RATIO_DR7"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax1.transAxes)
 
 
 ax2= fig.add_subplot(4,3,2)
@@ -864,11 +844,13 @@ ax3= fig.add_subplot(4,3,3)
 px = "EW_CIV"
 py = "LOGEDD_RATIO_DR7"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+xlim(-60,10)
 
 ax4= fig.add_subplot(4,3,4)
 px = "Vmin_CIV"
 py = "logF1400"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax4.transAxes)
 
 ax5= fig.add_subplot(4,3,5)
 px = "Vmax_CIV"
@@ -879,11 +861,13 @@ ax6= fig.add_subplot(4,3,6)
 px = "EW_CIV"
 py = "logF1400"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+xlim(-60,10)
 
 ax7= fig.add_subplot(4,3,7)
 px = "Vmin_CIV"
 py = "int_alpha_nu"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax7.transAxes)
 
 ax8= fig.add_subplot(4,3,8)
 px = "Vmax_CIV"
@@ -894,12 +878,13 @@ ax9= fig.add_subplot(4,3,9)
 px = "EW_CIV"
 py = "int_alpha_nu"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+xlim(-60,10)
 
 ax10= fig.add_subplot(4,3,10)
 px = "Vmin_CIV"
 py = "HeII_EW_BLH"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
-
+text(0.1, 0.85, str(len(t[t[py] != -999]))+" objects", color='k', fontsize=18, transform=ax10.transAxes)
 
 ax11= fig.add_subplot(4,3,11)
 px = "Vmax_CIV"
@@ -911,6 +896,7 @@ ax12= fig.add_subplot(4,3,12)
 px = "EW_CIV"
 py = "HeII_EW_BLH"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+xlim(-60,10)
 
 #axes labels
 fig1= fig.add_axes([0., 0., 1, 1])
@@ -920,7 +906,7 @@ fig1.set_ylim(0, 1)
 
 fig1.text(.23, 0.93, r" CIV Vmin (km/s)", rotation='horizontal', horizontalalignment='center',verticalalignment='center', fontsize= 18, family= 'serif')
 
-fig1.text(0.5, 0.93, r"CIV Vmin (km/s)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+fig1.text(0.5, 0.93, r"CIV Vmax (km/s)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
 fig1.text(0.78, 0.925, r"CIV EW ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
