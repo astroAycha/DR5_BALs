@@ -809,3 +809,180 @@ def clstr_2d(line,k):
 
     return
 
+###############
+
+## plot multiple panels with 2d scatter plots
+
+sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
+
+
+data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
+
+clstr= Table.read('./clusters/3features/CIV6clstrs.fits')
+
+t= join(data, clstr, keys= 'SDSSName')
+
+clstrs_ls=[]
+
+k=6
+
+for o in range(k):
+    clstrs_ls.append([o ,len(clstr[clstr['label'] ==o]), \
+                      mean(clstr['Vmin'][clstr['label'] ==o]),\
+                      mean(clstr['Vmax'][clstr['label'] ==o]), \
+                      mean(clstr['EW'][clstr['label'] ==o])])
+
+
+ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+
+print ord_clstrs
+
+
+clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
+          sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"]]
+
+clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
+
+fig= figure(figsize=(16,12))
+
+#axes labels
+fig1= fig.add_axes([0., 0., 1, 1])
+fig1.set_axis_off()
+fig1.set_xlim(0, 1)
+fig1.set_ylim(0, 1)
+
+fig1.text(.23, 0.93, r" CIV Vmin (km/s)", rotation='horizontal', horizontalalignment='center',verticalalignment='center', fontsize= 18, family= 'serif')
+
+fig1.text(0.5, 0.93, r"CIV Vmin (km/s)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+fig1.text(0.78, 0.92, r"CIV EW ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+fig1.text(0.1, 0.81, r"log L/L$_{\rm Edd}$", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+fig1.text(0.082, 0.6, r"log L(1400)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+fig1.text(0.1, 0.4, r"Intrin $\alpha_\nu$", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+fig1.text(0.1, 0.19, r"EW(HeII) ($\AA$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+##subplots
+ax1= fig.add_subplot(4,3,1)
+px = "Vmin_CIV"
+py = "LOGEDD_RATIO_DR7"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999) ], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax2= fig.add_subplot(4,3,2)
+px = "Vmax_CIV"
+py = "LOGEDD_RATIO_DR7"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999) ], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax3= fig.add_subplot(4,3,3)
+px = "EW_CIV"
+py = "LOGEDD_RATIO_DR7"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999)], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax4= fig.add_subplot(4,3,4)
+px = "Vmin_CIV"
+py = "logF1400"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999)], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax5= fig.add_subplot(4,3,5)
+px = "Vmax_CIV"
+py = "logF1400"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999)], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax6= fig.add_subplot(4,3,6)
+px = "EW_CIV"
+py = "logF1400"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999)], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax7= fig.add_subplot(4,3,7)
+px = "Vmin_CIV"
+py = "int_alpha_nu"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999)], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax8= fig.add_subplot(4,3,8)
+px = "Vmax_CIV"
+py = "int_alpha_nu"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999)], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax9= fig.add_subplot(4,3,9)
+px = "EW_CIV"
+py = "int_alpha_nu"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999)], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax10= fig.add_subplot(4,3,10)
+px = "Vmin_CIV"
+py = "HeII_EW_BLH"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999)], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax11= fig.add_subplot(4,3,11)
+px = "Vmax_CIV"
+py = "HeII_EW_BLH"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999)], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
+ax12= fig.add_subplot(4,3,12)
+px = "EW_CIV"
+py = "HeII_EW_BLH"
+j= 0
+for r in ord_clstrs:
+    c= r[0]
+    scatter(t[px][(t['label']==c) & (t[py] != -999)], \
+            t[py][(t['label']== c) & (t[py] != -999)], c= clr_ls[j], marker= 'o', s=10)
+    j+=1
+
