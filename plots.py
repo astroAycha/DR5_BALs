@@ -982,13 +982,16 @@ clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_r
           sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["pale aqua"]]
     
 clstr_name= ['a', 'b', 'c', 'd', 'e', 'f']
-
+var_ls= [21*20, 21*20, 42*20, 40*20, 30*20, 10*20]
 
 fig= figure(figsize=(16,12))
 
+
 ##subplots
 
-ax1= fig.add_subplot(4,3,1)
+ax1= fig.add_subplot(4,3,1, sharex= ax10)
+ax1.set_xticklabels('',visible=False)
+xlim(100,-18500)
 px = "Vmin_CIV"
 py = "LOGEDD_RATIO_DR7"
 m1, m2=[], []
@@ -996,11 +999,14 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax1.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
-ax2= fig.add_subplot(4,3,2)
+ax2= fig.add_subplot(4,3,2, sharex= ax11)
+ax2.set_xticklabels('',visible=False)
+ax2.set_yticklabels('',visible=False)
+xlim(-3500, -23500)
 px = "Vmax_CIV"
 py = "LOGEDD_RATIO_DR7"
 m1, m2=[], []
@@ -1008,11 +1014,14 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax2.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
-ax3= fig.add_subplot(4,3,3)
+ax3= fig.add_subplot(4,3,3, sharex= ax12)
+ax3.set_xticklabels('',visible=False)
+ax3.set_yticklabels('',visible=False)
+xlim(-1,-52)
 px = "EW_CIV"
 py = "LOGEDD_RATIO_DR7"
 m1, m2=[], []
@@ -1020,11 +1029,13 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax3.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
-ax4= fig.add_subplot(4,3,4)
+ax4= fig.add_subplot(4,3,4, sharex= ax10)
+ax4.set_xticklabels('',visible=False)
+xlim(100,-18500)
 px = "Vmin_CIV"
 py = "logF1400"
 m1, m2=[], []
@@ -1032,12 +1043,15 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax4.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
 
-ax5= fig.add_subplot(4,3,5)
+ax5= fig.add_subplot(4,3,5, sharex= ax11)
+ax5.set_xticklabels('',visible=False)
+ax5.set_yticklabels('',visible=False)
+xlim(-3500, -23500)
 px = "Vmax_CIV"
 py = "logF1400"
 m1, m2=[], []
@@ -1045,11 +1059,14 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax5.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
-ax6= fig.add_subplot(4,3,6)
+ax6= fig.add_subplot(4,3,6, sharex= ax12)
+ax6.set_xticklabels('',visible=False)
+ax6.set_yticklabels('',visible=False)
+xlim(-1,-52)
 px = "EW_CIV"
 py = "logF1400"
 m1, m2=[], []
@@ -1057,11 +1074,13 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax6.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
-ax7= fig.add_subplot(4,3,7)
+ax7= fig.add_subplot(4,3,7, sharex= ax10)
+ax7.set_xticklabels('',visible=False)
+xlim(100,-18500)
 px = "Vmin_CIV"
 py = "int_alpha_nu"
 m1, m2=[], []
@@ -1069,11 +1088,14 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax7.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
-ax8= fig.add_subplot(4,3,8)
+ax8= fig.add_subplot(4,3,8, sharex= ax11)
+ax8.set_xticklabels('',visible=False)
+ax8.set_yticklabels('',visible=False)
+xlim(-3500, -23500)
 px = "Vmax_CIV"
 py = "int_alpha_nu"
 m1, m2=[], []
@@ -1081,11 +1103,14 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax8.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
-ax9= fig.add_subplot(4,3,9)
+ax9= fig.add_subplot(4,3,9, sharex= ax12)
+ax9.set_xticklabels('',visible=False)
+ax9.set_yticklabels('',visible=False)
+xlim(-1,-52)
 px = "EW_CIV"
 py = "int_alpha_nu"
 m1, m2=[], []
@@ -1093,11 +1118,12 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax9.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
 ax10= fig.add_subplot(4,3,10)
+xlim(100,-18500)
 px = "Vmin_CIV"
 py = "HeII_EW_BLH"
 m1, m2=[], []
@@ -1105,11 +1131,13 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax10.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
 ax11= fig.add_subplot(4,3,11)
+ax11.set_yticklabels('',visible=False)
+xlim(-3500, -23500)
 px = "Vmax_CIV"
 py = "HeII_EW_BLH"
 m1, m2=[], []
@@ -1117,11 +1145,13 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax11.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
 
 ax12= fig.add_subplot(4,3,12)
+ax12.set_yticklabels('',visible=False)
+xlim(-1,-52)
 px = "EW_CIV"
 py = "HeII_EW_BLH"
 m1, m2=[], []
@@ -1129,9 +1159,12 @@ for i in oc:
     c= i[0]
     m1.append(mean(t[px][t['label'] == c]))
     m2.append(mean(t[py][(t[py]!=-999) & (t['label']== c)]))
-scatter(m1,m2, color= clr_ls, marker= 'o', s=40)
-for t, txt in enumerate(clstr_name):
-    ax12.annotate(txt, (m1[t],m2[t]))
+scatter(m1,m2, color= clr_ls, marker= 'o', s= var_ls, alpha=0.8)
+for j in range(k):
+    text(m1[j], m2[j], clstr_name[j], color='k')
+
+subplots_adjust(wspace =0.04, hspace= 0.04)
+#ax1.tick_params(axis='x', which='both', bottom='off', top='off', labelbottom='off')
 
 #axes labels
 fig1= fig.add_axes([0., 0., 1, 1])
@@ -1139,19 +1172,21 @@ fig1.set_axis_off()
 fig1.set_xlim(0, 1)
 fig1.set_ylim(0, 1)
 
-fig1.text(.23, 0.93, r" CIV Vmin (km/s)", rotation='horizontal', horizontalalignment='center',verticalalignment='center', fontsize= 18, family= 'serif')
+#x-axis bottom
+fig1.text(.23, 0.05, r" CIV Vmin (km/s)", rotation='horizontal', horizontalalignment='center',verticalalignment='center', fontsize= 18, family= 'serif')
 
-fig1.text(0.5, 0.93, r"CIV Vmax (km/s)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+fig1.text(0.5, 0.05, r"CIV Vmax (km/s)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
-fig1.text(0.78, 0.925, r"CIV EW ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+fig1.text(0.78, 0.05, r"CIV EW ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
-fig1.text(0.082, 0.81, r"log L/L$_{\rm Edd}$", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+#y-axis
+fig1.text(0.07, 0.81, r"log L/L$_{\rm Edd}$", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
-fig1.text(0.082, 0.6, r"log L(1400)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+fig1.text(0.07, 0.6, r"log L(1400)"+"\n"+" [mW/m$^2$/Hz]", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
-fig1.text(0.082, 0.4, r"Intrin $\alpha_\nu$", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+fig1.text(0.07, 0.4, r"Intrin $\alpha_\nu$", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
-fig1.text(0.082, 0.19, r"EW(HeII) ($\AA$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+fig1.text(0.07, 0.19, r"EW(HeII) ($\AA$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
 
 
