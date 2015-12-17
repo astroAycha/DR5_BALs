@@ -479,18 +479,17 @@ def clust_compos(line, k, f):
 def clstr_prop(line,k):
 
     """ 
-    plot KDE of the clusters in the Vmin vs Vmax plane with the EW as a marker.
-    lower panels: distributions of properties in each cluster: extinction, HeII, CF...
+    histograms of the clusters in the Vmin vs Vmax plane with the EW as a marker.
     
     Param: 
-    line: 'CIV', 'SiIV', or 'MgII'
+    line: 'CIV', 'SiIV', 'AlIII', or 'MgII'
     k: number of clusters (3,4,5..)
     
     """
 
     data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
 
-    clstr_tbl= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits")
+    clstr_tbl= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits") # for 3 features
     
     clstrs_ls=[]
     for o in range(k):
@@ -500,7 +499,7 @@ def clstr_prop(line,k):
                            mean(clstr_tbl['EW'][clstr_tbl['label'] ==o])])
     
     
-    ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+    ord_clstrs= sorted(clstrs_ls, key= itemgetter(2)) #order the clusters according to their vmin (same as in the clusters/compo plots)
     
     print ord_clstrs
 
@@ -574,7 +573,7 @@ def clstr_prop(line,k):
 
     ax3= fig.add_subplot(423)
     i =0
-    param= "alpha_UV_BLH"
+    param= "E_B-V_1"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
                       (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
@@ -588,7 +587,7 @@ def clstr_prop(line,k):
              
         i+=1
 
-    ax3.text(0.1, 0.75,r"$\alpha_{UV}$", transform=ax3.transAxes, color= 'k', fontsize= 18)
+    ax3.text(0.65, 0.8,r"E(B-V)", transform=ax3.transAxes, color= 'k', fontsize= 18)
     ax3.text(0.95, 0.85, "C", transform=ax3.transAxes, color= 'r', fontsize= 14, bbox= props)
 
     ax4= fig.add_subplot(424)
@@ -631,7 +630,7 @@ def clstr_prop(line,k):
 
     ax6= fig.add_subplot(426)
     i =0
-    param= "v_md_BLH"
+    param= "alpha_UV_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
                       (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
 
@@ -645,7 +644,7 @@ def clstr_prop(line,k):
         
         i+=1
 
-    ax6.text(0.65, 0.8,r"v$_{md}$ [km/s]", transform=ax6.transAxes, color= 'k', fontsize= 16)
+    ax6.text(0.65, 0.8,r"$\alpha_{UV}$", transform=ax6.transAxes, color= 'k', fontsize= 16)
     ax6.text(0.95, 0.85, "F", transform=ax6.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
@@ -668,6 +667,25 @@ def clstr_prop(line,k):
     ax7.text(0.2, 0.85,"CF", transform=ax7.transAxes, color= 'k', fontsize= 16)
     ax7.text(0.05, 0.85, "G", transform=ax7.transAxes, color= 'r', fontsize= 14, bbox= props)
 
+
+    ax8= fig.add_subplot(428)
+    i =0
+    param= "v_md_BLH"
+    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
+                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
+        
+    print param, len(prop_tbl[prop_tbl[param] !=-999])
+                      
+    for c in ord_clstrs:
+        if c[1] >cutoff:
+            l= c[0]
+            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
+                bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+                                      
+        i+=1
+            
+    ax8.text(0.65, 0.8,r" v$_{md}$ [km/s]", transform=ax8.transAxes, color= 'k', fontsize= 16)
+    ax8.text(0.95, 0.85, "G", transform=ax8.transAxes, color= 'r', fontsize= 14, bbox= props)
 
     return
 
@@ -752,8 +770,8 @@ ylabel(r"$M_{\rm i}$", fontsize=20)
 
 xlim(0,5.2)
 ylim(-22.5, -29.8)
-scatter(data['z'], data['M_i'], c= '0.9', marker= '.', label='Full BALQs sample')
-sns.kdeplot(t['z_1'], t['M_i'], cmap='Reds_r', shade_lowest= False, legend= False, n_levels= 10)
+scatter(data['z'], data['M_i'], c= '0.8', marker= '.', label='Full BALQs sample')
+sns.kdeplot(t['z_1'], t['M_i'], cmap='YlOrBr_r', shade_lowest= False, legend= False, n_levels= 10)
 #scatter(t['z_1'], t['M_i'], c='r', marker= 'o', s=7, label='CIV sample')
 #legend(loc= 4)
 
@@ -952,6 +970,99 @@ fig1.text(0.082, 0.6, r"log L(1400)", rotation='vertical', horizontalalignment='
 fig1.text(0.082, 0.4, r"Intrin $\alpha_\nu$", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
 fig1.text(0.082, 0.19, r"EW(HeII) ($\AA$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+###############################################
+
+## keep only a few of the previous subplots
+
+## plot multiple panels with 2d scatter plots
+
+sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
+
+data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
+
+clstr= Table.read('./clusters/3features/CIV6clstrs.fits')
+
+t= join(data, clstr, keys= 'SDSSName')
+
+fig= figure(figsize=(15,9))
+
+#subplots
+nl= 15 #number of contours
+cm= "PuBuGn_r" #color map
+
+ax1= fig.add_subplot(231)
+xlim(5500, -24100)
+px = "Vmin_CIV"
+py = "int_alpha_nu"
+sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+     color='k', fontsize=14, transform=ax1.transAxes)
+
+ax2= fig.add_subplot(232)
+xlim(2500, -31200)
+px = "Vmax_CIV"
+py = "int_alpha_nu"
+sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+     color='k', fontsize=14, transform=ax2.transAxes)
+
+ax3= fig.add_subplot(233)
+xlim(5,-52)
+px = "EW_CIV"
+py = "int_alpha_nu"
+sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+     color='k', fontsize=14, transform=ax3.transAxes)
+
+ax4= fig.add_subplot(234)
+xlim(5500, -24100)
+ylim(-5,15)
+px = "Vmin_CIV"
+py = "HeII_EW_BLH"
+sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+     color='k', fontsize=14, transform=ax4.transAxes)
+
+ax5= fig.add_subplot(235)
+xlim(2500, -31200)
+ylim(-5,15)
+px = "Vmax_CIV"
+py = "HeII_EW_BLH"
+sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+     color='k', fontsize=14, transform=ax5.transAxes)
+
+ax6= fig.add_subplot(236)
+xlim(5,-52)
+ylim(-5,15)
+px = "EW_CIV"
+py = "HeII_EW_BLH"
+sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
+s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
+text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+     color='k', fontsize=14, transform=ax6.transAxes)
+
+#axes labels
+fig1= fig.add_axes([0., 0., 1, 1])
+fig1.set_axis_off()
+fig1.set_xlim(0, 1)
+fig1.set_ylim(0, 1)
+
+fig1.text(.23, 0.05, r" CIV Vmin (km/s)", rotation='horizontal', horizontalalignment='center',verticalalignment='center', fontsize= 18, family= 'serif')
+
+fig1.text(0.5, 0.05, r"CIV Vmax (km/s)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+fig1.text(0.78, 0.04, r"CIV EW ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+fig1.text(0.09, 0.71, r"Intrin $\alpha_\nu$", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+fig1.text(0.09, 0.3, r"EW(HeII) ($\AA$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
 
 
 #####
@@ -987,7 +1098,7 @@ var_ls= [21*20, 21*20, 42*20, 40*20, 30*20, 10*20]
 fig= figure(figsize=(16,12))
 
 
-##subplots
+#subplots
 
 ax1= fig.add_subplot(4,3,1, sharex= ax10)
 ax1.set_xticklabels('',visible=False)
