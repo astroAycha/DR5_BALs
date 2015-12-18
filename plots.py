@@ -542,7 +542,7 @@ def clstr_prop(line,k):
             hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] < 50000)], \
             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
-            ax1.text(0.05, .85-j/10., line+"-"+clstr_name[i]+", N= "+str(c[1]), color= clr_ls[i], fontsize= 16, transform=ax1.transAxes)
+            ax1.text(0.05, .85-j/10., line+"-"+clstr_name[i], color= clr_ls[i], fontsize= 16, transform=ax1.transAxes)
             j+=1
         
         i+=1
@@ -685,7 +685,7 @@ def clstr_prop(line,k):
         i+=1
             
     ax8.text(0.65, 0.8,r" v$_{md}$ [km/s]", transform=ax8.transAxes, color= 'k', fontsize= 16)
-    ax8.text(0.95, 0.85, "G", transform=ax8.transAxes, color= 'r', fontsize= 14, bbox= props)
+    ax8.text(0.95, 0.85, "H", transform=ax8.transAxes, color= 'r', fontsize= 14, bbox= props)
 
     return
 
