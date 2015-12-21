@@ -166,7 +166,7 @@ def overlap(f):
             
             for (c,j) in zip(oc, range(k)):
                 a= alph[j]
-                tbl.write("{} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {} & {:02.1f} & {:02.1f} & {:02.1f} & {} & {} \n".format(l+"-"+a, c[3], c[4], c[5], c[6], nur[j], var[j], si4[j], sial[j], baskin[j], krawczyk[j]))
+                tbl.write("& {} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f} & {:02.1f} & {:02.1f} & {} & {} & {} \n".format(l+"-"+a, c[3], c[4], c[5], c[6], var[j], si4[j], sial[j], nur[j], baskin[j], krawczyk[j]))
 
     tbl.close()
     
