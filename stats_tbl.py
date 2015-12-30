@@ -87,14 +87,14 @@ def clstr_cntrs(f):
 
 def overlap(f):
     
-    """ table to show overlap between our sample from Gibson et al. 2015 and other datasets: Filiz Ak 2014, Baskin et al 2015, Krawczyk et al. 2015
+    """ table to show overlap between our sample from Gibson et al. 2015 and other datasets: Filiz Ak 2014, Baskin et al 2015, Krawczyk et al. 2015, and Shen et al. 2011
         param:
         f: number of features used (3 or 4) this is just to know which file to open.
         """
     
     line_ls= ["CIV", "SiIV", "AlIII", "MgII"]
     
-    tbl= open("cntrs_num_tbl"+str(f)+".txt", 'wrb')
+    tbl= open("cntrs_num_tbl"+str(f)+".txt", 'wrb') # new file to recored numbers in a latex table format
     
     data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
     
@@ -144,6 +144,7 @@ def overlap(f):
             nur=[] # nubmber of objects from Filiz Ak
             baskin= [] # number of objects from Baskin
             krawczyk= [] #number of objects from krawczyk
+            shen= [] # number of objects from Shen
             var= [] # variability
             si4= [] # SiIV only. no AlIII
             sial=[] # SiIV with or without AlIII
@@ -157,6 +158,8 @@ def overlap(f):
                 
                 krawczyk.append(len(t[(t['label'] ==q) & (t['E_B-V_1'] != -999)]))
                 
+                shen.append(len(t[(t['label'] ==q) & (t['LOGEDD_RATIO_DR7'] != -999)]))
+                
                 var.append(len(t[(t['label'] ==q) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==q]))
                 
                 si4.append(len(t[(t['label'] ==q) & (t['BIO_SiIV'] >0) & (t['BIO_AlIII'] ==0)])*100./len(t[t['label']==q]))
@@ -166,7 +169,7 @@ def overlap(f):
             
             for (c,j) in zip(oc, range(k)):
                 a= alph[j]
-                tbl.write("& {} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f} & {:02.1f} & {:02.1f} & {} & {} & {} \n".format(l+"-"+a, c[3], c[4], c[5], c[6], var[j], si4[j], sial[j], nur[j], baskin[j], krawczyk[j]))
+                tbl.write("& {} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f} & {:02.1f} & {:02.1f} & {} & {} & {} & {} \n".format(l+"-"+a, c[3], c[4], c[5], c[6], si4[j], sial[j], var[j], nur[j], baskin[j], krawczyk[j], shen[j]))
 
     tbl.close()
     
