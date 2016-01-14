@@ -73,8 +73,8 @@ def line_prof(line, k, f):
 
     # left panel for the HeII and OIII]
     #ax1= fig.add_subplot(121)
-    xlim(1600,1700)
-    ylim(1,2)
+    ax1.set_xlim(1600,1700)
+    ax1.set_ylim(0.8,1.35)
     xlabel(line + r'Rest Wavelength')
     ylabel(line + r' Arbitrary flux')
               
@@ -90,8 +90,8 @@ def line_prof(line, k, f):
 
     # right panel for the CIII] lend and FeIII
     #ax2= fig.add_subplot(122)
-    xlim(1800,2150)
-    ylim(1,2)
+    ax2.set_xlim(1800,2150)
+    ax2.set_ylim(1,2)
     xlabel(r'Restframe Wavelength ($\AA$)')
     ylabel(r'Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)')
     
@@ -1184,5 +1184,42 @@ fig1.text(0.07, 0.4, r"Intrin $\alpha_\nu$", rotation='vertical', horizontalalig
 
 fig1.text(0.07, 0.19, r"EW(HeII) ($\AA$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
+###############
+
+## attempting 3D plots for clusters. I have a feeling they won't show the clusters
+
+c4= Table.read('./clusters/3features/CIV6clstrs.fits')
+
+clstrs_ls=[]
+
+k=6
+
+for o in range(k):
+    clstrs_ls.append([o ,len(c4[c4['label'] ==o]), \
+                      mean(c4['Vmin'][c4['label'] ==o]),\
+                      mean(c4['Vmax'][c4['label'] ==o]), \
+                      mean(c4['EW'][c4['label'] ==o])])
+
+
+oc= sorted(clstrs_ls, key= itemgetter(2)) #ordered clusters
+
+clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
+          sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["pale aqua"]]
+
+fig= figure()
+
+ax= plt.axes(projection='3d')
+
+j= 0
+for c in oc:
+    i= c[0]
+
+    ax.scatter(xs= c4['EW'][c4['label']== i], ys= c4['Vmin'][c4['label']== i], zs= c4['Vmax'][c4['label']== i], c= clr_ls[j])
+
+    j+= 1
+
+ax.set_xlabel('CIV EW')
+ax.set_ylabel('CIV Vmin')
+ax.set_zlabel('CIV Vmax')
 
 
