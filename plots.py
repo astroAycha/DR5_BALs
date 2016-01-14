@@ -1186,7 +1186,11 @@ fig1.text(0.07, 0.19, r"EW(HeII) ($\AA$)", rotation='vertical', horizontalalignm
 
 ###############
 
-## attempting 3D plots for clusters. I have a feeling they won't show the clusters
+## quick 3D plots to show clusters
+
+#from astropy.table import Table
+#from mpl_toolkits.mplot3d import Axes3D
+#import seaborn as sns
 
 c4= Table.read('./clusters/3features/CIV6clstrs.fits')
 
@@ -1201,7 +1205,7 @@ for o in range(k):
                       mean(c4['EW'][c4['label'] ==o])])
 
 
-oc= sorted(clstrs_ls, key= itemgetter(2)) #ordered clusters
+oc= sorted(clstrs_ls, key= itemgetter(2)) #ordered clusters (with Vmin)
 
 clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
           sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["pale aqua"]]
