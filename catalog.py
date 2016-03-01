@@ -23,6 +23,7 @@ t= Table.read('tbl1.fits')
 
 t.keep_columns(['Name', 'RA_1', 'DEC_1', 'z_1', 'SiIV-BI', 'SiIV-BIO', 'SiIV-EW', 'SiIV-vmin', 'SiIV-vmax', 'SiIV-fdeep', 'CIV-BI', 'CIV-BIO', 'CIV-EW', 'CIV-vmin', 'CIV-vmax', 'CIV-fdeep', 'AlIII-BI', 'AlIII-BIO', 'AlIII-EW', 'AlIII-vmin', 'AlIII-vmax', 'AlIII-fdeep', 'MgII-BI', 'MgII-BIO', 'MgII-EW', 'MgII-vmin', 'MgII-vmax', 'MgII-fdeep', 'SiIV-EmL', 'CIV-EmL', 'AlIII-EmL', 'MgII-EmL', 'SiIV-BMBB', 'CIV-BMBB', 'AlIII-BMBB', 'MgII-BMBB', 'CIV4-BWA', 'SN1700', 'logF1400', 'logF2500', 'M_i','MJD_spec', 'plate_1', 'fiberid', 'AV_SandF', 'Z_HW', 'LOGEDD_RATIO'])
 
+t['Name'].name= 'SDSSName'
 t['RA_1'].name= 'RA'
 t['DEC_1'].name= 'DEC'
 t['z_1'].name= 'z'
