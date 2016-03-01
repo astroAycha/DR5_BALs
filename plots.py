@@ -1,5 +1,3 @@
-""" plots similar to what is in lstr_plots.py but ordered according to the number of objects in each cluster 
-May 8 2015"""
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,227 +11,114 @@ import seaborn as sns
 from scipy.stats import spearmanr
 
 
-#sns.set_style('ticks')
-#sns.set_context("paper", font_scale=2)
-
-
-
-## original script forked from Pauline
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import cm
-#from matplotlib.ticker import NullFormatter
-import matplotlib.ticker as ticker
-from seaborn import kdeplot
-
-# based on http://www.astrobetter.com/blog/2014/02/10/visualization-fun-with-python-2d-histogram-with-1d-histograms-on-axes/
-
-def kde_hist(line,k):
-    '''plot KDE for clusters for one value of K
-    param:
-    line: 'SiIV', 'CIV', 'MgII'
-    
-    k: number of clusters: 3, 4, 5
-       
-        '''
-    sns.set(font_scale= 1.5)
-    sns.set_style("ticks", {'font.family': u'serif'})
-    props= dict(boxstyle='round', alpha=0.9, color='w')
-    
-    clstr_tab= Table.read("./clusters/"+line+ str(k) +"clstrs.fits") #table with clustering parameters for this line
-    
-    # start with a rectangular Figure
-    f = plt.figure(figsize=(12,12))
-    
-    # define where the axes go
-    left, width = 0.1, 0.65
-    bottom, height = 0.1, 0.65
-    bottom_h = left_h = left+width+0.02
-    
-    rect_scatter = [left, bottom, width, height]
-    rect_histx = [left, bottom_h, width, 0.2]
-    rect_histy = [left_h, bottom, 0.15, height]
-    
-    # add the axes to the figure
-    ax2d = plt.axes(rect_scatter)
-    axHistx = plt.axes(rect_histx)
-    axHisty = plt.axes(rect_histy)
-    
-    # no labels for the sidecar histograms, because the 2D plot has them
-    nullfmt   = NullFormatter()
-    axHistx.xaxis.set_major_formatter(nullfmt)
-    axHisty.yaxis.set_major_formatter(nullfmt)
-    
-    # the 2D plot:
-    # note the all-important transpose!
-    clstr_num= []
-        
-    for j in range(k):
-        
-        clstr_num.append([j, (mean(clstr_tab['Vmin'][clstr_tab['label']== j]), (mean(clstr_tab['Vmax'][clstr_tab['label']== j])))])
-        
-    ordered_clstrs= sorted(clstr_num, key= itemgetter(1)) # reverse= True
-    print ordered_clstrs
-
-    cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys', 'Reds']
-
-    ew, x, y, n, =[],[],[],[]
-    cc= -1
-    for c in ordered_clstrs:
-        cc+=1
-        
-        #if (min(clstr_tab['Vmin'][clstr_tab['label']==c[0]]) >0) & (min(clstr_tab['Vmax'][clstr_tab['label']==c[0]]) >0):
-        sns.kdeplot(clstr_tab['Vmin'][clstr_tab['label']==c[0]], clstr_tab['Vmax'][clstr_tab['label']==c[0]] \
-                        ,cmap= cmap_ls[cc], ax=ax2d, shade=True, shade_lowest=False, alpha=0.6)
-        
-        ew.append(mean(clstr_tab['EW'][clstr_tab['label']==c[0]]))
-        x.append(mean(clstr_tab['Vmin'][clstr_tab['label']==c[0]]))
-        y.append(mean(clstr_tab['Vmax'][clstr_tab['label']==c[0]]))
-        n.append(len(clstr_tab[clstr_tab['label']==c[0]]))
-    
-    ax2d.scatter(x,y, marker='D', color='w', s=[e for e in ew])
-        
-    clstr_label= ['a'+str(k),'b'+str(k),'c'+str(k),'d'+str(k),'e'+str(k),'f'+str(k)]
-    clr_ls= ['steelblue', 'olivedrab','orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
-    u=0.3
-    for l in range(k):
-        u-=0.04
-            
-        ax2d.text(x[l]+150, y[l]-150, clstr_label[l], color='r', fontsize= 14 ) #, bbox=props
-        ax2d.text(0.67, u,  line+"-"+clstr_label[l]+", N="+str(n[l]) \
-                  , transform=ax2d.transAxes, fontsize= 13, color= clr_ls[l])
-
-    ax2d.set_xlabel(line+ " Vmin (km/s)" )
-    ax2d.set_ylabel(line+ " Vmax (km/s)")
-    #ax2d.set_xlim(0,11000)
-    #ax2d.set_ylim(0,11000)
-
-    b= Table.read("sample_bal_myflags.fits")
-    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=1, color='0.5', label="BAL Quasars")
-    z= arange(11000)
-    ax2d.plot(z,z,'k-', lw=.5) #plot 1:1 line
-    
-    # the 1-D histograms: first the X-histogram
-    sns.kdeplot(clstr_array[:,1], ax=axHistx, shade= False,  color='k', label= sample_label+" Sample"+"\n"+"N="+str(len(clstr_array)))
-    sns.kdeplot(b['BHWHM_'+line_name], ax=axHistx, shade= False, lw= 2, color='c', label= "BALQ"+"\n"+"N="+str(len(b)))
-    
-    axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
-    axHistx.set_ylabel(line_label+' BHWHM')
-    axHistx.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
-    axHistx.yaxis.set_major_locator(ticker.MultipleLocator(base=0.0003)) # this locator puts ticks at regular intervals
-    #gca().xaxis.set_major_locator(MaxNLocator(nbins=3, prune= 'both'))
-    #axHistx.set_yticks([500, 1000, 1500])
-    #axHistx.set_ylim(0,1000)
-    axHistx.legend(prop={'size':12})
-        
-    # then the Y-histogram
-    sns.kdeplot(clstr_array[:,2], ax=axHisty, vertical= True, shade= False, color='k', label= sample_label+" Sample"+"\n"+"N="+str(len(clstr_array)))
-    sns.kdeplot(b['RHWHM_'+line_name], ax=axHisty, vertical= True, shade= False, lw= 2, color='c', label= "BALQ"+"\n"+"N="+str(len(b)))
-
-    axHisty.set_ylim(ax2d.get_ylim()) # y-limits match the 2D plot
-    axHisty.set_xlabel(line_label+' RHWHM')
-    axHisty.xaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
-    axHisty.xaxis.set_major_locator(ticker.MultipleLocator(base=0.0003)) # this locator puts ticks at regular intervals
-    #gca().yaxis.set_major_locator(MaxNLocator(nbins=3, prune= 'both'))
-    #axHisty.set_xticks([500, 1000, 1500])
-    #axHisty.set_xlim(0,1000)
-    axHisty.legend(prop={'size':12})
-    
-    plt.show()
-    return
-
-
 ########################
 
-def plot_spec_three_pans(line, k):
+def line_prof(line, k, f):
     
-    """ plot composite spectra in 4 panels:
-        panel 1: Ly alpha, Si IV, C IV, (He II & OIII])
+    """ plot composite spectra in 2 panels:
+        panel 1: He II & OIII]
         panel 2: Al III, Si III], C III]
-        panel 3: Mg II
+        
         param:
         line: "SiIV", "CIV", "AlIII", or "MgII"
-        k: number of clusters (3, 4, ...)
+        k: number of clusters (3, 4, 5 or 6)
         """
     
-    clstr_name= "./clusters/"+line+str(k)+"clstrs.fits"
-    clstr= Table.read(clstr_name)
+    sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
     
-    clstr_num=[]
-    for f in range(k):
-        clstr_num.append([f, (mean(clstr['Vmin'][clstr['label']== f]), (mean(clstr['Vmax'][clstr['label']== f])))])
-        
-    ordered_clstrs= sorted(clstr_num, key= itemgetter(1)) #reverse= True
-    print ordered_clstrs
+    tt= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
+    
+    cutoff= 10
+    
+    props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
+    
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
+                          mean(tt['Vmin'][tt['label'] ==o]),\
+                          mean(tt['Vmax'][tt['label'] ==o]), \
+                          mean(tt['EW'][tt['label'] ==o])])
 
+    ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+
+    print ord_clstrs
     
-    compo_list= []
-    for r in ordered_clstrs:
-        compo_name= "./composites/"+line+"_"+str(k)+"clstr"+str(r[0]+1)+".fits"
+    
+    clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
+              sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["pale aqua"]]
+        
+    amb= sns.light_palette(sns.xkcd_rgb["amber"], as_cmap= True)
+    aq= sns.light_palette(sns.xkcd_rgb["pale aqua"], as_cmap= True)
+              
+    clrm_ls= ['Blues', 'Purples' , 'Reds', 'Greys', 'Greens', amb, aq]
+              
+              
+    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+              
+              
+    fig= figure(figsize=(12,6))
+
+    # define where the axes go
+    leftp1, widthp1 = 0.1, 0.3
+    leftp2, widthp2 = 0.4, 0.5
+    bottom, height = 0.1, 0.8
+
+    p1 = [leftp1, bottom, widthp1, height]
+    p2 = [leftp2, bottom, widthp2, height]
+
+    # add the axes to the figure
+    ax1 = plt.axes(p1)
+    ax2 = plt.axes(p2)
+
+
+    # left panel for the HeII and OIII]
+    #ax1= fig.add_subplot(121)
+    ax1.set_xlim(1600,1700)
+    ax1.set_ylim(0.8,1.35)
+    xlabel(line + r'Rest Wavelength')
+    ylabel(line + r' Arbitrary flux')
+              
+    i=1
+    for c in ord_clstrs:
+        l= c[0]
+        compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
-        num_obj= spec[0].header['SPEC_NUMBER']
-        compo_list.append([compo_name, num_obj])
-    
-    print compo_list
+        if c[1] > cutoff:
+            ax1.plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(1700-1100)*2], lw= 2, color= clr_ls[i-1])
+            #ax1.text(0.82, .99-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(tt[tt['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax1.transAxes) # labels for each cluster with number of obejects. Text colors match the plot
+        i+=1
 
+    # right panel for the CIII] lend and FeIII
+    #ax2= fig.add_subplot(122)
+    ax2.set_xlim(1800,2150)
+    ax2.set_ylim(1,2)
+    xlabel(r'Restframe Wavelength ($\AA$)')
+    ylabel(r'Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)')
+    
+    line_mark= [1640, 1663.5, 1857, 1892, 1908]
+    line_label= ['HeII', 'OIII]', 'AlIII', 'SiIII]', 'CIII]']
+    
+    # labels for FeIII
+    ax2.arrow(2030, 1.4, -30, -.1, fc='k', ec='k')
+    ax2.arrow(2030, 1.4, +30, -.1, fc='k', ec='k')
+    text(2020, 1.45, r'FeIII', fontsize= 14, family='serif', color='k')
+    
+    #for p in r:
+       # axvline(line_mark[p], ls= ':', color= '.5')
+       # text(line_mark[p], 3, line_label[p], rotation= 'vertical')
+    
+    
+    i=1
+    for c in ord_clstrs:
+        l= c[0]
+        compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
+        spec= fits.open(compo_name)
+        if c[1] > cutoff:
+            ax2.plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
+        #ax2.text(0.82, .99-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(tt[tt['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax2.transAxes) # labels for each cluster with number of obejects. Text colors match the plot
+        i+=1
 
-    fig= figure(figsize=(14,8))
-    sns.set_style("ticks")
-    fig1= fig.add_axes([0., 0., 1, 1])
-    fig1.set_axis_off()
-    fig1.set_xlim(0, 1)
-    fig1.set_ylim(0, 1)
-    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', \
-             horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
-    fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', \
-              horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
-
     
-    line_mark= [[1215.7, 1240, 1305, 1335, 1396.8, 1549, 1640, 1663.5], \
-                [1857, 1892, 1908], [2800]]
-    line_labels= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV', 'CIV', 'HeII', 'OIII]'], \
-                  ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
-    
-    alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
-    compo_labels= [line+"-"+ a for a in alphabet_list]
-    
-    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
-    
-    splt_ls=[211, 223, 224]
-    dx_ls= [(1150, 1700), (1800, 2000),  (2750, 2850)]
-    dy_ls= [(0.3, 2), (0.75, 1.8),  (0.85, 1.8)]
-    
-    for s in range(3):
-    
-        ax= fig.add_subplot(splt_ls[s])
-        xlim(dx_ls[s])
-        ylim(dy_ls[s])
-        
-        for t in range(len(line_mark[s])):
-            ax.axvline(line_mark[s][t], ls=':', c='k')
-            ax.text(line_mark[s][t]-10, dy_ls[s][1]-(dy_ls[s][1]-dy_ls[s][0])/10, \
-                    line_labels[s][t], rotation= 'vertical', fontsize= 14, family='serif')
-        
-        ii= dy_ls[s][1]
-        for (sp, clr, clab) in zip(compo_list, clr_ls, compo_labels):
-            n= sp[1]
-            spec= fits.open(sp[0])
-            wlen= spec[0].data[0]
-            flx= spec[0].data[1]
-            
-            if n >25:
-                plot(wlen, flx/flx[(dx_ls[s][0]-1100)*2], c= clr, lw= 2)
-            
-            ii-=0.1
-            ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
-
-        #mean_compo= fits.open("./composites/mean_compo_"+sample_name+".fits")
-        #mean_flx= mean_compo[0].data[1]
-        
-        #plot(wlen, mean_flx/mean_flx[(dx_ls[s][0]-1100)*2], c='k', lw=2, label= "Mean")
-        
-        #ax.text(2752, dy_ls[s][1]-0.15, sample_label+" Sample, "+"N="+ str(len(clstr_array))+"\n"+"Mean Composite ", color= 'k', fontsize= 14, family= 'serif')
-
     return
 
 
@@ -542,7 +427,7 @@ def clstr_prop(line,k):
             hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] < 50000)], \
             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
-            ax1.text(0.05, .85-j/10., line+"-"+clstr_name[i]+", N= "+str(c[1]), color= clr_ls[i], fontsize= 16, transform=ax1.transAxes)
+            ax1.text(0.05, .85-j/10., line+"-"+clstr_name[i], color= clr_ls[i], fontsize= 16, transform=ax1.transAxes)
             j+=1
         
         i+=1
@@ -685,7 +570,7 @@ def clstr_prop(line,k):
         i+=1
             
     ax8.text(0.65, 0.8,r" v$_{md}$ [km/s]", transform=ax8.transAxes, color= 'k', fontsize= 16)
-    ax8.text(0.95, 0.85, "G", transform=ax8.transAxes, color= 'r', fontsize= 14, bbox= props)
+    ax8.text(0.95, 0.85, "H", transform=ax8.transAxes, color= 'r', fontsize= 14, bbox= props)
 
     return
 
@@ -1299,5 +1184,46 @@ fig1.text(0.07, 0.4, r"Intrin $\alpha_\nu$", rotation='vertical', horizontalalig
 
 fig1.text(0.07, 0.19, r"EW(HeII) ($\AA$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
+###############
+
+## quick 3D plots to show clusters
+
+#from astropy.table import Table
+#from mpl_toolkits.mplot3d import Axes3D
+#import seaborn as sns
+
+c4= Table.read('./clusters/3features/CIV6clstrs.fits')
+
+clstrs_ls=[]
+
+k=6
+
+for o in range(k):
+    clstrs_ls.append([o ,len(c4[c4['label'] ==o]), \
+                      mean(c4['Vmin'][c4['label'] ==o]),\
+                      mean(c4['Vmax'][c4['label'] ==o]), \
+                      mean(c4['EW'][c4['label'] ==o])])
+
+
+oc= sorted(clstrs_ls, key= itemgetter(2)) #ordered clusters (with Vmin)
+
+clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
+          sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["pale aqua"]]
+
+fig= figure()
+
+ax= plt.axes(projection='3d')
+
+j= 0
+for c in oc:
+    i= c[0]
+
+    ax.scatter(xs= c4['EW'][c4['label']== i], ys= c4['Vmin'][c4['label']== i], zs= c4['Vmax'][c4['label']== i], c= clr_ls[j])
+
+    j+= 1
+
+ax.set_xlabel('CIV EW')
+ax.set_ylabel('CIV Vmin')
+ax.set_zlabel('CIV Vmax')
 
 
