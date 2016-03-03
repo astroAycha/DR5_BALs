@@ -13,7 +13,7 @@ from scipy.stats import spearmanr
 
 ########################
 
-def line_prof(line, k, f):
+def line_prof(line, k, g):
     
     """ plot composite spectra in 2 panels:
         panel 1: He II & OIII]
@@ -22,11 +22,12 @@ def line_prof(line, k, f):
         param:
         line: "SiIV", "CIV", "AlIII", or "MgII"
         k: number of clusters (3, 4, 5 or 6)
+        g: directory where composites (or clusters) are saved, e.g., g1/ or g2/
         """
     
     sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
     
-    tt= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
+    tt= Table.read("./clusters/"+g+line+str(k)+"clstrs.fits")
     
     cutoff= 10
     
@@ -81,7 +82,7 @@ def line_prof(line, k, f):
     i=1
     for c in ord_clstrs:
         l= c[0]
-        compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
+        compo_name= "./composites/"+g+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
         if c[1] > cutoff:
             ax1.plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(1700-1100)*2], lw= 2, color= clr_ls[i-1])
@@ -111,7 +112,7 @@ def line_prof(line, k, f):
     i=1
     for c in ord_clstrs:
         l= c[0]
-        compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
+        compo_name= "./composites/"+g+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
         if c[1] > cutoff:
             ax2.plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
@@ -204,7 +205,7 @@ legend()
 
 ###########
 
-def clust_compos(line, k, f):
+def clust_compos(line, k, g):
 
     '''plot composites in one panel, and other two panels to show clustering parameter space
     k: number of clusters
@@ -227,21 +228,23 @@ def clust_compos(line, k, f):
     
     clstr_tbl= Table.read("./clusters/4features/ew_vmin_vmax_deltv/"+line+str(k)+"clstrs.fits")
 
-    #clstr_tbl= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
-    
-    data= Table.read("myBALCat_xtra.csv", format= 'ascii.csv')
+    clstr_tbl= Table.read("./clusters/"+g+line+str(k)+"clstrs.fits")
 
+    #data= Table.read("myBALCat_xtra.csv", format= 'ascii.csv')
+                          
+    data = Table.read("myBALs.fits")
+                          
     tt= join(clstr_tbl, data, keys= 'SDSSName')
 
     props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
 
     clstrs_ls=[]
     for o in range(k):
-            clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
-                          mean(tt['Vmin_'+line][tt['label'] ==o]),\
-                          mean(tt['Vmax_'+line][tt['label'] ==o]), \
-                          mean(tt['EW_'+line][tt['label'] ==o]), \
-                        mean(tt[deltv][tt['label'] ==o])])
+        clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
+                          mean(tt[line+'-vmin'][tt['label'] ==o]),\
+                          mean(tt[line+'-vmax'][tt['label'] ==o]), \
+                          mean(tt[line+'-EW'][tt['label'] ==o]), \
+                          mean(tt[lum][tt['label'] ==o])])
 
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
 
@@ -271,12 +274,9 @@ def clust_compos(line, k, f):
         l= c[0]
         print l
         if c[1] > cutoff:
-            sns.kdeplot(tt['deltV'][tt['label'] == l], tt['Vmax_'+line][tt['label'] == l],  \
-                        shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
-            '''
-            sns.kdeplot(tt['Vmin_'+line][tt['label'] == l], tt['Vmax_'+line][tt['label'] == l], \
+            sns.kdeplot(tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
                     shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
-                    '''
+
         
         i+=1
 
@@ -311,7 +311,7 @@ def clust_compos(line, k, f):
         l= c[0]
         print l
         if c[1] > cutoff:
-            sns.kdeplot(tt['EW_'+line][tt['label'] == l], tt['Vmax_'+line][tt['label'] == l], \
+            sns.kdeplot(tt[line+'-EW'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
                         shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
         
         i+=1
@@ -344,7 +344,7 @@ def clust_compos(line, k, f):
     i=1
     for c in ord_clstrs:
         l= c[0]
-        compo_name= "./composites/4features/ew_vmin_vmax_deltv"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
+        compo_name= "./composites/"+g+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
         if c[1] > cutoff:
             plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
