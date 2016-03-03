@@ -224,8 +224,10 @@ def clust_compos(line, k, f):
         lum = "logF1400"
 
     cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
+    
+    clstr_tbl= Table.read("./clusters/4features/ew_vmin_vmax_deltv/"+line+str(k)+"clstrs.fits")
 
-    clstr_tbl= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
+    #clstr_tbl= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
     
     data= Table.read("myBALCat_xtra.csv", format= 'ascii.csv')
 
@@ -235,11 +237,11 @@ def clust_compos(line, k, f):
 
     clstrs_ls=[]
     for o in range(k):
-        clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
+            clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
                           mean(tt['Vmin_'+line][tt['label'] ==o]),\
                           mean(tt['Vmax_'+line][tt['label'] ==o]), \
                           mean(tt['EW_'+line][tt['label'] ==o]), \
-                          mean(tt[lum][tt['label'] ==o])])
+                        mean(tt[deltv][tt['label'] ==o])])
 
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
 
@@ -269,8 +271,12 @@ def clust_compos(line, k, f):
         l= c[0]
         print l
         if c[1] > cutoff:
+            sns.kdeplot(tt['deltV'][tt['label'] == l], tt['Vmax_'+line][tt['label'] == l],  \
+                        shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+            '''
             sns.kdeplot(tt['Vmin_'+line][tt['label'] == l], tt['Vmax_'+line][tt['label'] == l], \
                     shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+                    '''
         
         i+=1
 
@@ -338,7 +344,7 @@ def clust_compos(line, k, f):
     i=1
     for c in ord_clstrs:
         l= c[0]
-        compo_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
+        compo_name= "./composites/4features/ew_vmin_vmax_deltv"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
         if c[1] > cutoff:
             plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
@@ -1192,7 +1198,7 @@ fig1.text(0.07, 0.19, r"EW(HeII) ($\AA$)", rotation='vertical', horizontalalignm
 #from mpl_toolkits.mplot3d import Axes3D
 #import seaborn as sns
 
-c4= Table.read('./clusters/3features/CIV6clstrs.fits')
+c4= Table.read('./clusters/3features/ew_vmin_vmax/CIV6clstrs.fits')
 
 clstrs_ls=[]
 
@@ -1210,9 +1216,14 @@ oc= sorted(clstrs_ls, key= itemgetter(2)) #ordered clusters (with Vmin)
 clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
           sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["pale aqua"]]
 
-fig= figure()
+fig= figure(figsize=(10,8))
 
 ax= plt.axes(projection='3d')
+
+#plot projections
+#ax.scatter(c4['EW'], c4['Vmin'], marker= '+', color='k', zdir='z', zs=-2)
+#ax.scatter(c4['Vmin'], c4['Vmax'], marker= '+', color='k', zdir='x', zs=0)
+#ax.scatter(c4['EW'], c4['Vmax'], marker= '+', color='k', zdir='y', zs=-2.5)
 
 j= 0
 for c in oc:
@@ -1221,6 +1232,7 @@ for c in oc:
     ax.scatter(xs= c4['EW'][c4['label']== i], ys= c4['Vmin'][c4['label']== i], zs= c4['Vmax'][c4['label']== i], c= clr_ls[j])
 
     j+= 1
+
 
 ax.set_xlabel('CIV EW')
 ax.set_ylabel('CIV Vmin')
