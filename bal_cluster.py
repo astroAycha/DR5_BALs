@@ -17,8 +17,8 @@ def bal_cluster(line, k):
     line: which line to use for the clustering features
     k: number of clusters"""
     
-    #data= Table.read('myBALCat.fits')
-    data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
+    data= Table.read('myBALCat.fits')
+    #data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
 
     #selec the sample: line has an absorption trough: BI0 >0 , S/N >3, and a redshift cutoff to restrict the bandwidth
 
@@ -68,16 +68,22 @@ def bal_cluster(line, k):
 
     s['SDSSName'].fill_value= -999
     names= s['SDSSName'].filled() # SDSS name
+    
+    dv= vmax - vmin # delta V
 
     #standardize parameters before using them in clustering
     f1= (ew - mean(ew))/std(ew)
     f2= (vmin - mean(vmin))/std(vmin)
     f3= (vmax - mean(vmax))/std(vmax)
     f4= (cl - mean(cl))/std(cl)
+    f5= (dv - mean(dv))/std(dv)
     
     # list of features to be used in clustering
+    f_names= ['EW', 'Vmin', 'Vmax', 'deltV'] #edit this to show features used
+
     #f= [f1, f2, f3, f4]
-    f= [f1, f2, f3] # three features (without continuum lum)
+    #f= [f1, f2, f3] # three features (without continuum lum)
+    f= [f1, f2, f3, f5] # use EW, Vmax, and Delta V for clustering
 
     #f= [ew, vmin, vmax, fdeep]# , cl]
 
@@ -97,22 +103,26 @@ def bal_cluster(line, k):
     
     clstr_name= line+str(k)
     
-    
+    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
+                     names= ('EW', 'Vmin', 'Vmax', 'deltV', 'label', 'SDSSName', 'z'), \
+                     dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
+    '''
+    # used for clustering with EW, Vmin and Vmax
     clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], labels, names, redshift], \
                      names= ('EW', 'Vmin', 'Vmax', 'label', 'SDSSName', 'z'), \
                      dtype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64'))
-
+                     '''
     '''
     #used when Lum was used in clustering
     clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
                      names= ('EW', 'Vmin', 'Vmax', 'Lum', 'label', 'SDSSName', 'z'), \
                      dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
                      '''
-        
-    clstr_tab.write("./clusters/"+str(len(f))+"features/"+clstr_name+"clstrs.fits", format= 'fits')
+    clstr_tab.write("./clusters/"+str(len(f))+"features/ew_vmin_vmax_deltv/"+clstr_name+"clstrs.fits", format= 'fits')
+    
+    #clstr_tab.write("./clusters/"+str(len(f))+"features/"+clstr_name+"clstrs.fits", format= 'fits') #uncomment to save files in the 3features directory
     
     
-    #clstr_tab.write("./clusters/"+str(len(f))+"features/"+clstr_name+"clstrs.fits", format= 'fits')
 
     return
    
