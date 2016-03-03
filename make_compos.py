@@ -16,8 +16,9 @@ def spec_compos(line, k, f):
     k: number of clusters
     f: number of features
     """
-
-    clstr= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
+    
+    clstr= Table.read("./clusters/"+str(f)+"features/ew_vmin_vmax_deltv/"+line+str(k)+"clstrs.fits") # use for clustering results with delta V instead of Vmin and Vmax
+    #clstr= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
     column_names= clstr.colnames
     
     data= Table.read('myBALCat.fits')
@@ -66,7 +67,8 @@ def spec_compos(line, k, f):
 
     for m,n in zip(range(k), spec_num): #assumes there is a directory called composites in the working directory
     
-        spec_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(m+1)+".fits"
+        spec_name= "./composites/"+str(f)+"features/ew_vmin_vmax_deltv/"+line+"_"+str(k)+"clstr"+str(m+1)+".fits"
+        #spec_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(m+1)+".fits"
         spec_file= np.vstack((wlen,compos_ls[m], std_ls[m]))
         
         hdu= fits.PrimaryHDU(spec_file)
