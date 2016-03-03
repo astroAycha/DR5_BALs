@@ -17,9 +17,14 @@ def bal_cluster(line, k):
     k: number of clusters
     g1= normalized EW, Vmin, Vmax
     g2= normalized EW, Vmin, dV
+    g3: normalized EW, Vmin, EW/dv
+    g4: normalized EW, Vmax, EW/dv
+    g5: normalized EW, Vmin, Vmax, dV
+    g6: normalized EW, Vmin, Vmax, EW/dv
     
     """
-    group = "g2/"
+    group = "g6/"
+    colnames= ('EW', 'Vmin', 'Vmax', 'EW_dV', 'label', 'SDSSName', 'z')
     
     data= Table.read('myBALs.fits')
     #data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
@@ -76,22 +81,25 @@ def bal_cluster(line, k):
     s[lum].fill_value= -999
     cl= s[lum].filled() # Log of 1400 or 2500 monochromatic luminosity
 
-    s['Name'].fill_value= -999
-    names= s['Name'].filled() # SDSS name
+    s['SDSSName'].fill_value= -999
+    names= s['SDSSName'].filled() # SDSS name
     
 
     dv= vmax- vmin # delta v
+    dd= ew/dv # some sort of an estimate of the trough depth
     
     #standardize (normalized) parameters before using them in clustering
     ew_n= (ew - mean(ew))/std(ew)
     vmin_n= (vmin - mean(vmin))/std(vmin)
     vmax_n= (vmax - mean(vmax))/std(vmax)
     dv_n = (dv - mean(dv))/std(dv)
+    dd_n= (dd- mean(dd))/std(dd)
     
     #cl_n= (cl - mean(cl))/std(cl)
     
     # list of features to be used in clustering
-    f= [ew_n, vmin_n, dv_n]
+    #f= [ew_n, vmin_n, dv_n]
+    f= [ew_n, vmin_n, vmax_n, dd_n]
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
 
@@ -110,17 +118,17 @@ def bal_cluster(line, k):
     clstr_name= line+str(k)
     
     
-    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], labels, names, redshift], \
-                     names= ('EW', 'Vmin', 'Vmax', 'label', 'SDSSName', 'z'), \
-                     dtype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64'))
-
-    '''
-    #used when Lum was used in clustering
+    # use with 3 features
+    #clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], labels, names, redshift], \
+                    # names= colnames, \
+                    # dtype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64'))
+                     
+    # use with 4 features
     clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
-                     names= ('EW', 'Vmin', 'Vmax', 'Lum', 'label', 'SDSSName', 'z'), \
-                     dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
-                     '''
-        
+                                      names= colnames, \
+                                      dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
+
+
     clstr_tab.write("./clusters/"+group+clstr_name+"clstrs.fits", format= 'fits')
     
     
