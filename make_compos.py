@@ -10,17 +10,17 @@ from astropy.io import fits
 
 from scipy.stats import sigmaclip
 
-def spec_compos(line, k, f):
+def spec_compos(line, k, g):
 
     """create median composite spectra from a list of file names
     k: number of clusters
-    f: number of features
+    g: directory where clusters are stored. e.g, g1/ , g2/ or g3/ ...
     """
 
-    clstr= Table.read("./clusters/"+str(f)+"features/"+line+str(k)+"clstrs.fits")
+    clstr= Table.read("./clusters/"+g+line+str(k)+"clstrs.fits")
     column_names= clstr.colnames
     
-    data= Table.read('myBALCat.fits')
+    data= Table.read('myBALs.fits')
 
     t= join(clstr, data, keys= 'SDSSName', join_type= 'left')
     print len(t)
@@ -66,7 +66,7 @@ def spec_compos(line, k, f):
 
     for m,n in zip(range(k), spec_num): #assumes there is a directory called composites in the working directory
     
-        spec_name= "./composites/"+str(f)+"features/"+line+"_"+str(k)+"clstr"+str(m+1)+".fits"
+        spec_name= "./composites/"+g+line+"_"+str(k)+"clstr"+str(m+1)+".fits"
         spec_file= np.vstack((wlen,compos_ls[m], std_ls[m]))
         
         hdu= fits.PrimaryHDU(spec_file)
