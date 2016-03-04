@@ -28,13 +28,16 @@ def spec_proc(data_tab):
         
         flx= spec[1].data.field(0) # flux
 
-        c0 = spec[0].header['coeff0']
+        #c0 = spec[0].header['coeff0']
+        c0= spec[1].data.field(1)[0]
         c1 = spec[0].header['coeff1']
         #npix = spec[0].header['NAXIS']
-        npix= len(flx)
+        npix= spec[1].header['NAXIS2']
+        #npix= len(flx)
         #print npix
 
         wlen = 10.**(c0 + c1 * np.arange(npix))
+        #print len(wlen)
         
         #wlen= 10.**(spec[0].header['coeff0']+ spec[0].header['coeff1'] * np.arange(len(spec[1].data.field(1)))) # wavelength, coeff0: starting wavelength, coeff1: dispersion
         
@@ -42,7 +45,8 @@ def spec_proc(data_tab):
         #wlen= 10.**(spec[0].header['coeff0']+ spec[0].header['coeff1'] * np.arange(len(spec[0].data[0]))) # wavelength, coeff0: starting wavelength, coeff1: dispersion
         
         ext_lambda= extinction.extinction_ccm89(wlen * u.angstrom, a_v= Av, r_v= 3.1)
-        tau_lambda= ext_lambda/(1.086)
+        tau_lambda= ext_lambda/((1 * u.angstrom) * 1.086) # the unit seems necessary on my desktop but not needed on laptop :/
+        #tau_lambda= ext_lambda/(1.086)
         dered_flx= flx * np.exp(tau_lambda) # extinction corrected flux
         
         rest_wlen= wlen /(1+z) # restframe wavelength
