@@ -19,25 +19,23 @@ def spec_proc(data_tab):
 
     for i in range(len(s)):
         #print i
-        z= s['z'][i] # use redshifts from Hewett and Wild 2010
+        z= s['Z_HW'][i] # use redshifts from Hewett and Wild 2010
         Av= s['AV_SandF'][i] #Av (Schlafly and Finkbeiner 2011) see extinction_tab.txt
         
         spec_name= "./data/spec-"+str(s['plate'][i]).zfill(4)+"-"+str(s['MJD_spec'][i])+"-"+str(s['fiberid'][i]).zfill(4)+".fits" # fits file name
         
         spec= fits.open(spec_name) # read file
         
-        flx= spec[1].data.field(0) # flux
-
+        flx= spec[1].data.field(0) # flux array
+        w= 10.**(spec[1].data.field(1)) # wavelength array
+        wlen= w.astype(double)
+        
         #c0 = spec[0].header['coeff0']
-        c0= spec[1].data.field(1)[0]
-        c1 = spec[0].header['coeff1']
-        #npix = spec[0].header['NAXIS']
-        npix= spec[1].header['NAXIS2']
-        #npix= len(flx)
-        #print npix
+        #c0= spec[1].data.field(1)[0]
+        #c1 = spec[0].header['coeff1']
+        #npix= spec[1].header['NAXIS2']
 
-        wlen = 10.**(c0 + c1 * np.arange(npix))
-        #print len(wlen)
+        #wlen = 10.**(c0 + c1 * np.arange(npix))
         
         #wlen= 10.**(spec[0].header['coeff0']+ spec[0].header['coeff1'] * np.arange(len(spec[1].data.field(1)))) # wavelength, coeff0: starting wavelength, coeff1: dispersion
         
