@@ -9,7 +9,7 @@ from astropy.table import Table, join
 from sklearn.cluster import KMeans
 from sklearn import metrics
 
-def bal_cluster(line, k):
+def bal_cluster(line, k, g):
 
     """ unsupervised clustering using KMeans.
     param:
@@ -21,11 +21,10 @@ def bal_cluster(line, k):
     g4: normalized EW, Vmax, EW/dv
     g5: normalized EW, Vmin, Vmax, dV
     g6: normalized EW, Vmin, Vmax, EW/dv
+    g7: normalized Vmin, Vmax, EW/dV
     
     """
-    group = "g6/"
-    colnames= ('EW', 'Vmin', 'Vmax', 'EW_dV', 'label', 'SDSSName', 'z')
-    
+
     data= Table.read('myBALs.fits')
 
     #data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
@@ -87,22 +86,6 @@ def bal_cluster(line, k):
     
     dv= vmax - vmin # delta V
 
-    #standardize parameters before using them in clustering
-    f1= (ew - mean(ew))/std(ew)
-    f2= (vmin - mean(vmin))/std(vmin)
-    f3= (vmax - mean(vmax))/std(vmax)
-    f4= (cl - mean(cl))/std(cl)
-    f5= (dv - mean(dv))/std(dv)
-    
-    # list of features to be used in clustering
-    f_names= ['EW', 'Vmin', 'Vmax', 'deltV'] #edit this to show features used
-
-    #f= [f1, f2, f3, f4]
-    #f= [f1, f2, f3] # three features (without continuum lum)
-    f= [f1, f2, f3, f5] # use EW, Vmax, and Delta V for clustering
-
-    #f= [ew, vmin, vmax, fdeep]# , cl]
-
     dv= vmax- vmin # delta v
     dd= ew/dv # some sort of an estimate of the trough depth
     
@@ -114,10 +97,47 @@ def bal_cluster(line, k):
     dd_n= (dd- mean(dd))/std(dd)
     
     #cl_n= (cl - mean(cl))/std(cl)
+
+
+    if g==  'g1/':
     
+        f = [ew_n, vmin_n, vmax_n]
+        colnames= ('EW', 'Vmin', 'Vmax', 'label', 'SDSSName', 'z')
+        datatype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64')
+
+    elif g== 'g2/':
+        
+        f = [ew_n, vmin_n, dv_n]
+        colnames= ('EW', 'Vmin', 'dV', 'label', 'SDSSName', 'z')
+        datatype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64')
+
+    elif g== 'g3/':
+        f= [ew_n, vmin_n, dd_n]
+        colnames= ('EW', 'Vmin', 'EW_dV', 'label', 'SDSSName', 'z')
+        datatype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64')
+    
+    elif g== 'g4/':
+        f= [ew_n, vmax_n, dd_n]
+        colnames= ('EW', 'Vmax', 'EW_dV', 'label', 'SDSSName', 'z')
+        datatype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64')
+
+    elif g== 'g5/':
+        f = [ew_n, vmin_n, vmax_n, dv_n]
+        colnames= ('EW', 'Vmin', 'Vmax', 'dV', 'label', 'SDSSName', 'z')
+        datatype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64')
+    
+    elif g== 'g6/':
+        f= [ew_n, vmin_n, vmax_n, dd_n]
+        colnames= ('EW', 'Vmin', 'Vmax', 'EW_dV', 'label', 'SDSSName', 'z')
+        datatype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64')
+
+    elif g== 'g7/':
+        f= [vmin_n, vmax_n, dd_n]
+        colnames= ('Vmin', 'Vmax', 'EW_dV', 'label', 'SDSSName', 'z')
+        datatype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64')
+    
+
     # list of features to be used in clustering
-    #f= [ew_n, vmin_n, dv_n]
-    f= [ew_n, vmin_n, vmax_n, dd_n]
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
 
@@ -134,26 +154,13 @@ def bal_cluster(line, k):
     # save the results in a FITS table
     
     clstr_name= line+str(k)
-    
-    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
-                     names= ('EW', 'Vmin', 'Vmax', 'deltV', 'label', 'SDSSName', 'z'), \
-                     dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
-    '''
-    # used for clustering with EW, Vmin and Vmax
+
+    # table with clustering results
     clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], labels, names, redshift], \
-                     names= ('EW', 'Vmin', 'Vmax', 'label', 'SDSSName', 'z'), \
-                     dtype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64'))
-                     '''
-    '''
-    #used when Lum was used in clustering
-    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], qs[:,3], labels, names, redshift], \
-                     names= ('EW', 'Vmin', 'Vmax', 'Lum', 'label', 'SDSSName', 'z'), \
-                     dtype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64'))
-                     '''
-    clstr_tab.write("./clusters/"+str(len(f))+"features/ew_vmin_vmax_deltv/"+clstr_name+"clstrs.fits", format= 'fits')
-    
-    #clstr_tab.write("./clusters/"+str(len(f))+"features/"+clstr_name+"clstrs.fits", format= 'fits') #uncomment to save files in the 3features directory
-    
+                     names= colnames, \
+                     dtype= datatype)
+    clstr_tab.write("./clusters/"+g+clstr_name+"clstrs.fits", format= 'fits')
+
 
     return
    
