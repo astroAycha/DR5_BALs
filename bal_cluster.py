@@ -15,15 +15,21 @@ def bal_cluster(line, k, g):
     param:
     line: which line to use for the clustering features
     k: number of clusters
-    g1= normalized EW, Vmin, Vmax
-    g2= normalized EW, Vmin, dV
+    g0: normalized EW, Vmin, Vmax
+    g1: normalized EW, Vmin, dV
+    g2: normalized EW, Vmax, dV
     g3: normalized EW, Vmin, EW/dv
     g4: normalized EW, Vmax, EW/dv
     g5: normalized EW, Vmin, Vmax, dV
     g6: normalized EW, Vmin, Vmax, EW/dv
     g7: normalized Vmin, Vmax, EW/dV
+    g8: normalized EW, dV, EW/dV
+    g9: normalized EW, dV
     
     """
+    
+    clstr_name= line+str(k)
+
 
     data= Table.read('myBALs.fits')
 
@@ -58,7 +64,7 @@ def bal_cluster(line, k, g):
 
     """
     s['Z_HW'].fill_value= -999
-    redshift= s['z'].filled() #redshift
+    redshift= s['Z_HW'].filled() #redshift
 
     s[line+'-BI'].fill_value= -999
     bi= s[line+'-BI'].filled() # balnicity: integration 3000-25000
@@ -84,9 +90,8 @@ def bal_cluster(line, k, g):
     s['SDSSName'].fill_value= -999
     names= s['SDSSName'].filled() # SDSS name
     
-    dv= vmax - vmin # delta V
-
     dv= vmax- vmin # delta v
+    
     dd= ew/dv # some sort of an estimate of the trough depth
     
     #standardize (normalized) parameters before using them in clustering
@@ -99,45 +104,59 @@ def bal_cluster(line, k, g):
     #cl_n= (cl - mean(cl))/std(cl)
 
 
-    if g==  'g1/':
+    if g==  'g0':
     
         f = [ew_n, vmin_n, vmax_n]
-        colnames= ('EW', 'Vmin', 'Vmax', 'label', 'SDSSName', 'z')
-        datatype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64')
+        colnames= ('EW', 'Vmin', 'Vmax')
+        datatype= ('float64', 'float64', 'float64')
 
-    elif g== 'g2/':
+    elif g== 'g1':
         
         f = [ew_n, vmin_n, dv_n]
-        colnames= ('EW', 'Vmin', 'dV', 'label', 'SDSSName', 'z')
-        datatype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64')
+        colnames= ('EW', 'Vmin', 'dV')
+        datatype= ('float64', 'float64', 'float64')
 
-    elif g== 'g3/':
+    elif g== 'g2':
+    
+        f = [ew_n, vmax_n, dv_n]
+        colnames= ('EW', 'Vmax', 'dV')
+        datatype= ('float64', 'float64', 'float64')
+
+    elif g== 'g3':
         f= [ew_n, vmin_n, dd_n]
-        colnames= ('EW', 'Vmin', 'EW_dV', 'label', 'SDSSName', 'z')
-        datatype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64')
+        colnames= ('EW', 'Vmin', 'EW_dV')
+        datatype= ('float64', 'float64', 'float64')
     
-    elif g== 'g4/':
+    elif g== 'g4':
         f= [ew_n, vmax_n, dd_n]
-        colnames= ('EW', 'Vmax', 'EW_dV', 'label', 'SDSSName', 'z')
-        datatype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64')
+        colnames= ('EW', 'Vmax', 'EW_dV')
+        datatype= ('float64', 'float64', 'float64')
 
-    elif g== 'g5/':
+    elif g== 'g5':
         f = [ew_n, vmin_n, vmax_n, dv_n]
-        colnames= ('EW', 'Vmin', 'Vmax', 'dV', 'label', 'SDSSName', 'z')
-        datatype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64')
+        colnames= ('EW', 'Vmin', 'Vmax', 'dV')
+        datatype= ('float64', 'float64', 'float64', 'float64')
     
-    elif g== 'g6/':
+    elif g== 'g6':
         f= [ew_n, vmin_n, vmax_n, dd_n]
-        colnames= ('EW', 'Vmin', 'Vmax', 'EW_dV', 'label', 'SDSSName', 'z')
-        datatype= ('float64', 'float64', 'float64', 'float64', 'int', 'S18', 'float64')
+        colnames= ('EW', 'Vmin', 'Vmax', 'EW_dV')
+        datatype= ('float64', 'float64', 'float64', 'float64')
 
-    elif g== 'g7/':
+    elif g== 'g7':
         f= [vmin_n, vmax_n, dd_n]
-        colnames= ('Vmin', 'Vmax', 'EW_dV', 'label', 'SDSSName', 'z')
-        datatype= ('float64', 'float64', 'float64', 'int', 'S18', 'float64')
-    
+        colnames= ('Vmin', 'Vmax', 'EW_dV')
+        datatype= ('float64', 'float64', 'float64')
 
-    # list of features to be used in clustering
+    elif g== 'g8':
+        f= [ew_n, dv_n, dd_n]
+        colnames= ('EW', 'dV', 'EW_dV')
+        datatype= ('float64', 'float64', 'float64')
+
+    elif g== 'g9':
+        f= [ew_n, dv_n]
+        colnames= ('EW', 'dV')
+        datatype= ('float64', 'float64')
+    
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
 
@@ -148,18 +167,33 @@ def bal_cluster(line, k, g):
     labels= kmeans.predict(qs)
     sc= metrics.silhouette_score(qs, labels)
     cntrs= kmeans.cluster_centers_
+
+    ## file to save centroids and silhouette scores for every run
+    param_f= open("./clusters/"+g+"/"+clstr_name+"param.txt", 'wr')
+
+    param_f.write(g+", \t features: "+str(colnames)+ "\n")
+
+    param_f.write("Silhouette score= "+ str(sc)+ "\n")
+
+    param_f.write("centroids: "+"\n"+str(cntrs)+ "\n")
+
+    param_f.close()
+
     print "Silhouette score= ", sc
     print "centroids: "+"\n", cntrs
 
     # save the results in a FITS table
-    
-    clstr_name= line+str(k)
 
     # table with clustering results
-    clstr_tab= Table([qs[:,0], qs[:,1], qs[:,2], labels, names, redshift], \
-                     names= colnames, \
-                     dtype= datatype)
-    clstr_tab.write("./clusters/"+g+clstr_name+"clstrs.fits", format= 'fits')
+    clstr_tbl= Table([qs[:,b] for b in range(len(f))], names= colnames, dtype= datatype)
+
+    print "table has", len(clstr_tbl), "objects"
+
+    lab= Column(name= 'label', data= labels)
+
+    clstr_tbl.add_columns([lab, names, redshift])
+
+    clstr_tbl.write("./clusters/"+g+"/"+clstr_name+"clstrs.fits", format= 'fits')
 
 
     return
