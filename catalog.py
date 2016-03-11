@@ -35,9 +35,22 @@ t.write("myBALs.fits")
 
 
 
+### big_tbl.fits is the result of corss-matching myBALs.fits with the Shen et al. 2010 data table, Filiz Ak et al. 2014 table 1, Baskin et al. 2015 table 1, and Krawczyk et al. 2015 table 1
 
+tt= Table.read('big_tbl.fits')
 
+##keep only the columns I need
 
+tt.keep_columns(['SDSSName','RA_1','DEC_1','z_1','SiIV-BI','SiIV-BIO','SiIV-EW','SiIV-vmin','SiIV-vmax','SiIV-fdeep','CIV-BI','CIV-BIO','CIV-EW','CIV-vmin','CIV-vmax','CIV-fdeep','AlIII-BI','AlIII-BIO','AlIII-EW','AlIII-vmin','AlIII-vmax','AlIII-fdeep','MgII-BI','MgII-BIO','MgII-EW','MgII-vmin','MgII-vmax','MgII-fdeep','SiIV-EmL','CIV-EmL','AlIII-EmL','MgII-EmL','SiIV-BMBB','CIV-BMBB','AlIII-BMBB','MgII-BMBB','CIV4-BWA','SN1700','logF1400','logF2500','M_i','MJD_spec','plate_1','fiberid','AV_SandF','LOGEDD_RATIO_1','Z_HW_1','Dal1','E_Dal1','e_Dal2','E_B-V_1','E_E_B-V_1','e_E_B-V_2','Dal2','E_Dal3','e_Dal4','E_B-V_2','E_E_B-V_3','e_E_B-V_4','HeII_EW','alpha_UV','v_md','CF','FWHM','BI1','e_BI1','BI2','e_BI2','Delt'])
+
+tt['RA_1'].name= 'RA'
+tt['DEC_1'].name= 'DEC'
+tt['z_1'].name= 'z'
+tt['plate_1'].name= 'plate'
+tt['LOGEDD_RATIO_1'].name= 'LOGEDD_RATIO'
+tt['Z_HW_1'].name= 'Z_HW'
+
+tt.write('myBALsx.fits')
 
 
 ############################
