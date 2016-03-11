@@ -226,9 +226,9 @@ def clust_compos(line, k, g):
 
     cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
     
-    clstr_tbl= Table.read("./clusters/4features/ew_vmin_vmax_deltv/"+line+str(k)+"clstrs.fits")
+    #clstr_tbl= Table.read("./clusters/4features/ew_vmin_vmax_deltv/"+line+str(k)+"clstrs.fits")
 
-    clstr_tbl= Table.read("./clusters/"+g+line+str(k)+"clstrs.fits")
+    clstr_tbl= Table.read("./clusters/"+g+"/"+line+str(k)+"clstrs.fits")
 
     #data= Table.read("myBALCat_xtra.csv", format= 'ascii.csv')
                           
@@ -344,7 +344,7 @@ def clust_compos(line, k, g):
     i=1
     for c in ord_clstrs:
         l= c[0]
-        compo_name= "./composites/"+g+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
+        compo_name= "./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
         if c[1] > cutoff:
             plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
