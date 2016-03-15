@@ -5,100 +5,22 @@ import numpy as np
 from operator import itemgetter
 from astropy.table import Table, join
 
-def clstr_cntrs(f):
 
-    """ create a table with the centroids for the clusters for k= 3,4 and 5. formated for the manuscript
-    param: 
-    f: number of features used (3 or 4) this is just to know which file to open.
-    """
-
-    line_ls= ["CIV", "SiIV", "AlIII", "MgII"]
-
-    tbl= open("cntrs_tbl"+str(f)+".txt", 'wrb')
-    
-    data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
-    
-    alph= ['a', 'b', 'c', 'd', 'e', 'f']
-
-    for l in line_ls:
-    
-        if l == 'MgII':
-            lum = 'logF2500'
-        else:
-            lum = 'logF1400'
-    
-        for k in range(3,7):
-        
-            tt= Table.read("./clusters/"+str(f)+"features/"+l+str(k)+"clstrs.fits")
-            
-            t= join(data, tt, keys= 'SDSSName')
-            
-            tbl.write(l+ "&" + str(len(t)) + "& "+ "K="+ str(k)+ "\n")
-            
-            clstrs_ls=[]
-            
-            if f == 4: # using 4 featurs: vmin, vmax, ew nad lum
-                for o in range(k):
-                    clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
-                                      mean(t['Vmin_'+l][t['label'] ==o]),\
-                                      mean(t['Vmax_'+l][t['label'] ==o]), \
-                                      mean(t['EW_'+l][t['label'] ==o]), \
-                                      mean(t[lum][t['label'] ==o])])
-    
-            oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
-            
-            for c in oc:
-                tbl.write("{:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:06.2f} \n".format(c[3], c[4], c[5], c[6], c[7]))
-        
-        
-            if f == 3: # 3 features vmin, vamx, ew
-        
-                for o in range(k):
-                    clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
-                                      mean(t['Vmin_'+l][t['label'] ==o]),\
-                                      mean(t['Vmax_'+l][t['label'] ==o]), \
-                                      mean(t['EW_'+l][t['label'] ==o])])
-        
-            oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
-            
-            var= [] #variability
-            si4= [] # SiIV only. no AlIII
-            sial=[] # SiIV with or without AlIII
-    
-            for x in oc:
-                q= x[2] #cluster label
-                
-                var.append(len(t[(t['label'] ==q) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==q]))
-
-                si4.append(len(t[(t['label'] ==q) & (t['BIO_SiIV'] >0) & (t['BIO_AlIII'] ==0)])*100./len(t[t['label']==q]))
-        
-                sial.append(len(t[(t['label'] ==q) & (t['BIO_SiIV'] >0) & (t['BIO_AlIII'] >0)])*100./len(t[t['label']==q]))
-
-
-            for (c,j) in zip(oc, range(k)):
-                a= alph[j]
-                tbl.write("{} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f} & {:02.1f} & {:02.1f} \n".format(l+"-"+a, c[3], c[4], c[5], c[6], var[j], si4[j], sial[j]))
-
-    tbl.close()
-
-    return
-
-###################
-
-def overlap(f):
+def overlap(g):
     
     """ table to show overlap between our sample from Gibson et al. 2015 and other datasets: Filiz Ak 2014, Baskin et al 2015, Krawczyk et al. 2015, and Shen et al. 2011
         param:
-        f: number of features used (3 or 4) this is just to know which file to open.
+        g: group number: refers to the clustering runs in bal_cluster.py each with a different combination of features
         """
     
-    line_ls= ["CIV", "SiIV", "AlIII", "MgII"]
+    #line_ls= ["CIV", "SiIV", "AlIII", "MgII"]
+    line_ls= ["CIV"]
     
-    tbl= open("cntrs_num_tbl"+str(f)+".txt", 'wrb') # new file to recored numbers in a latex table format
+    tbl= open("cntrs_num_tbl"+str(g)+".txt", 'wrb') # new file to recored numbers in a latex table format
     
-    data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
+    data= Table.read('myBALsx.fits')
     
-    alph= ['a', 'b', 'c', 'd', 'e', 'f']
+    alph= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     
     for l in line_ls:
         
@@ -107,37 +29,21 @@ def overlap(f):
         else:
             lum = 'logF1400'
     
-        for k in range(3,7):
+        for k in range(3,9):
             
-            tt= Table.read("./clusters/"+str(f)+"features/"+l+str(k)+"clstrs.fits")
+            tt= Table.read("./clusters/"+g+"/"+l+str(k)+"clstrs.fits")
             
             t= join(data, tt, keys= 'SDSSName')
             
             tbl.write(l+ "&" + str(len(t)) + "& "+ "K="+ str(k)+ "\n")
             
             clstrs_ls=[]
-            
-            if f == 4: # using 4 featurs: vmin, vmax, ew and lum
-                for o in range(k):
-                    clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
-                                      mean(t['Vmin_'+l][t['label'] ==o]),\
-                                      mean(t['Vmax_'+l][t['label'] ==o]), \
-                                      mean(t['EW_'+l][t['label'] ==o]), \
-                                      mean(t[lum][t['label'] ==o])])
-        
-            oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
-            
-            for c in oc:
-                tbl.write("{:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:06.2f} \n".format(c[3], c[4], c[5], c[6], c[7]))
-
-
-            if f == 3: # 3 features vmin, vamx, ew
-    
-                for o in range(k):
-                    clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
-                                      mean(t['Vmin_'+l][t['label'] ==o]),\
-                                      mean(t['Vmax_'+l][t['label'] ==o]), \
-                                      mean(t['EW_'+l][t['label'] ==o])])
+      
+            for o in range(k):
+                clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
+                                  mean(t[l+'-vmin'][t['label'] ==o]),\
+                                  mean(t[l+'-vmax'][t['label'] ==o]), \
+                                  mean(t[l+'-EW'][t['label'] ==o])])
             
             oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
             
@@ -154,17 +60,17 @@ def overlap(f):
                 
                 nur.append(len(t[(t['label'] ==q) & (t['Delt'] != -999)]))
                 
-                baskin.append(len(t[(t['label'] ==q) & (t['HeII_EW_BLH'] != -999)]))
+                baskin.append(len(t[(t['label'] ==q) & (t['HeII_EW'] != -999)]))
                 
                 krawczyk.append(len(t[(t['label'] ==q) & (t['E_B-V_1'] != -999)]))
                 
-                shen.append(len(t[(t['label'] ==q) & (t['LOGEDD_RATIO_DR7'] != -999)]))
+                shen.append(len(t[(t['label'] ==q) & (t['LOGEDD_RATIO'] != -999)]))
                 
                 var.append(len(t[(t['label'] ==q) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==q]))
                 
-                si4.append(len(t[(t['label'] ==q) & (t['BIO_SiIV'] >0) & (t['BIO_AlIII'] ==0)])*100./len(t[t['label']==q]))
+                si4.append(len(t[(t['label'] ==q) & (t['SiIV-BIO'] >0) & (t['AlIII-BIO'] ==0)])*100./len(t[t['label']==q]))
                 
-                sial.append(len(t[(t['label'] ==q) & (t['BIO_SiIV'] >0) & (t['BIO_AlIII'] >0)])*100./len(t[t['label']==q]))
+                sial.append(len(t[(t['label'] ==q) & (t['SiIV-BIO'] >0) & (t['AlIII-BIO'] >0)])*100./len(t[t['label']==q]))
             
             
             for (c,j) in zip(oc, range(k)):
@@ -177,6 +83,73 @@ def overlap(f):
 
 
 ###################
+
+def clstr_cntrs(g):
+    
+    """ create a table with the centroids for the clusters for k= 3,4 and 5. formated for the manuscript
+        param:
+        g: group number: refers to the clustering runs in bal_cluster.py each with a different combination of features
+        """
+    
+    #line_ls= ["CIV", "SiIV", "AlIII", "MgII"]
+    line_ls= ["CIV"]
+    
+    tbl= open("cntrs_tbl"+str(g)+".txt", 'wrb')
+    
+    data= Table.read('myBALsx.fits')
+    
+    alph= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    
+    for l in line_ls:
+        
+        if l == 'MgII':
+            lum = 'logF2500'
+        else:
+            lum = 'logF1400'
+    
+        for k in range(3,9):
+            
+            tt= Table.read("./clusters/"+g+"/"+l+str(k)+"clstrs.fits")
+            
+            t= join(data, tt, keys= 'SDSSName')
+            
+            tbl.write(l+ "&" + str(len(t)) + "& "+ "K="+ str(k)+ "\n")
+            
+            clstrs_ls=[]
+            
+            for o in range(k):
+                clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
+                                  mean(t[l+'-vmin'][t['label'] ==o]),\
+                                  mean(t[l+'-vmax'][t['label'] ==o]), \
+                                  mean(t[l+'-EW'][t['label'] ==o])])
+        
+            oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
+            
+            
+            var= [] #variability
+            si4= [] # SiIV only. no AlIII
+            sial=[] # SiIV with or without AlIII
+            
+            for x in oc:
+                q= x[2] #cluster label
+                
+                var.append(len(t[(t['label'] ==q) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==q]))
+                
+                si4.append(len(t[(t['label'] ==q) & (t['SiIV-BIO'] >0) & (t['AlIII-BIO'] ==0)])*100./len(t[t['label']==q]))
+                
+                sial.append(len(t[(t['label'] ==q) & (t['SiIV-BIO'] >0) & (t['AlIII-BIO'] >0)])*100./len(t[t['label']==q]))
+            
+            
+            for (c,j) in zip(oc, range(k)):
+                a= alph[j]
+                tbl.write("{} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f} & {:02.1f} & {:02.1f} \n".format(l+"-"+a, c[3], c[4], c[5], c[6], var[j], si4[j], sial[j]))
+                
+    tbl.close()
+    
+    return
+
+###################
+
 
 #check fraction of objects with BI0(AlIII) >0 in each of the CIV and SiIV clusters:
 
