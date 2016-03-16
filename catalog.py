@@ -50,13 +50,10 @@ tt['plate_1'].name= 'plate'
 tt['LOGEDD_RATIO_1'].name= 'LOGEDD_RATIO'
 tt['Z_HW_1'].name= 'Z_HW'
 
-## some columns have NANs --> replace with -999
+tt.write('myBALsx.fits')
 
-tt['SiIV-BIO'].fill_value = -999
-tt['Delt'].fill_value = -999
-
-ttt= tt.filled()
-ttt.write('myBALsxx.fits')
+## replacing nan cells with -999 using astropy's fill_value did not work.
+## saved as csv, opened as spreadsheet, replaced nan values with -999.
 
 
 ############################
