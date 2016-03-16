@@ -50,7 +50,13 @@ tt['plate_1'].name= 'plate'
 tt['LOGEDD_RATIO_1'].name= 'LOGEDD_RATIO'
 tt['Z_HW_1'].name= 'Z_HW'
 
-tt.write('myBALsx.fits')
+## some columns have NANs --> replace with -999
+
+tt['SiIV-BIO'].fill_value = -999
+tt['Delt'].fill_value = -999
+
+ttt= tt.filled()
+ttt.write('myBALsxx.fits')
 
 
 ############################
