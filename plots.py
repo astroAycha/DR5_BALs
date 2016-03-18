@@ -362,6 +362,66 @@ def clust_compos(line, k, g):
     #prop_tbl= join(data, clstr_tbl, keys='SDSSName')
     #scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
 
+#############
+
+def std_compos(line, k, g):
+
+    """ plot composites with their std in a multi-panel plot
+    """
+
+    sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
+    
+    if line== 'MgII':
+        xlimit= (1700, 3100)
+        r= arange(5,9)
+        lum= "logF2500"
+
+    else:
+        xlimit= (1300, 2165)
+        r= arange(0,8)
+        lum = "logF1400"
+    
+    cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
+    
+    #clstr_tbl= Table.read("./clusters/4features/ew_vmin_vmax_deltv/"+line+str(k)+"clstrs.fits")
+    
+    clstr_tbl= Table.read("./clusters/"+g+"/"+line+str(k)+"clstrs.fits")
+    
+    #data= Table.read("myBALCat_xtra.csv", format= 'ascii.csv')
+    
+    data = Table.read("myBALs.fits")
+    
+    tt= join(clstr_tbl, data, keys= 'SDSSName')
+    
+    props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
+    
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
+                          mean(tt[line+'-vmin'][tt['label'] ==o]),\
+                          mean(tt[line+'-vmax'][tt['label'] ==o]), \
+                          mean(tt[line+'-EW'][tt['label'] ==o]), \
+                          mean(tt[lum][tt['label'] ==o])])
+
+    ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+
+    print ord_clstrs
+
+    abc= ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+
+    fig= figure(figsize=(13,12))
+
+    for i in range(k):
+    
+        compo= fits.open("./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits")
+        ax= fig.add_subplot(k,1, i+1)
+        
+        errorbar(compo[0].data[0], compo[0].data[1], compo[0].data[3], color= '0.8')
+        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= 'm', label= line+abc[i])
+        xlim(1300,2200)
+        ylim(-0.3,4.6)
+        legend()
+
 
 
 ##############
