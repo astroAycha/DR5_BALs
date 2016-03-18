@@ -25,7 +25,8 @@ def spec_compos(line, k, g):
     t= join(clstr, data, keys= 'SDSSName', join_type= 'left')
     print len(t)
 
-    compos_ls= [] #list of arrays, each array is a composite that represents one cluster
+    median_compos_ls= [] #list of arrays, each array is a medain composite that represents one cluster
+    mean_compos_ls= [] #list of arrays, each array is a mean composite that represents one cluster
     spec_num= []  #number of objects in each composite (cluster) to be used in the plotting
     std_ls= [] # a list of stdev arrays for each composite
 
@@ -47,19 +48,22 @@ def spec_compos(line, k, g):
     
         spec_num.append(len(clust_spec[1:]))
     
-        clipped_compo= [] # 3 sigma clipping before median combining the spectra
+        clipped_median, clipped_mean= [], [] # 3 sigma clipping before median and mean combining the spectra
         std_array=[]
     
         for i in range(clust_spec.shape[1]):
         
             y= sigmaclip(clust_spec[1:,i], 3, 3)
-            m=median(y[0])
-            clipped_compo.append(m)
+            m= median(y[0])
+            clipped_median.append(m)
+            avg= mean(y[0])
+            clipped_mean.append(avg)
             s= std(y[0])
             std_array.append(s)
     
     
-        compos_ls.append(clipped_compo) # list with the composites (compos[0] is composite from 1st cluster, compos[1] 2nd cluster,...)
+        median_compos_ls.append(clipped_median) # list with the composites (compos[0] is composite from 1st cluster, compos[1] 2nd cluster,...)
+        mean_compos_ls.append(clipped_mean)
         std_ls.append(std_array)
 
     #save each composite into a FITS file
@@ -67,7 +71,7 @@ def spec_compos(line, k, g):
     for m,n in zip(range(k), spec_num): #assumes there is a directory called composites in the working directory
     
         spec_name= "./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(m+1)+".fits"
-        spec_file= np.vstack((wlen,compos_ls[m], std_ls[m]))
+        spec_file= np.vstack((wlen, median_compos_ls[m], mean_compos_ls[m], std_ls[m]))
         
         hdu= fits.PrimaryHDU(spec_file)
         hdr= hdu.header
