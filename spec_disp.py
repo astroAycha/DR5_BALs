@@ -2,8 +2,55 @@
 import numpy as np
 from astropy.io import fits
 
-from astropy.table import Table
+from astropy.table import Table, join
 
+
+def spec_compo_compare(line, k, g, c):
+
+    """ plot comosite spectrum and overplot individual spectra for comparison.
+        param: line: used in the clustering CIV, SiIV, AlIII, or MgII
+                k: number of clusters: 3-8
+                g: group name (each group contains clusters generated using different set of clustering features (see bal_clusters.py)
+                 g0,... g9
+                c: cluster number: 0 up to k-1
+    """
+
+    compo_name= "./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(c+1)+".fits"
+    
+    compo= fits.open(compo_name)
+
+    data = Table.read("myBALs.fits")
+    
+    clstr_data= Table.read("./clusters/"+g+"/"+line+str(k)+"clstrs.fits")
+    
+    clstr= clstr_data[clstr_data['label'] == c]
+    
+    t= join(clstr, data, keys= "SDSSName")
+    
+    print len(t)
+    
+    fig= figure(figsize=(16,10))
+    
+    for i in range(len(t)):
+        try:
+            plot(compo[0].data[0], compo[0].data[1], color= 'r', lw= 2)
+            spec_name= "./proc_data/spec-"+str(t['plate'][i])+"-"+str(t['MJD_spec'][i])+"-"+str(t['fiberid'][i]).zfill(4)+"_proc.fits"
+        
+            spec= fits.open(spec_name)
+            
+            plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], color= '0.4')
+            xlim(1300,2200)
+            ylim(-1,5)
+
+            resume = input("Press Enter to plot next spectrum on list.")
+        
+        except SyntaxError:
+            pass
+            clf()
+
+
+
+##############
 def spec_display(spec_ls, n1, n2):
     
     """ read a list of spectra and display them. Read input and use as flag (for either low SNR or BAL quasar).
