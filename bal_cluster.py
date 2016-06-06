@@ -4,7 +4,7 @@
 import numpy as np
 
 from astropy.io import fits
-from astropy.table import Table, join
+from astropy.table import Table, join, Column
 
 from sklearn.cluster import KMeans
 from sklearn import metrics
@@ -25,6 +25,9 @@ def bal_cluster(line, k, g):
     g7: normalized Vmin, Vmax, EW/dV
     g8: normalized EW, dV, EW/dV
     g9: normalized EW, dV
+    g11: normalized EW, Vmax, BI0/dV
+    g12: normalized EW, Vmin, Vmax, BI0/dV
+    g13: normalized BI0, Vmax, BI0/dV
     
     """
     
@@ -94,12 +97,17 @@ def bal_cluster(line, k, g):
     
     dd= ew/dv # some sort of an estimate of the trough depth
     
+    dp= bi0/dv # another dimensionless parameter to estimate trough depth
+    
     #standardize (normalized) parameters before using them in clustering
     ew_n= (ew - mean(ew))/std(ew)
     vmin_n= (vmin - mean(vmin))/std(vmin)
     vmax_n= (vmax - mean(vmax))/std(vmax)
     dv_n = (dv - mean(dv))/std(dv)
     dd_n= (dd- mean(dd))/std(dd)
+    bi_n= (bi0 - mean(bi0))/std(bi0)
+    dp_n= (dp - mean(dp))/std(dp)
+    
     
     #cl_n= (cl - mean(cl))/std(cl)
 
@@ -156,6 +164,21 @@ def bal_cluster(line, k, g):
         f= [ew_n, dv_n]
         colnames= ('EW', 'dV')
         datatype= ('float64', 'float64')
+
+    elif g== 'g11':
+        f= [ew_n, vmax_n, dp_n]
+        colnames= ('EW', 'Vmax', 'BI0_dV')
+        datatype= ('float64', 'float64', 'float64')
+
+    elif g== 'g12':
+        f= [ew_n, vmin_n, vmax_n, dp_n]
+        colnames= ('EW', 'Vmin', 'Vmax', 'BI0_dV')
+        datatype= ('float64', 'float64', 'float64', 'float64')
+
+    elif g== 'g13':
+        f= [bi_n, vmax_n, dp_n]
+        colnames= ('BI0', 'Vmax', 'BI0_dV')
+        datatype= ('float64', 'float64', 'float64')
     
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
