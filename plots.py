@@ -257,25 +257,29 @@ def clust_compos(line, k, g):
     amb= sns.light_palette(sns.xkcd_rgb["amber"], as_cmap= True)
     aq= sns.light_palette(sns.xkcd_rgb["pale aqua"], as_cmap= True)
     
-    clrm_ls= ['Blues', 'Purples' , 'Reds', 'Greys', 'Greens', amb, aq]
+    clrm_ls= ['Blues', 'Purples' , 'Reds', 'Greys', 'Greens', amb, aq, 'pink']
 
     
-    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     
 
     fig= figure(figsize=(14,10))
 
     ax1= fig.add_subplot(221)
-    xlabel(line + r' V$_{min}$ (km/s)')
-    ylabel(line + r' V$_{max}$ (km/s)')
+    #xlabel(line + r' V$_{min}$ (km/s)')
+    xlabel(line + r" depth")
+    ylabel(line + r" V$_{max}$ (km/s)")
     
     i =1
     for c in ord_clstrs:
         l= c[0]
         print l
         if c[1] > cutoff:
-            sns.kdeplot(tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
-                    shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+            #sns.kdeplot(tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
+                    #shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+            sns.kdeplot(tt[line+'-BIO'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
+                        shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], \
+                        label= False, legend= False)
 
         
         i+=1
@@ -373,21 +377,16 @@ def std_compos(line, k, g):
     
     if line== 'MgII':
         xlimit= (1700, 3100)
-        r= arange(5,9)
         lum= "logF2500"
 
     else:
         xlimit= (1300, 2165)
-        r= arange(0,8)
         lum = "logF1400"
     
     cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
     
-    #clstr_tbl= Table.read("./clusters/4features/ew_vmin_vmax_deltv/"+line+str(k)+"clstrs.fits")
-    
     clstr_tbl= Table.read("./clusters/"+g+"/"+line+str(k)+"clstrs.fits")
     
-    #data= Table.read("myBALCat_xtra.csv", format= 'ascii.csv')
     
     data = Table.read("myBALs.fits")
     
@@ -407,9 +406,10 @@ def std_compos(line, k, g):
 
     print ord_clstrs
 
-    abc= ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+    abc= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
     fig= figure(figsize=(13,12))
+    subplots_adjust(hspace =0.01)
 
     for i in range(k):
     
@@ -417,12 +417,13 @@ def std_compos(line, k, g):
         ax= fig.add_subplot(k,1, i+1)
         
         errorbar(compo[0].data[0], compo[0].data[1], compo[0].data[3], color= '0.8')
-        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= 'm', label= line+abc[i])
+        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= 'm', label= line+"-"+abc[i]+" median")
+        #plot(compo[0].data[0], compo[0].data[2], lw= 2, color= 'g', label= line+"-"+abc[i]+" mean")
         xlim(1300,2200)
         ylim(-0.3,4.6)
         legend()
 
-
+    return
 
 ##############
 
@@ -439,8 +440,10 @@ def clstr_prop(line,k):
     """
 
     data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
+    
+    #data= Table.read('myBALsx.fits')
 
-    clstr_tbl= Table.read("./clusters/3features/"+line+str(k)+"clstrs.fits") # for 3 features
+    clstr_tbl= Table.read("./clusters/g0/"+line+str(k)+"clstrs.fits") # for 3 features
     
     clstrs_ls=[]
     for o in range(k):
@@ -476,7 +479,7 @@ def clstr_prop(line,k):
 
     props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
     
-    
+    """
     ax1= fig.add_subplot(421)
     i= 0
     j =0
@@ -520,9 +523,9 @@ def clstr_prop(line,k):
     
     ax2.text(0.05, 0.6, r"log L(1400$\AA$)"+"\n"+"[mW/m$^2$/Hz]", transform=ax2.transAxes, color= 'k', fontsize= 16)
     ax2.text(0.95, 0.85, "B", transform=ax2.transAxes, color= 'r', fontsize= 14, bbox= props)
+    """
 
-
-    ax3= fig.add_subplot(423)
+    ax3= fig.add_subplot(321)
     i =0
     param= "E_B-V_1"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
@@ -537,11 +540,11 @@ def clstr_prop(line,k):
              bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
              
         i+=1
-
+        
     ax3.text(0.65, 0.8,r"E(B-V)", transform=ax3.transAxes, color= 'k', fontsize= 18)
     ax3.text(0.95, 0.85, "C", transform=ax3.transAxes, color= 'r', fontsize= 14, bbox= props)
 
-    ax4= fig.add_subplot(424)
+    ax4= fig.add_subplot(322)
     i =0
     param= "int_alpha_nu"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
@@ -560,7 +563,7 @@ def clstr_prop(line,k):
     ax4.text(0.95, 0.85, "D", transform=ax4.transAxes, color= 'r', fontsize= 14, bbox= props)
     
 
-    ax5= fig.add_subplot(425)
+    ax5= fig.add_subplot(323)
     i =0
     param= "HeII_EW_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
@@ -579,7 +582,7 @@ def clstr_prop(line,k):
     ax5.text(0.95, 0.85, "E", transform=ax5.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
-    ax6= fig.add_subplot(426)
+    ax6= fig.add_subplot(324)
     i =0
     param= "alpha_UV_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
@@ -599,7 +602,7 @@ def clstr_prop(line,k):
     ax6.text(0.95, 0.85, "F", transform=ax6.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
-    ax7= fig.add_subplot(427)
+    ax7= fig.add_subplot(325)
     i =0
     param= "CF_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
@@ -619,7 +622,7 @@ def clstr_prop(line,k):
     ax7.text(0.05, 0.85, "G", transform=ax7.transAxes, color= 'r', fontsize= 14, bbox= props)
 
 
-    ax8= fig.add_subplot(428)
+    ax8= fig.add_subplot(326)
     i =0
     param= "v_md_BLH"
     hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
