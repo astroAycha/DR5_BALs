@@ -25,9 +25,14 @@ def bal_cluster(line, k, g):
     g7: normalized Vmin, Vmax, EW/dV
     g8: normalized EW, dV, EW/dV
     g9: normalized EW, dV
+    
     g11: normalized EW, Vmax, BI0/dV
     g12: normalized EW, Vmin, Vmax, BI0/dV
     g13: normalized BI0, Vmax, BI0/dV
+    g14: normalized BI0, Vmin, Vmax, BI0/dV
+    g15: normalized BI0, dV, Vmax
+    g16: normalized BI0, EW, Vmin, Vmax, dV, BI0/dV
+    g17: normalized BI0, EW, Vmin, Vmax, BI0/dV
     
     """
     
@@ -179,6 +184,21 @@ def bal_cluster(line, k, g):
         f= [bi_n, vmax_n, dp_n]
         colnames= ('BI0', 'Vmax', 'BI0_dV')
         datatype= ('float64', 'float64', 'float64')
+
+    elif g== 'g14':
+        f= [bi_n, vmin_n, vmax_n, dp_n]
+        colnames= ('BI0', 'Vmin', 'Vmax', 'BI0_dV')
+        datatype= ('float64', 'float64', 'float64', 'float64')
+
+    elif g== 'g15':
+        f= [bi_n, vmax_n, dv_n]
+        colnames= ('BI0', 'Vmax', 'dV')
+        datatype= ('float64', 'float64', 'float64')
+
+    elif g== 'g16':
+        f= [bi_n, ew_n, vmin_n, vmax_n, dv_n, dp_n]
+        colnames= ('BI0', 'EW', 'Vmin', 'Vmax', 'dV', 'BI0_dV')
+        datatype= ('float64', 'float64', 'float64', 'float64', 'float64', 'float64')
     
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
