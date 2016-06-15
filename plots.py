@@ -277,9 +277,12 @@ def clust_compos(line, k, g):
         if c[1] > cutoff:
             #sns.kdeplot(tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
                     #shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
-            sns.kdeplot(tt[line+'-BIO'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
-                        shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], \
-                        label= False, legend= False)
+           # sns.kdeplot(tt[line+'-BIO'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
+                      #  shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], \
+                      #  label= False, legend= False)
+        
+            sns.kdeplot(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
+                    shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
 
         
         i+=1
@@ -315,7 +318,9 @@ def clust_compos(line, k, g):
         l= c[0]
         print l
         if c[1] > cutoff:
-            sns.kdeplot(tt[line+'-EW'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
+            #sns.kdeplot(tt[line+'-EW'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
+                        #shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+            sns.kdeplot(tt[line+'-BIO'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
                         shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
         
         i+=1
@@ -411,17 +416,20 @@ def std_compos(line, k, g):
     fig= figure(figsize=(13,12))
     subplots_adjust(hspace =0.01)
 
-    for i in range(k):
-    
+    z= 0
+    for w in ord_clstrs:
+        i= w[0]
         compo= fits.open("./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits")
-        ax= fig.add_subplot(k,1, i+1)
+        
+        ax= fig.add_subplot(k, 1, z+1)
         
         errorbar(compo[0].data[0], compo[0].data[1], compo[0].data[3], color= '0.8')
-        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= 'm', label= line+"-"+abc[i]+" median")
+        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= 'm', label= line+"-"+abc[z]+" median")
         #plot(compo[0].data[0], compo[0].data[2], lw= 2, color= 'g', label= line+"-"+abc[i]+" mean")
         xlim(1300,2200)
         ylim(-0.3,4.6)
         legend()
+        z+=1
 
     return
 
