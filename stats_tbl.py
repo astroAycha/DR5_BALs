@@ -18,7 +18,7 @@ def overlap(g):
     
     tbl= open("cntrs_num_tbl"+str(g)+".txt", 'wrb') # new file to recored numbers in a latex table format
     
-    data= Table.read('myBALsx.fits')
+    data= Table.read('myBALsx.csv')
     
     alph= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     
