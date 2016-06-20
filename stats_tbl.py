@@ -41,9 +41,9 @@ def overlap(g):
       
             for o in range(k):
                 clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
-                                  mean(t[l+'-vmin'][t['label'] ==o]),\
+                                  mean(t[l+'-EW'][t['label'] ==o]),\
                                   mean(t[l+'-vmax'][t['label'] ==o]), \
-                                  mean(t[l+'-EW'][t['label'] ==o])])
+                                  mean(t[l+'-vmin'][t['label'] ==o])])
             
             oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
             
@@ -75,7 +75,9 @@ def overlap(g):
             
             for (c,j) in zip(oc, range(k)):
                 a= alph[j]
-                tbl.write("& {} & {:d} & {:06.2f} & {:06.2f} & {:06.2f} & {:02.1f} & {:02.1f} & {:02.1f} & {} & {} & {} & {} \n".format(l+"-"+a, c[3], c[4], c[5], c[6], si4[j], sial[j], var[j], nur[j], baskin[j], krawczyk[j], shen[j]))
+                tbl.write("& {} & ${:d}$ & ${:06.2f}$ & ${:06.2f}$ & ${:06.2f}$ & ${:02.1f}$ & ${:02.1f}$ & ${:02.1f}$ & ${}$ & ${}$ & ${}$ & ${}$ \n".format(l+"-"+a, c[3], c[4], c[5], c[6], si4[j], sial[j], var[j], nur[j], baskin[j], krawczyk[j], shen[j]))
+                
+                #tbl.write("{},{:d},{:06.2f},{:06.2f},{:06.2f},{:02.1f},{:02.1f},{:02.1f},{},{},{},{} \n".format(l+"-"+a, c[3], c[4], c[5], c[6], si4[j], sial[j], var[j], nur[j], baskin[j], krawczyk[j], shen[j]))
 
     tbl.close()
     
