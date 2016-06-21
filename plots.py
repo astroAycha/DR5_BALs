@@ -241,9 +241,9 @@ def clust_compos(line, k, g):
     clstrs_ls=[]
     for o in range(k):
         clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
-                          mean(tt[line+'-vmin'][tt['label'] ==o]),\
+                          mean(tt[line+'-EW'][tt['label'] ==o]),\
                           mean(tt[line+'-vmax'][tt['label'] ==o]), \
-                          mean(tt[line+'-EW'][tt['label'] ==o]), \
+                          mean(tt[line+'-vmin'][tt['label'] ==o]), \
                           mean(tt[lum][tt['label'] ==o])])
 
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
@@ -251,15 +251,19 @@ def clust_compos(line, k, g):
     print ord_clstrs
 
 
-    clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
-              sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["pale aqua"]]
-    
-    amb= sns.light_palette(sns.xkcd_rgb["amber"], as_cmap= True)
-    aq= sns.light_palette(sns.xkcd_rgb["pale aqua"], as_cmap= True)
-    
-    clrm_ls= ['Blues', 'Purples' , 'Reds', 'Greys', 'Greens', amb, aq, 'pink']
+    clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["magenta"], sns.xkcd_rgb["pale red"], \
+              sns.xkcd_rgb["grey"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], \
+              sns.xkcd_rgb["rose"] ]
 
+    prpl= sns.light_palette(sns.xkcd_rgb["magenta"], as_cmap= True)
+    amb= sns.light_palette(sns.xkcd_rgb["amber"], as_cmap= True)
+    pnk= sns.light_palette(sns.xkcd_rgb["muted pink"], as_cmap= True)
+    pch= sns.light_palette(sns.xkcd_rgb["rose"], as_cmap= True)
     
+    clrm_ls= ['Blues', prpl , 'Reds', 'Greys', 'Greens', amb, pch, pnk ]
+    
+
+
     clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     
 
@@ -276,32 +280,27 @@ def clust_compos(line, k, g):
         print l
         if c[1] > cutoff:
             #sns.kdeplot(tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
-                    #shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
-           # sns.kdeplot(tt[line+'-BIO'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
-                      #  shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], \
-                      #  label= False, legend= False)
+                   # shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+                
+            sns.kdeplot(tt[line+'-EW'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
+                shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
         
-            sns.kdeplot(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
-                    shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+            #sns.kdeplot(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l],shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
 
         
         i+=1
 
-    #labels for full sample with number of clusters and number of objects
-    ax1.text(0.1, 0.8, line+" Sample, K= "+str(k)+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax1.transAxes)
 
-    vmin, vmax, ews, lum =[], [], [], []
+    vmin, vmax, ews =[], [], []
     for c in ord_clstrs:
         if c[1] > cutoff:
-            vmin.append(c[2])
+            ews.append(c[2])
             vmax.append(c[3])
-            ews.append(c[4])
-            lum.append(c[5])
+            vmin.append(c[4])
 
-    #ax1.scatter(vmin, vmax, s= [abs(e)*10 for e in ews], edgecolor= '#34495e', facecolor= 'w', marker= 'D')
 
     for x in range(len(vmin)):
-        ax1.text(vmin[x], vmax[x], clstr_name[x] , color= 'k', fontsize= 14 , multialignment= 'center', bbox= props)
+        ax1.text(ews[x]/(vmax[x]-vmin[x]), vmax[x], clstr_name[x] , color= 'k', fontsize= 14 , multialignment= 'center', bbox= props)
 
 
     #panel for the Vmax vs EW space
@@ -318,12 +317,15 @@ def clust_compos(line, k, g):
         l= c[0]
         print l
         if c[1] > cutoff:
-            #sns.kdeplot(tt[line+'-EW'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
-                        #shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
-            sns.kdeplot(tt[line+'-BIO'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
+            sns.kdeplot(tt[line+'-EW'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
                         shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+            
         
         i+=1
+    
+    #labels for full sample with number of clusters and number of objects
+    ax2.text(0.1, 0.8, line+" Sample, K= "+str(k)+"\n"+ "N= "+str(len(clstr_tbl)), color= 'k', fontsize= 18, transform=ax2.transAxes)
+
 
     for x in range(len(vmin)):
         text(ews[x], vmax[x], clstr_name[x] , color= 'k', fontsize= 14, multialignment= 'center', bbox= props)
@@ -423,8 +425,11 @@ def std_compos(line, k, g):
         
         ax= fig.add_subplot(k, 1, z+1)
         
+        if z < k-1:
+            ax.set_xticklabels('',visible=False)
+        
         errorbar(compo[0].data[0], compo[0].data[1], compo[0].data[3], color= '0.8')
-        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= 'm', label= line+"-"+abc[z]+" median")
+        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= 'm', label= line+"-"+abc[z])
         #plot(compo[0].data[0], compo[0].data[2], lw= 2, color= 'g', label= line+"-"+abc[i]+" mean")
         xlim(1300,2200)
         ylim(-0.3,4.6)
