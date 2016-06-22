@@ -251,16 +251,17 @@ def clust_compos(line, k, g):
     print ord_clstrs
 
 
-    clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["magenta"], sns.xkcd_rgb["pale red"], \
+    clr_ls = [sns.xkcd_rgb["azure"], sns.xkcd_rgb["heather"], sns.xkcd_rgb["pale red"], \
               sns.xkcd_rgb["grey"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], \
-              sns.xkcd_rgb["rose"] ]
+              sns.xkcd_rgb["light navy"] ]
 
-    prpl= sns.light_palette(sns.xkcd_rgb["magenta"], as_cmap= True)
+    az= sns.light_palette(sns.xkcd_rgb["azure"], as_cmap= True)
+    prpl= sns.light_palette(sns.xkcd_rgb["heather"], as_cmap= True)
     amb= sns.light_palette(sns.xkcd_rgb["amber"], as_cmap= True)
     pnk= sns.light_palette(sns.xkcd_rgb["muted pink"], as_cmap= True)
-    pch= sns.light_palette(sns.xkcd_rgb["rose"], as_cmap= True)
+    pch= sns.light_palette(sns.xkcd_rgb["light navy"], as_cmap= True)
     
-    clrm_ls= ['Blues', prpl , 'Reds', 'Greys', 'Greens', amb, pch, pnk ]
+    clrm_ls= [az, prpl , 'Reds', 'Greys', 'Greens', amb, pch, pnk ]
     
 
 
@@ -337,7 +338,7 @@ def clust_compos(line, k, g):
     xlim(xlimit)
     ylim(.1,3.2)
     xlabel(r'Restframe Wavelength ($\AA$)')
-    ylabel(r'Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)')
+    ylabel(r'Normalized Flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)')
 
     line_mark= [1335, 1396.8, 1549, 1640, 1663.5, 1857, 1892, 1908, 2800]
     line_label= ['CII', 'SiIV', 'CIV', 'HeII', 'OIII]', 'AlIII', 'SiIII]', 'CIII]', 'MgII']
@@ -404,19 +405,33 @@ def std_compos(line, k, g):
     clstrs_ls=[]
     for o in range(k):
         clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
-                          mean(tt[line+'-vmin'][tt['label'] ==o]),\
+                          mean(tt[line+'-EW'][tt['label'] ==o]),\
                           mean(tt[line+'-vmax'][tt['label'] ==o]), \
-                          mean(tt[line+'-EW'][tt['label'] ==o]), \
+                          mean(tt[line+'-vmin'][tt['label'] ==o]), \
                           mean(tt[lum][tt['label'] ==o])])
 
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
 
     print ord_clstrs
 
+    clr_ls = [sns.xkcd_rgb["azure"], sns.xkcd_rgb["heather"], sns.xkcd_rgb["pale red"], \
+              sns.xkcd_rgb["grey"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], \
+              sns.xkcd_rgb["light navy"] ]
+
     abc= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
     fig= figure(figsize=(13,12))
     subplots_adjust(hspace =0.01)
+
+    fig1= fig.add_axes([0., 0., 1, 1])
+    fig1.set_axis_off()
+    fig1.set_xlim(0, 1)
+    fig1.set_ylim(0, 1)
+    fig1.text(.51, 0.055, r"Wavelength ($\AA$)", \
+          horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(.08, 0.54, r"Normalized Flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)", rotation='vertical', \
+              horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
 
     z= 0
     for w in ord_clstrs:
@@ -428,8 +443,8 @@ def std_compos(line, k, g):
         if z < k-1:
             ax.set_xticklabels('',visible=False)
         
-        errorbar(compo[0].data[0], compo[0].data[1], compo[0].data[3], color= '0.8')
-        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= 'm', label= line+"-"+abc[z])
+        errorbar(compo[0].data[0], compo[0].data[1], compo[0].data[3], color= '0.9')
+        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= clr_ls[z], label= line+"-"+abc[z])
         #plot(compo[0].data[0], compo[0].data[2], lw= 2, color= 'g', label= line+"-"+abc[i]+" mean")
         xlim(1300,2200)
         ylim(-0.3,4.6)
@@ -441,7 +456,7 @@ def std_compos(line, k, g):
 ##############
 
 
-def clstr_prop(line,k):
+def clstr_prop(line,k, g):
 
     """ 
     histograms of the clusters in the Vmin vs Vmax plane with the EW as a marker.
@@ -452,28 +467,31 @@ def clstr_prop(line,k):
     
     """
 
-    data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
+    #data= Table.read('myBALCat_xtra.csv', format= 'ascii.csv')
     
-    #data= Table.read('myBALsx.fits')
+    data= Table.read('myBALsx.fits')
 
-    clstr_tbl= Table.read("./clusters/g0/"+line+str(k)+"clstrs.fits") # for 3 features
+    clstr_tbl= Table.read("./clusters/"+g+"/"+line+str(k)+"clstrs.fits")
+    
+    tt= join(clstr_tbl, data, keys= 'SDSSName')
     
     clstrs_ls=[]
     for o in range(k):
-        clstrs_ls.append([o ,len(clstr_tbl[clstr_tbl['label'] ==o]),\
-                           mean(clstr_tbl['Vmin'][clstr_tbl['label'] ==o]),\
-                           mean(clstr_tbl['Vmax'][clstr_tbl['label'] ==o]), \
-                           mean(clstr_tbl['EW'][clstr_tbl['label'] ==o])])
+        clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
+                           mean(tt[line+'-EW'][tt['label'] ==o]),\
+                           mean(tt[line+'-vmax'][tt['label'] ==o]), \
+                           mean(tt[line+'-vmin'][tt['label'] ==o])])
     
     
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2)) #order the clusters according to their vmin (same as in the clusters/compo plots)
     
     print ord_clstrs
 
-    clr_ls = [sns.xkcd_rgb["windows blue"], sns.xkcd_rgb["dusty purple"], sns.xkcd_rgb["pale red"], \
-          sns.xkcd_rgb["greyish"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], sns.xkcd_rgb["pale aqua"]]
+    clr_ls = [sns.xkcd_rgb["azure"], sns.xkcd_rgb["heather"], sns.xkcd_rgb["pale red"], \
+              sns.xkcd_rgb["grey"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], \
+              sns.xkcd_rgb["light navy"] ]
 
-    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+    clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
     cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
 
@@ -488,68 +506,21 @@ def clstr_prop(line,k):
               horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
 
-    prop_tbl= join(data, clstr_tbl, keys='SDSSName')
-
     props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
     
-    """
-    ax1= fig.add_subplot(421)
-    i= 0
-    j =0
-    param= "LOGEDD_RATIO_DR7"
-    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
-    #print hist_bins
     
-    print param, len(prop_tbl[prop_tbl[param] !=-999])
-    
-    for c in ord_clstrs:
-        if c[1] > cutoff:
-            l= c[0]
-            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] < 50000)], \
-            bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
-        
-            ax1.text(0.05, .85-j/10., line+"-"+clstr_name[i], color= clr_ls[i], fontsize= 16, transform=ax1.transAxes)
-            j+=1
-        
-        i+=1
-    
-    ax1.text(0.7, 0.77,r"log(L/L$_{\rm Edd}$)", transform=ax1.transAxes, color= 'k', fontsize= 16)
-    ax1.text(0.95, 0.85, "A", transform=ax1.transAxes, color= 'r', fontsize= 14, bbox= props)
-
-
-    ax2= fig.add_subplot(422)
-    i =0
-    param= "logF1400" # log monochromatic lum at 1400A from the Gibson catalog
-    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
-
-    print param, len(prop_tbl[prop_tbl[param] !=-999])
-    
-    for c in ord_clstrs:
-        if c[1] >cutoff:
-            l= c[0]
-            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
-             bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
-             
-        i+=1
-    
-    ax2.text(0.05, 0.6, r"log L(1400$\AA$)"+"\n"+"[mW/m$^2$/Hz]", transform=ax2.transAxes, color= 'k', fontsize= 16)
-    ax2.text(0.95, 0.85, "B", transform=ax2.transAxes, color= 'r', fontsize= 14, bbox= props)
-    """
-
     ax3= fig.add_subplot(321)
     i =0
-    param= "E_B-V_1"
-    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
+    param= "HeII_EW"
+    hist_bins= arange(min(tt[param][tt[param] !=-999]), max(tt[param][tt[param] !=-999]), \
+                      (max(tt[param][tt[param] !=-999])-min(tt[param][tt[param] !=-999]))/12)
 
-    print param, len(prop_tbl[prop_tbl[param] !=-999])
+    print param, len(tt[tt[param] !=-999])
 
     for c in ord_clstrs:
         if c[1] >cutoff:
             l= c[0]
-            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
+            hist(tt[param][(tt['label'] == l) & (tt[param] !=-999)], \
              bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
              
         i+=1
@@ -560,16 +531,16 @@ def clstr_prop(line,k):
     ax4= fig.add_subplot(322)
     i =0
     param= "int_alpha_nu"
-    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
+    hist_bins= arange(min(tt[param][tt[param] !=-999]), max(tt[param][tt[param] !=-999]), \
+                      (max(tt[param][tt[param] !=-999])-min(tt[param][tt[param] !=-999]))/12)
         
-    print param, len(prop_tbl[prop_tbl[param] !=-999])
+    print param, len(tt[tt[param] !=-999])
                       
     for c in ord_clstrs:
         if c[1] > cutoff:
             l= c[0]
-            hist((prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] !=0)]), \
-                                       bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
+            hist((tt[param][(tt['label'] == l) & (tt[param] !=-999) & (tt[param] !=0)]), \
+                 bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
                                       
         i+=1
     ax4.text(0.1, 0.8,r"Intrinsic $\alpha_\nu$", transform=ax4.transAxes, color= 'k', fontsize= 16)
@@ -578,16 +549,16 @@ def clstr_prop(line,k):
 
     ax5= fig.add_subplot(323)
     i =0
-    param= "HeII_EW_BLH"
-    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
+    param= "HeII_EW"
+    hist_bins= arange(min(tt[param][tt[param] !=-999]), max(tt[param][tt[param] !=-999]), \
+                      (max(tt[param][tt[param] !=-999])-min(tt[param][tt[param] !=-999]))/12)
 
-    print param, len(prop_tbl[prop_tbl[param] !=-999])
+    print param, len(tt[tt[param] !=-999])
 
     for c in ord_clstrs:
         if c[1] > cutoff:
             l= c[0]
-            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999) & (prop_tbl[param] !=0)], \
+            hist(tt[param][(tt['label'] == l) & (tt[param] !=-999) & (tt[param] !=0)], \
                  bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
 
         i+=1
@@ -598,15 +569,15 @@ def clstr_prop(line,k):
     ax6= fig.add_subplot(324)
     i =0
     param= "alpha_UV_BLH"
-    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
+    hist_bins= arange(min(tt[param][tt[param] !=-999]), max(tt[param][tt[param] !=-999]), \
+                      (max(tt[param][tt[param] !=-999])-min(tt[param][tt[param] !=-999]))/12)
 
-    print param, len(prop_tbl[prop_tbl[param] !=-999])
+    print param, len(tt[tt[param] !=-999])
 
     for c in ord_clstrs:
         if c[1] >cutoff:
             l= c[0]
-            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
+            hist(tt[param][(tt['label'] == l) & (tt[param] !=-999)], \
              bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
         i+=1
@@ -618,15 +589,15 @@ def clstr_prop(line,k):
     ax7= fig.add_subplot(325)
     i =0
     param= "CF_BLH"
-    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
+    hist_bins= arange(min(tt[param][tt[param] !=-999]), max(tt[param][tt[param] !=-999]), \
+                      (max(tt[param][tt[param] !=-999])-min(tt[param][tt[param] !=-999]))/12)
 
-    print param, len(prop_tbl[prop_tbl[param] !=-999])
+    print param, len(tt[tt[param] !=-999])
 
     for c in ord_clstrs:
         if c[1] > cutoff:
             l= c[0]
-            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
+            hist(tt[param][(tt['label'] == l) & (tt[param] !=-999)], \
              bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
         
         i+=1
@@ -638,15 +609,15 @@ def clstr_prop(line,k):
     ax8= fig.add_subplot(326)
     i =0
     param= "v_md_BLH"
-    hist_bins= arange(min(prop_tbl[param][prop_tbl[param] !=-999]), max(prop_tbl[param][prop_tbl[param] !=-999]), \
-                      (max(prop_tbl[param][prop_tbl[param] !=-999])-min(prop_tbl[param][prop_tbl[param] !=-999]))/12)
+    hist_bins= arange(min(tt[param][tt[param] !=-999]), max(tt[param][tt[param] !=-999]), \
+                      (max(tt[param][tt[param] !=-999])-min(tt[param][tt[param] !=-999]))/12)
         
-    print param, len(prop_tbl[prop_tbl[param] !=-999])
+    print param, len(tt[tt[param] !=-999])
                       
     for c in ord_clstrs:
         if c[1] >cutoff:
             l= c[0]
-            hist(prop_tbl[param][(prop_tbl['label'] == l) & (prop_tbl[param] !=-999)], \
+            hist(tt[param][(tt['label'] == l) & (tt[param] !=-999)], \
                 bins= hist_bins, histtype= 'step', normed= True, color= clr_ls[i], lw= 2)
                                       
         i+=1
