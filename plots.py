@@ -272,7 +272,7 @@ def clust_compos(line, k, g):
 
     ax1= fig.add_subplot(221)
     #xlabel(line + r' V$_{min}$ (km/s)')
-    xlabel(line + r" depth")
+    xlabel(line + r" depth ($\AA$/kms/s)")
     ylabel(line + r" V$_{max}$ (km/s)")
     
     i =1
