@@ -50,11 +50,16 @@ tt['plate_1'].name= 'plate'
 tt['LOGEDD_RATIO_1'].name= 'LOGEDD_RATIO'
 tt['Z_HW_1'].name= 'Z_HW'
 
+# calculate intrinsic extinction index and add column to table
+
+cc= Column(name='int_alpha_nu', data= tt['Dal1']-0.28)
+tt.add_column(cc)
+
 tt.write('myBALsx.fits')
 
 ## replacing nan cells with -999 using astropy's fill_value did not work.
 ## saved as csv, opened as spreadsheet, replaced nan values with -999.
-
+tt.write('myBALsx.csv')
 
 ############################
 
