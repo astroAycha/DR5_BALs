@@ -268,9 +268,9 @@ def clust_compos(line, k, g):
     clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     
 
-    fig= figure(figsize=(14,10))
+    fig= figure(figsize=(14,14))
 
-    ax1= fig.add_subplot(221)
+    ax1= fig.add_subplot(321)
     #xlabel(line + r' V$_{min}$ (km/s)')
     xlabel(line + r" depth ($\AA$/kms/s)")
     ylabel(line + r" V$_{max}$ (km/s)")
@@ -306,7 +306,7 @@ def clust_compos(line, k, g):
 
     #panel for the Vmax vs EW space
 
-    ax2= fig.add_subplot(222, sharey= ax1)
+    ax2= fig.add_subplot(322, sharey= ax1)
     xlabel(line + r' EW ($\AA$)')
     #ylabel(line + r' $V_{max}$ (km/s)')
     #ax2.axes.get_yaxis().set_visible(False)
@@ -331,10 +331,46 @@ def clust_compos(line, k, g):
     for x in range(len(vmin)):
         text(ews[x], vmax[x], clstr_name[x] , color= 'k', fontsize= 14, multialignment= 'center', bbox= props)
 
+
+
+    ax4= fig.add_subplot(323)
+    #xlabel(line + r' V$_{min}$ (km/s)')
+    xlabel(line + r" depth ($\AA$/kms/s)")
+    ylabel(line + r" V$_{max}$ (km/s)")
+    
+    i =1
+    for c in ord_clstrs:
+        l= c[0]
+        print l
+        if c[1] > cutoff:
+            #sns.kdeplot(tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
+            # shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+            
+            sns.kdeplot(tt[line+'-EW'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
+                        shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+        
+        #sns.kdeplot(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l],shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+        
+        
+        i+=1
+    
+    
+    vmin, vmax, ews =[], [], []
+    for c in ord_clstrs:
+        if c[1] > cutoff:
+            ews.append(c[2])
+            vmax.append(c[3])
+            vmin.append(c[4])
+
+
+    for x in range(len(vmin)):
+        ax4.text(ews[x]/(vmax[x]-vmin[x]), vmax[x], clstr_name[x] , color= 'k', fontsize= 14 , multialignment= 'center', bbox= props)
+
+
     subplots_adjust(wspace =0.01)
 
     #panel for the composites
-    ax3= fig.add_subplot(212)
+    ax3= fig.add_subplot(313)
     xlim(xlimit)
     ylim(.1,3.2)
     xlabel(r'Restframe Wavelength ($\AA$)')
