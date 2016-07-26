@@ -34,6 +34,8 @@ def bal_cluster(line, k, g):
     g16: normalized BI0, EW, Vmin, Vmax, dV, BI0/dV
     g17: normalized BI0, EW, Vmin, Vmax, BI0/dV
     
+    g18: normalized EW, Vmin, Vmax, dV/EW
+    
     """
     
     clstr_name= line+str(k)
@@ -104,6 +106,8 @@ def bal_cluster(line, k, g):
     
     dp= bi0/dv # another dimensionless parameter to estimate trough depth
     
+    dc4= dv/ew # another param to estimate the depth of CIV
+    
     #standardize (normalized) parameters before using them in clustering
     ew_n= (ew - mean(ew))/std(ew)
     vmin_n= (vmin - mean(vmin))/std(vmin)
@@ -112,7 +116,7 @@ def bal_cluster(line, k, g):
     dd_n= (dd- mean(dd))/std(dd)
     bi_n= (bi0 - mean(bi0))/std(bi0)
     dp_n= (dp - mean(dp))/std(dp)
-    
+    dc4_n= (dc4- mean(dc4))/std(dc4)
     
     #cl_n= (cl - mean(cl))/std(cl)
 
@@ -199,7 +203,12 @@ def bal_cluster(line, k, g):
         f= [bi_n, ew_n, vmin_n, vmax_n, dv_n, dp_n]
         colnames= ('BI0', 'EW', 'Vmin', 'Vmax', 'dV', 'BI0_dV')
         datatype= ('float64', 'float64', 'float64', 'float64', 'float64', 'float64')
-    
+
+    elif g== 'g18':
+        f= [ew_n, vmin_n, vmax_n, dc4_n]
+        colnames= ['EW', 'Vmin', 'Vmax', 'dCIV']
+        datatype= ('float64', 'float64', 'float64', 'float64')
+
 
     qs= np.column_stack(param for param in f) # 2D array to do clustering on
 
