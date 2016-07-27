@@ -224,14 +224,12 @@ def clust_compos(line, k, g):
         r= arange(0,8)
         lum = "logF1400"
 
-    cutoff = 5 # change to 30 for CIV and SiIV, 20 for AlIII and 10 for MgII
+    cutoff = 5 # lower limit for how many objects are in the composite. good to ensure low S/N composites are not plotted
     
-    #clstr_tbl= Table.read("./clusters/4features/ew_vmin_vmax_deltv/"+line+str(k)+"clstrs.fits")
 
     clstr_tbl= Table.read("./clusters/"+g+"/"+line+str(k)+"clstrs.fits")
 
-    #data= Table.read("myBALCat_xtra.csv", format= 'ascii.csv')
-                          
+
     data = Table.read("myBALs.fits")
                           
     tt= join(clstr_tbl, data, keys= 'SDSSName')
@@ -264,14 +262,12 @@ def clust_compos(line, k, g):
     clrm_ls= [az, prpl , 'Reds', 'Greys', 'Greens', amb, pch, pnk ]
     
 
-
     clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     
 
-    fig= figure(figsize=(14,14))
+    fig= figure(figsize=(18,8))
 
-    ax1= fig.add_subplot(321)
-    #xlabel(line + r' V$_{min}$ (km/s)')
+    ax1= fig.add_subplot(241)
     xlabel(line + r" depth ($\AA$/kms/s)")
     ylabel(line + r" V$_{max}$ (km/s)")
     
@@ -280,14 +276,9 @@ def clust_compos(line, k, g):
         l= c[0]
         print l
         if c[1] > cutoff:
-            #sns.kdeplot(tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
-                   # shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
                 
             sns.kdeplot(tt[line+'-EW'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
                 shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
-        
-            #sns.kdeplot(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l],shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
-
         
         i+=1
 
@@ -306,11 +297,8 @@ def clust_compos(line, k, g):
 
     #panel for the Vmax vs EW space
 
-    ax2= fig.add_subplot(322, sharey= ax1)
+    ax2= fig.add_subplot(242, sharey= ax1)
     xlabel(line + r' EW ($\AA$)')
-    #ylabel(line + r' $V_{max}$ (km/s)')
-    #ax2.axes.get_yaxis().set_visible(False)
-    #ax2.set_xticklabels([])
     ax2.yaxis.tick_right()
     
     i =1
@@ -333,8 +321,7 @@ def clust_compos(line, k, g):
 
 
 
-    ax4= fig.add_subplot(323)
-    #xlabel(line + r' V$_{min}$ (km/s)')
+    ax4= fig.add_subplot(243)
     xlabel(line + r" depth ($\AA$/kms/s)")
     ylabel(line + r" V$_{max}$ (km/s)")
     
@@ -343,14 +330,9 @@ def clust_compos(line, k, g):
         l= c[0]
         print l
         if c[1] > cutoff:
-            #sns.kdeplot(tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
-            # shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
             
             sns.kdeplot(tt[line+'-EW'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
                         shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
-        
-        #sns.kdeplot(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l],shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
-        
         
         i+=1
     
@@ -370,7 +352,7 @@ def clust_compos(line, k, g):
     subplots_adjust(wspace =0.01)
 
     #panel for the composites
-    ax3= fig.add_subplot(313)
+    ax3= fig.add_subplot(212)
     xlim(xlimit)
     ylim(.1,3.2)
     xlabel(r'Restframe Wavelength ($\AA$)')
@@ -401,14 +383,6 @@ def clust_compos(line, k, g):
     
     
     return
-
-##considering adding pie chart here to show the fraction of objects with vatiablity
-#pie([28,3,16,3,12], shadow= True, colors= clr_ls, startangle=30, radius= 0.6, labels=['a', 'b', 'c', 'd', 'e'])
-
-
-
-    #prop_tbl= join(data, clstr_tbl, keys='SDSSName')
-    #scatter(prop_tbl['Vmin_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], prop_tbl['Vmax_'+line][(prop_tbl['BI1']-prop_tbl['BI2']) !=-999], marker='o', s=5, color='k')
 
 #############
 
