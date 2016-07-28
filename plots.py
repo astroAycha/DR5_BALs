@@ -267,8 +267,8 @@ def clust_compos(line, k, g):
 
     fig= figure(figsize=(18,8))
 
-    ax1= fig.add_subplot(241)
-    xlabel(line + r" depth ($\AA$/kms/s)")
+    ax1= fig.add_subplot(231)
+    xlabel(line + r" depth ($\AA$/km/s)")
     ylabel(line + r" V$_{max}$ (km/s)")
     
     i =1
@@ -278,7 +278,7 @@ def clust_compos(line, k, g):
         if c[1] > cutoff:
                 
             sns.kdeplot(tt[line+'-EW'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
-                shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+                shade= True, shade_lowest= False, alpha= 0.7, cmap= clrm_ls[i-1], label= False, legend= False)
         
         i+=1
 
@@ -297,9 +297,10 @@ def clust_compos(line, k, g):
 
     #panel for the Vmax vs EW space
 
-    ax2= fig.add_subplot(242, sharey= ax1)
+    ax2= fig.add_subplot(232, sharey= ax1)
     xlabel(line + r' EW ($\AA$)')
-    ax2.yaxis.tick_right()
+    ax2.axes.get_yaxis().set_visible(False)
+
     
     i =1
     for c in ord_clstrs:
@@ -307,7 +308,7 @@ def clust_compos(line, k, g):
         print l
         if c[1] > cutoff:
             sns.kdeplot(tt[line+'-EW'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
-                        shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+                        shade= True, shade_lowest= False, alpha= 0.7, cmap= clrm_ls[i-1], label= False, legend= False)
             
         
         i+=1
@@ -321,9 +322,11 @@ def clust_compos(line, k, g):
 
 
 
-    ax4= fig.add_subplot(243)
-    xlabel(line + r" depth ($\AA$/kms/s)")
+    ax4= fig.add_subplot(233)
+    xlabel(line + r" V$_{min}$ (km/s)")
     ylabel(line + r" V$_{max}$ (km/s)")
+    ax4.yaxis.tick_right()
+    ax4.yaxis.set_label_position("right")
     
     i =1
     for c in ord_clstrs:
@@ -331,8 +334,8 @@ def clust_compos(line, k, g):
         print l
         if c[1] > cutoff:
             
-            sns.kdeplot(tt[line+'-EW'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
-                        shade= True, shade_lowest= False, alpha= 0.5, cmap= clrm_ls[i-1], label= False, legend= False)
+            sns.kdeplot(tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
+                        shade= True, shade_lowest= False, alpha= 0.7, cmap= clrm_ls[i-1], label= False, legend= False)
         
         i+=1
     
@@ -430,7 +433,7 @@ def std_compos(line, k, g):
 
     abc= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
-    fig= figure(figsize=(13,12))
+    fig= figure(figsize=(15,14))
     subplots_adjust(hspace =0.01)
 
     fig1= fig.add_axes([0., 0., 1, 1])
@@ -449,6 +452,7 @@ def std_compos(line, k, g):
         compo= fits.open("./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits")
         
         ax= fig.add_subplot(k, 1, z+1)
+        ax.text(2150, 3, "N= "+str(compo[0].header['SPEC_NUMBER']))
         
         if z < k-1:
             ax.set_xticklabels('',visible=False)
