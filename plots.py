@@ -12,7 +12,7 @@ from scipy.stats import spearmanr
 
 
 ########################
-
+# did NOT use in paper
 def line_prof(line, k, g):
     
     """ plot composite spectra in 2 panels:
@@ -124,6 +124,7 @@ def line_prof(line, k, g):
 
 
 ###################
+# did NOT use in paper
 def bal_hist1(k):
 
     """make histograms for absorption properties in the BALQ sample
@@ -235,7 +236,7 @@ def clust_compos(line, k, g):
                           
     tt= join(clstr_tbl, data, keys= 'SDSSName')
 
-    props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
+    props= dict(boxstyle='round', facecolor='w', edgecolor='w')# , alpha=0.7)
 
     clstrs_ls=[]
     for o in range(k):
@@ -293,7 +294,7 @@ def clust_compos(line, k, g):
 
 
     for x in range(len(vmin)):
-        ax1.text(ews[x]/(vmax[x]-vmin[x]), vmax[x], clstr_name[x] , color= 'k', fontsize= 14 , multialignment= 'center', bbox= props)
+        ax1.text(ews[x]/(vmax[x]-vmin[x]), vmax[x], clstr_name[x] , color= clr_ls[x], fontsize= 14 , multialignment= 'center', bbox= props)
 
 
     #panel for the Vmax vs EW space
@@ -319,7 +320,7 @@ def clust_compos(line, k, g):
 
 
     for x in range(len(vmin)):
-        text(ews[x], vmax[x], clstr_name[x] , color= 'k', fontsize= 14, multialignment= 'center', bbox= props)
+        text(ews[x], vmax[x], clstr_name[x] , color= clr_ls[x], fontsize= 14, multialignment= 'center', bbox= props)
 
 
 
@@ -350,7 +351,7 @@ def clust_compos(line, k, g):
 
 
     for x in range(len(vmin)):
-        ax4.text(vmin[x], vmax[x], clstr_name[x] , color= 'k', fontsize= 14 , multialignment= 'center', bbox= props)
+        ax4.text(vmin[x], vmax[x], clstr_name[x] , color= clr_ls[x], fontsize= 14 , multialignment= 'center', bbox= props)
 
 
     subplots_adjust(wspace =0.01)
