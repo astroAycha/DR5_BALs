@@ -6,6 +6,7 @@ from operator import itemgetter
 from astropy.table import Table, join
 
 
+## used in paper
 def overlap(g):
     
     """ table to show overlap between our sample from Gibson et al. 2015 and other datasets: Filiz Ak 2014, Baskin et al 2015, Krawczyk et al. 2015, and Shen et al. 2011
