@@ -204,6 +204,7 @@ ylim(0,1.3)
 legend()
 
 ###########
+## Used in paper
 
 def clust_compos(line, k, g):
 
@@ -278,7 +279,7 @@ def clust_compos(line, k, g):
         if c[1] > cutoff:
                 
             sns.kdeplot(tt[line+'-EW'][tt['label'] == l]/(tt[line+'-vmax'][tt['label'] == l]-tt[line+'-vmin'][tt['label'] == l]), tt[line+'-vmax'][tt['label'] == l], \
-                shade= True, shade_lowest= False, alpha= 0.7, cmap= clrm_ls[i-1], label= False, legend= False)
+                shade= True, shade_lowest= False, alpha= 0.6, cmap= clrm_ls[i-1], label= False, legend= False)
         
         i+=1
 
@@ -308,7 +309,7 @@ def clust_compos(line, k, g):
         print l
         if c[1] > cutoff:
             sns.kdeplot(tt[line+'-EW'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
-                        shade= True, shade_lowest= False, alpha= 0.7, cmap= clrm_ls[i-1], label= False, legend= False)
+                        shade= True, shade_lowest= False, alpha= 0.6, cmap= clrm_ls[i-1], label= False, legend= False)
             
         
         i+=1
@@ -335,7 +336,7 @@ def clust_compos(line, k, g):
         if c[1] > cutoff:
             
             sns.kdeplot(tt[line+'-vmin'][tt['label'] == l], tt[line+'-vmax'][tt['label'] == l], \
-                        shade= True, shade_lowest= False, alpha= 0.7, cmap= clrm_ls[i-1], label= False, legend= False)
+                        shade= True, shade_lowest= False, alpha= 0.6, cmap= clrm_ls[i-1], label= False, legend= False)
         
         i+=1
     
@@ -349,7 +350,7 @@ def clust_compos(line, k, g):
 
 
     for x in range(len(vmin)):
-        ax4.text(ews[x]/(vmax[x]-vmin[x]), vmax[x], clstr_name[x] , color= 'k', fontsize= 14 , multialignment= 'center', bbox= props)
+        ax4.text(vmin[x], vmax[x], clstr_name[x] , color= 'k', fontsize= 14 , multialignment= 'center', bbox= props)
 
 
     subplots_adjust(wspace =0.01)
@@ -381,13 +382,14 @@ def clust_compos(line, k, g):
         spec= fits.open(compo_name)
         if c[1] > cutoff:
             plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
-        ax3.text(0.82, .99-i/15., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 18, transform=ax3.transAxes) # labels for each cluster with number of obejects. Text colors match the plot
+        ax3.text(0.88, .99-i/12., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 16, transform=ax3.transAxes) # labels for each cluster with number of obejects. Text colors match the plot
         i+=1
     
     
     return
 
 #############
+# used in paper
 
 def std_compos(line, k, g):
 
@@ -433,7 +435,7 @@ def std_compos(line, k, g):
 
     abc= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
-    fig= figure(figsize=(15,14))
+    fig= figure(figsize=(15,12))
     subplots_adjust(hspace =0.01)
 
     fig1= fig.add_axes([0., 0., 1, 1])
@@ -452,7 +454,7 @@ def std_compos(line, k, g):
         compo= fits.open("./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits")
         
         ax= fig.add_subplot(k, 1, z+1)
-        ax.text(2150, 3, "N= "+str(compo[0].header['SPEC_NUMBER']))
+        ax.text(2140, 3, "N= "+str(compo[0].header['SPEC_NUMBER']))
         
         if z < k-1:
             ax.set_xticklabels('',visible=False)
@@ -468,7 +470,7 @@ def std_compos(line, k, g):
     return
 
 ##############
-
+## not used in paper
 
 def clstr_prop(line,k, g):
 
@@ -641,13 +643,15 @@ def clstr_prop(line,k, g):
 
 #########
 
+## used in paper
+
 ## plot multiple panels with 2d scatter plots
 
 sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
 
 data= Table.read('myBALsx.csv')
 
-clstr= Table.read('./clusters/g4/CIV7clstrs.fits')
+clstr= Table.read('./clusters/g6/CIV7clstrs.fits') # change g6 to the desired one. also k=7 here (CIV7clstrs)
 
 t= join(data, clstr, keys= 'SDSSName')
 
@@ -665,7 +669,11 @@ py = "logF1400"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 #scatter(t[px][t[py] != -999], t[py][t[py] != -999], marker='o', s= 5, color= '0.7')
 s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
-text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+if s[1] < 0.001:
+    ss= r"p <10$^{-3}$"
+else:
+    ss= "p= "+"{:3.2f}".format(s[1])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+ss, \
      color='k', fontsize=14, transform=ax1.transAxes)
 
 ax2= fig.add_subplot(332)
@@ -674,7 +682,11 @@ px = "CIV-vmax"
 py = "logF1400"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
-text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+if s[1] < 0.001:
+    ss= r"p <10$^{-3}$"
+else:
+    ss= "p= "+"{:3.2f}".format(s[1])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+ss, \
      color='k', fontsize=14, transform=ax2.transAxes)
 
 ax3= fig.add_subplot(333)
@@ -683,7 +695,11 @@ px = "CIV-EW"
 py = "int_alpha_nu"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
-text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+if s[1] < 0.001:
+    ss= r"p <10$^{-3}$"
+else:
+    ss= "p= "+"{:3.2f}".format(s[1])
+text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+ ss, \
      color='k', fontsize=14, transform=ax3.transAxes)
 
 ax4= fig.add_subplot(334)
@@ -692,7 +708,11 @@ px = "CIV-vmin"
 py = "int_alpha_nu"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
-text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+if s[1] < 0.001:
+    ss= r"p <10$^{-3}$"
+else:
+    ss= "p= "+"{:3.2f}".format(s[1])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+ss, \
      color='k', fontsize=14, transform=ax4.transAxes)
 
 ax5= fig.add_subplot(335)
@@ -701,7 +721,11 @@ px = "CIV-vmax"
 py = "int_alpha_nu"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
-text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+if s[1] < 0.001:
+    ss= r"p <10$^{-3}$"
+else:
+    ss= "p= "+"{:3.2f}".format(s[1])
+text(0.1, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+ss, \
      color='k', fontsize=14, transform=ax5.transAxes)
 
 ax6= fig.add_subplot(336)
@@ -710,7 +734,11 @@ px = "CIV-EW"
 py = "int_alpha_nu"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
-text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+if s[1] < 0.001:
+    ss= r"p <10$^{-3}$"
+else:
+    ss= "p= "+"{:3.2f}".format(s[1])
+text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+ss, \
      color='k', fontsize=14, transform=ax6.transAxes)
 
 ax7= fig.add_subplot(337)
@@ -720,7 +748,11 @@ px = "CIV-vmin"
 py = "HeII_EW"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
-text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+if s[1] < 0.001:
+    ss= r"p <10$^{-3}$"
+else:
+    ss= "p= "+"{:3.2f}".format(s[1])
+text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+ss, \
      color='k', fontsize=14, transform=ax7.transAxes)
 
 ax8= fig.add_subplot(338)
@@ -730,7 +762,11 @@ px = "CIV-vmax"
 py = "HeII_EW"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
-text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+if s[1] < 0.001:
+    ss= r"p <10$^{-3}$"
+else:
+    ss= "p= "+"{:3.2f}".format(s[1])
+text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+ss, \
      color='k', fontsize=14, transform=ax8.transAxes)
 
 ax9= fig.add_subplot(339)
@@ -740,7 +776,11 @@ px = "CIV-EW"
 py = "HeII_EW"
 sns.kdeplot(t[px][t[py] != -999], t[py][t[py] != -999], cmap=cm, n_levels= nl, shade_lowest= False, legend= False)
 s= spearmanr(t[px][t[py] != -999], t[py][t[py] != -999])
-text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+"p= "+"{:3.2f}".format(s[1]), \
+if s[1] < 0.001:
+    ss= r"p <10$^{-3}$"
+else:
+    ss= "p= "+"{:3.2f}".format(s[1])
+text(0.6, 0.75 ,"r= "+"{:03.2f}".format(s[0])+"\n"+ss, \
      color='k', fontsize=14, transform=ax9.transAxes)
 
 #axes labels
@@ -764,19 +804,21 @@ fig1.text(0.09, 0.22, r"EW(HeII) ($\AA$)", rotation='vertical', horizontalalignm
 
 
 ###########################
+## used in paper (bubbles)
+
 ### this is similar to the previous plot (kde of params vs vmin, vmax and EW) but using mean of param in each cluster
 
 sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
 
 data= Table.read('myBALsx.csv')
 
-clstr= Table.read('./clusters/g4/CIV7clstrs.fits')
+clstr= Table.read('./clusters/g6/CIV7clstrs.fits') ## change g6 to the desired one
 
 t= join(data, clstr, keys= 'SDSSName')
 
 clstrs_ls=[]
 
-k=7
+k=7  # change k to the desired number of clusters
 
 line= 'CIV'
 
@@ -896,6 +938,8 @@ ax7.set_xticklabels('',visible=False)
 xlim(100,-18500)
 px = "CIV-vmin"
 py = "int_alpha_nu"
+text(0.1, 0.1, "Red", color= 'r', size= 12, transform=ax7.transAxes)
+text(0.1, 0.9, "Blue", color= 'b', size= 12, transform=ax7.transAxes)
 m1, m2=[], []
 for i in oc:
     c= i[0]
