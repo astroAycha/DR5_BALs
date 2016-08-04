@@ -543,10 +543,10 @@ def lowip(k, g):
             
 
         cnum= np.arange(1,k+1,1)
-        fig = figure(figsize= (10,8))
+        fig = figure(figsize= (8,6))
         ax= fig.add_subplot(111)
-        xlabel('Cluster Name', fontsize= 14)
-        ylabel('Fraction %', fontsize= 14)
+        xlabel('Cluster Name', fontsize= 16)
+        ylabel('Fraction %', fontsize= 16)
         
         ax.set_xticklabels(['', 'a', 'b', 'c', 'd', 'e', 'f', 'g'])
         scatter(cnum, si4, marker= 'o', color= 'gold', s= 100, label= 'S0')
