@@ -471,6 +471,97 @@ def std_compos(line, k, g):
     return
 
 ##############
+
+## used in paper
+
+def lowip(k, g):
+    
+    """ plot the fractions of objects with lower IP troughs (S0 = SiIV, SA= SiIV+AlIII)
+        param:
+        k: number of clusters
+        g: group number: refers to the clustering runs in bal_cluster.py each with a different combination of features
+        """
+    
+    #line_ls= ["CIV", "SiIV", "AlIII", "MgII"]
+    line_ls= ["CIV"]
+    
+    tbl= open("cntrs_num_tbl"+str(g)+".txt", 'wrb') # new file to recored numbers in a latex table format
+    
+    data= Table.read('myBALsx.fits')
+    
+    alph= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    
+    
+    for l in line_ls:
+        
+        if l == 'MgII':
+            lum = 'logF2500'
+        else:
+            lum = 'logF1400'
+            
+        tt= Table.read("./clusters/"+g+"/"+l+str(k)+"clstrs.fits")
+            
+        t= join(data, tt, keys= 'SDSSName')
+            
+        tbl.write(l+ "&" + str(len(t)) + "& "+ "K="+ str(k)+ "\n")
+            
+        clstrs_ls=[]
+            
+        for o in range(k):
+            clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
+                              mean(t[l+'-EW'][t['label'] ==o]),\
+                              mean(t[l+'-vmax'][t['label'] ==o]), \
+                              mean(t[l+'-vmin'][t['label'] ==o])])
+            
+        oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
+            
+        nur=[] # nubmber of objects from Filiz Ak
+        baskin= [] # number of objects from Baskin
+        krawczyk= [] #number of objects from krawczyk
+        shen= [] # number of objects from Shen
+        var= [] # variability
+        si4= [] # SiIV only. no AlIII
+        sial=[] # SiIV with or without AlIII
+            
+        for x in oc:
+            q= x[2] #cluster label
+                
+            nur.append(len(t[(t['label'] ==q) & (t['Delt'] != -999)]))
+                
+            baskin.append(len(t[(t['label'] ==q) & (t['HeII_EW'] != -999)]))
+                
+            krawczyk.append(len(t[(t['label'] ==q) & (t['E_B-V_1'] != -999)]))
+                
+            shen.append(len(t[(t['label'] ==q) & (t['LOGEDD_RATIO'] != -999)]))
+                
+            var.append(len(t[(t['label'] ==q) & (abs(t['BI1']-t['BI2']) >0)])*100./len(t[t['label']==q]))
+                
+            si4.append(len(t[(t['label'] ==q) & (t['SiIV-BIO'] >0) & (t['AlIII-BIO'] ==0)])*100./len(t[t['label']==q]))
+                
+            sial.append(len(t[(t['label'] ==q) & (t['SiIV-BIO'] >0) & (t['AlIII-BIO'] >0)])*100./len(t[t['label']==q]))
+            
+            
+
+        cnum= np.arange(1,k+1,1)
+        fig = figure(figsize= (10,8))
+        ax= fig.add_subplot(111)
+        xlabel('Cluster Name', fontsize= 14)
+        ylabel('Fraction %', fontsize= 14)
+        
+        ax.set_xticklabels(['', 'a', 'b', 'c', 'd', 'e', 'f', 'g'])
+        scatter(cnum, si4, marker= 'o', color= 'gold', s= 100, label= 'S0')
+        scatter(cnum, sial, marker= '^', color= '0.5', s= 100, label= 'SA')
+        
+        legend(numpoints= 1)
+
+
+        return
+
+
+
+
+
+###############
 ## not used in paper
 
 def clstr_prop(line,k, g):
