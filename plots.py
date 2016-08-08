@@ -549,8 +549,9 @@ def lowip(k, g):
         ylabel('Fraction %', fontsize= 16)
         
         ax.set_xticklabels(['', 'a', 'b', 'c', 'd', 'e', 'f', 'g'])
-        scatter(cnum, si4, marker= 'o', color= 'gold', s= 100, label= 'S0')
-        scatter(cnum, sial, marker= '^', color= '0.5', s= 100, label= 'SA')
+        scatter(cnum, si4, marker= 'o', color= 'gold', alpha= 0.5, s= 100, label= 'S0')
+        scatter(cnum, sial, marker= '^', color= '0.5', alpha= 0.5, s= 100, label= 'SA')
+        scatter(cnum, var, marker= '*', color= 'green', alpha= 0.5, s= 100, label= r'$\Delta$ BI>0')
         
         legend(numpoints= 1)
 
