@@ -40,8 +40,8 @@ def spec_compos(line, k, g):
             flx= spec[0].data[1]
             wlen= spec[0].data[0]
             # normalize spectra
-            x1= (1975-1100)/2
-            x2= (2000-1100)/2  # values used to normalize spectrum by. change 1975A and 2000A to the desired wavelength range
+            x1= (1975-1100)*2
+            x2= (2000-1100)*2  # values used to normalize spectrum by. change 1975A and 2000A to the desired wavelength range
             norm_flx= flx/np.median(flx[x1:x2])
 
             clust_spec= np.vstack((clust_spec, norm_flx)) # 2D array. 1st row: restframe wavelength, other rows have corrected fluxes of spectra from clusters (one for each row)
