@@ -513,22 +513,101 @@ def closeup_c3(k,g):
     
     xlabel(r"Wavelength ($\AA$)",fontsize= 18, family= 'serif')
     ylabel(r"Normalized Flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)", fontsize= 18, family= 'serif')
-              
+    
+    line_mark= [1857, 1892, 1908]
+    line_label= ['AlIII', 'SiIII]', 'CIII]']
+
+    # labels for FeIII
+    arrow(2066, 0.85, 0, 0.1, fc='k', ec='k')
+    text(2055, 0.8, r'FeIII', fontsize= 14, family='serif', color='k')
+    
+    for p in range(3):
+        axvline(line_mark[p], ls= ':', color= '.5')
+        text(line_mark[p], 0.9, line_label[p], rotation= 'vertical')
+
+
     z=0
     for w in ord_clstrs:
         i= w[0]
         compo= fits.open("./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits")
                           
-        text(2140, 3, "N= "+str(compo[0].header['SPEC_NUMBER']))
+        text(2040, 1.8-(z+1)/15., line+"-"+abc[z]+", N= "+str(compo[0].header['SPEC_NUMBER']), color= clr_ls[z], fontsize= 14)
             
         plot(compo[0].data[0], compo[0].data[1]/compo[0].data[1][(2000-1100)*2], lw= 2, color= clr_ls[z], label= line+"-"+abc[z])
-        xlim(1770,2150)
+        xlim(1770,2100)
         ylim(.75,1.8)
        
         z+=1
-    legend(prop={'size':12})
+    #legend(prop={'size':12})
     return
 
+
+##############
+
+
+def closeup_c4(k,g):
+    
+    """ plot the region around the CIII] complex.
+        k: number of clusters
+        g: group (indicates which paramters used for the clustering)
+        """
+    
+    sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
+    
+    ## read composites from fits files and order according to CIV trough EW
+    
+    data = Table.read("myBALs.fits")
+    clstr_tbl= Table.read("./clusters/"+g+"/"+line+str(k)+"clstrs.fits")
+    
+    tt= join(clstr_tbl, data, keys= 'SDSSName')
+    
+    props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
+    
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
+                          mean(tt[line+'-EW'][tt['label'] ==o]),\
+                          mean(tt[line+'-vmax'][tt['label'] ==o]), \
+                          mean(tt[line+'-vmin'][tt['label'] ==o])])
+    
+    ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+    
+    print ord_clstrs
+    
+    clr_ls = [sns.xkcd_rgb["azure"], sns.xkcd_rgb["heather"], sns.xkcd_rgb["pale red"], \
+              sns.xkcd_rgb["grey"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], \
+              sns.xkcd_rgb["light navy"] ]
+        
+    abc= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
+
+    fig= figure(figsize=(12,12))
+    
+    xlabel(r"Wavelength ($\AA$)",fontsize= 18, family= 'serif')
+    ylabel(r"Normalized Flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)", fontsize= 18, family= 'serif')
+
+    line_mark= [1549, 1640, 1663.5]
+    line_label= ['CIV', 'HeII', 'OIII]']
+
+
+    for p in range(3):
+        axvline(line_mark[p], ls= ':', color= '.5')
+        text(line_mark[p], 0.9, line_label[p], rotation= 'vertical')
+    
+    z=0
+    for w in ord_clstrs:
+        i= w[0]
+        compo= fits.open("./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits")
+        
+        text(1410, 2.8-(z+1)/10., line+"-"+abc[z]+", N= "+str(compo[0].header['SPEC_NUMBER']), color= clr_ls[z], fontsize= 14)
+        
+        plot(compo[0].data[0], compo[0].data[1]/compo[0].data[1][(2000-1100)*2], lw= 2, color= clr_ls[z], label= line+"-"+abc[z])
+        xlim(1400,1700)
+        ylim(.4,2.8)
+        
+        z+=1
+    #legend(prop={'size':12})
+    return
 
 ##############
 
