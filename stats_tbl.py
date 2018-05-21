@@ -17,9 +17,9 @@ def overlap(g):
     #line_ls= ["CIV", "SiIV", "AlIII", "MgII"]
     line_ls= ["CIV"]
     
-    tbl= open("cntrs_num_tbl"+str(g)+".txt", 'wrb') # new file to recored numbers in a latex table format
+    tbl= open("cntrs_num_tbl"+str(g)+"x.txt", 'wrb') # new file to recored numbers in a latex table format
     
-    data= Table.read('myBALsx.csv')
+    data= Table.read('myBALsx.fits')
     
     alph= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     
@@ -44,7 +44,8 @@ def overlap(g):
                 clstrs_ls.append([l, k, o ,len(t[t['label'] ==o]),\
                                   mean(t[l+'-EW'][t['label'] ==o]),\
                                   mean(t[l+'-vmax'][t['label'] ==o]), \
-                                  mean(t[l+'-vmin'][t['label'] ==o])])
+                                  mean(t[l+'-vmin'][t['label'] ==o]),\
+                                  mean(t['EW_dV'][t['label']== o])])
             
             oc= sorted(clstrs_ls, key= itemgetter(4)) #ordered clusters
             
@@ -76,7 +77,7 @@ def overlap(g):
             
             for (c,j) in zip(oc, range(k)):
                 a= alph[j]
-                tbl.write("& {} & ${:d}$ & ${:06.2f}$ & ${:06.2f}$ & ${:06.2f}$ & ${:02.1f}$ & ${:02.1f}$ & ${:02.1f}$ & ${}$ & ${}$ & ${}$ & ${}$ \n".format(l+"-"+a, c[3], c[4], c[5], c[6], si4[j], sial[j], var[j], nur[j], baskin[j], krawczyk[j], shen[j]))
+                tbl.write("& {} & ${:d}$ & ${:06.2f}$ & ${:06.2f}$ & ${:06.2f}$ & ${:02.1f}$ & ${:02.1f}$ & ${:02.1f}$ & ${:02.1f}$ & ${}$ & ${}$ & ${}$ & ${}$ \n".format(l+"-"+a, c[3], c[4], c[5], c[6], c[7], si4[j], sial[j], var[j], nur[j], baskin[j], krawczyk[j], shen[j]))
                 
                 #tbl.write("{},{:d},{:06.2f},{:06.2f},{:06.2f},{:02.1f},{:02.1f},{:02.1f},{},{},{},{} \n".format(l+"-"+a, c[3], c[4], c[5], c[6], si4[j], sial[j], var[j], nur[j], baskin[j], krawczyk[j], shen[j]))
 
