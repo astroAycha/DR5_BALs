@@ -243,8 +243,7 @@ def clust_compos(line, k, g):
         clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
                           mean(tt[line+'-EW'][tt['label'] ==o]),\
                           mean(tt[line+'-vmax'][tt['label'] ==o]), \
-                          mean(tt[line+'-vmin'][tt['label'] ==o]), \
-                          mean(tt[lum][tt['label'] ==o])])
+                          mean(tt[line+'-vmin'][tt['label'] ==o])])
 
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
 
@@ -267,7 +266,7 @@ def clust_compos(line, k, g):
     clstr_name= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     
 
-    fig= figure(figsize=(18,8))
+    fig= figure(figsize=(18,10))
 
     ax1= fig.add_subplot(231)
     xlabel(line + r" depth ($\AA$/km/s)")
@@ -367,9 +366,9 @@ def clust_compos(line, k, g):
     line_label= ['CII', 'SiIV', 'CIV', 'HeII', 'OIII]', 'AlIII', 'SiIII]', 'CIII]', 'MgII']
 
     # labels for FeIII
-    ax3.arrow(2030, 1.4, -30, -.1, fc='k', ec='k')
-    ax3.arrow(2030, 1.4, +30, -.1, fc='k', ec='k')
-    text(2020, 1.45, r'FeIII', fontsize= 14, family='serif', color='k')
+    #ax3.arrow(2030, 1.4, -30, -.1, fc='k', ec='k')
+    ax3.arrow(2066, 0.5, 0, 0.4, fc='k', ec='k')
+    text(2055, 0.2, r'FeIII', fontsize= 14, family='serif', color='k')
     
     for p in r:
         axvline(line_mark[p], ls= ':', color= '.5')
@@ -382,7 +381,7 @@ def clust_compos(line, k, g):
         compo_name= "./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(l+1)+".fits"
         spec= fits.open(compo_name)
         if c[1] > cutoff:
-            plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2150-1100)*2], lw= 2, color= clr_ls[i-1])
+            plot(spec[0].data[0], spec[0].data[1]/spec[0].data[1][(2000-1100)*2], lw= 2, color= clr_ls[i-1])
         ax3.text(0.88, .99-i/12., line+"-"+clstr_name[i-1]+", N= "+str(len(clstr_tbl[clstr_tbl['label'] == l])), color= clr_ls[i-1], fontsize= 16, transform=ax3.transAxes) # labels for each cluster with number of obejects. Text colors match the plot
         i+=1
     
@@ -423,8 +422,7 @@ def std_compos(line, k, g):
         clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
                           mean(tt[line+'-EW'][tt['label'] ==o]),\
                           mean(tt[line+'-vmax'][tt['label'] ==o]), \
-                          mean(tt[line+'-vmin'][tt['label'] ==o]), \
-                          mean(tt[lum][tt['label'] ==o])])
+                          mean(tt[line+'-vmin'][tt['label'] ==o])])
 
     ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
 
@@ -436,7 +434,7 @@ def std_compos(line, k, g):
 
     abc= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
-    fig= figure(figsize=(15,12))
+    fig= figure(figsize=(10,12))
     subplots_adjust(hspace =0.01)
 
     fig1= fig.add_axes([0., 0., 1, 1])
@@ -455,19 +453,160 @@ def std_compos(line, k, g):
         compo= fits.open("./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits")
         
         ax= fig.add_subplot(k, 1, z+1)
-        ax.text(2140, 3, "N= "+str(compo[0].header['SPEC_NUMBER']))
+        ax.text(2120, 3, "N= "+str(compo[0].header['SPEC_NUMBER']))
         
         if z < k-1:
             ax.set_xticklabels('',visible=False)
         
         errorbar(compo[0].data[0], compo[0].data[1], compo[0].data[3], color= '0.9')
-        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= clr_ls[z], label= line+"-"+abc[z])
-        #plot(compo[0].data[0], compo[0].data[2], lw= 2, color= 'g', label= line+"-"+abc[i]+" mean")
+        plot(compo[0].data[0], compo[0].data[1], lw= 2, color= clr_ls[z], label= line+"-"+abc[z]) # median composite
+        #plot(compo[0].data[0], compo[0].data[2], lw= 2, color= 'k') ## average composite
+        
         xlim(1300,2200)
         ylim(-0.3,4.6)
-        legend()
+        legend(prop={'size':12})
         z+=1
 
+    return
+
+##############
+
+### quick function to compare the AlIII-SiIII]-CIII] region in the composites
+
+def closeup_c3(k,g):
+
+    """ plot the region around the CIII] complex. 
+        k: number of clusters
+        g: group (indicates which paramters used for the clustering)
+    """
+
+    sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
+
+    ## read composites from fits files and order according to CIV trough EW
+
+    data = Table.read("myBALs.fits")
+    clstr_tbl= Table.read("./clusters/"+g+"/"+line+str(k)+"clstrs.fits")
+    
+    tt= join(clstr_tbl, data, keys= 'SDSSName')
+    
+    props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
+    
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
+                          mean(tt[line+'-EW'][tt['label'] ==o]),\
+                          mean(tt[line+'-vmax'][tt['label'] ==o]), \
+                          mean(tt[line+'-vmin'][tt['label'] ==o])])
+
+    ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+    
+    print ord_clstrs
+    
+    clr_ls = [sns.xkcd_rgb["azure"], sns.xkcd_rgb["heather"], sns.xkcd_rgb["pale red"], \
+              sns.xkcd_rgb["grey"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], \
+              sns.xkcd_rgb["light navy"] ]
+              
+    abc= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
+
+    fig= figure(figsize=(12,6))
+    
+    xlabel(r"Wavelength ($\AA$)",fontsize= 18, family= 'serif')
+    ylabel(r"Normalized Flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)", fontsize= 18, family= 'serif')
+    
+    line_mark= [1857, 1892, 1908]
+    line_label= ['AlIII', 'SiIII]', 'CIII]']
+
+    # labels for FeIII
+    arrow(2066, 0.85, 0, 0.1, fc='k', ec='k')
+    text(2055, 0.8, r'FeIII', fontsize= 14, family='serif', color='k')
+    
+    for p in range(3):
+        axvline(line_mark[p], ls= ':', color= '.5')
+        text(line_mark[p], 0.9, line_label[p], rotation= 'vertical')
+
+
+    z=0
+    for w in ord_clstrs:
+        i= w[0]
+        compo= fits.open("./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits")
+                          
+        text(2040, 1.8-(z+1)/15., line+"-"+abc[z]+", N= "+str(compo[0].header['SPEC_NUMBER']), color= clr_ls[z], fontsize= 14)
+            
+        plot(compo[0].data[0], compo[0].data[1]/compo[0].data[1][(2000-1100)*2], lw= 2, color= clr_ls[z], label= line+"-"+abc[z])
+        xlim(1770,2100)
+        ylim(.75,1.8)
+       
+        z+=1
+    #legend(prop={'size':12})
+    return
+
+
+##############
+
+
+def closeup_c4(k,g):
+    
+    """ plot the region around the CIII] complex.
+        k: number of clusters
+        g: group (indicates which paramters used for the clustering)
+        """
+    
+    sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in', 'ytick.direction': u'in'})
+    
+    ## read composites from fits files and order according to CIV trough EW
+    
+    data = Table.read("myBALs.fits")
+    clstr_tbl= Table.read("./clusters/"+g+"/"+line+str(k)+"clstrs.fits")
+    
+    tt= join(clstr_tbl, data, keys= 'SDSSName')
+    
+    props= dict(boxstyle='round', facecolor='w', edgecolor='k')# , alpha=0.7)
+    
+    clstrs_ls=[]
+    for o in range(k):
+        clstrs_ls.append([o ,len(tt[tt['label'] ==o]),\
+                          mean(tt[line+'-EW'][tt['label'] ==o]),\
+                          mean(tt[line+'-vmax'][tt['label'] ==o]), \
+                          mean(tt[line+'-vmin'][tt['label'] ==o])])
+    
+    ord_clstrs= sorted(clstrs_ls, key= itemgetter(2))
+    
+    print ord_clstrs
+    
+    clr_ls = [sns.xkcd_rgb["azure"], sns.xkcd_rgb["heather"], sns.xkcd_rgb["pale red"], \
+              sns.xkcd_rgb["grey"], sns.xkcd_rgb["faded green"], sns.xkcd_rgb["amber"], \
+              sns.xkcd_rgb["light navy"] ]
+        
+    abc= ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
+
+    fig= figure(figsize=(12,12))
+    
+    xlabel(r"Wavelength ($\AA$)",fontsize= 18, family= 'serif')
+    ylabel(r"Normalized Flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)", fontsize= 18, family= 'serif')
+
+    line_mark= [1549, 1640, 1663.5]
+    line_label= ['CIV', 'HeII', 'OIII]']
+
+
+    for p in range(3):
+        axvline(line_mark[p], ls= ':', color= '.5')
+        text(line_mark[p], 0.9, line_label[p], rotation= 'vertical')
+    
+    z=0
+    for w in ord_clstrs:
+        i= w[0]
+        compo= fits.open("./composites/"+g+"/"+line+"_"+str(k)+"clstr"+str(i+1)+".fits")
+        
+        text(1410, 2.8-(z+1)/10., line+"-"+abc[z]+", N= "+str(compo[0].header['SPEC_NUMBER']), color= clr_ls[z], fontsize= 14)
+        
+        plot(compo[0].data[0], compo[0].data[1]/compo[0].data[1][(2000-1100)*2], lw= 2, color= clr_ls[z], label= line+"-"+abc[z])
+        xlim(1400,1700)
+        ylim(.4,2.8)
+        
+        z+=1
+    #legend(prop={'size':12})
     return
 
 ##############
